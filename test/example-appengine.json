@@ -1,0 +1,23 @@
+{
+  "deployment": {
+    "files": {
+      "example-resource-file1": {
+        "sourceUrl": "https://storage.googleapis.com/[MY_BUCKET_ID]/example-application/example-resource-file1"
+      },
+      "images/example-resource-file2": {
+        "sourceUrl": "https://storage.googleapis.com/[MY_BUCKET_ID]/example-application/images/example-resource-file2"
+      }
+    }
+  },
+  "id": "v1",
+  "handlers": [
+    {
+      "urlRegex": "/.*",
+      "script": {
+        "scriptPath": "example-python-app.py"
+      }
+    }
+  ],
+  "runtime": "python27",
+  "threadsafe": true
+}
