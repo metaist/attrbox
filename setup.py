@@ -13,8 +13,9 @@ from setuptools import setup, find_namespace_packages
 # pkg
 pkg = {}
 here = Path(__file__).parent.resolve()
-top = here / "src" / "attrbox"
-exec((top / "__about__.py").open().read(), pkg)  # pylint: disable=exec-used
+exec(  # pylint: disable=exec-used
+    (here / "src" / "attrbox" / "__about__.py").open(encoding="utf-8").read(), pkg
+)
 
 # See: https://github.com/pypa/pip/issues/7953
 site.ENABLE_USER_SITE = "--user" in sys.argv[1:]
@@ -27,7 +28,7 @@ setup(
     name="attrbox",
     version=pkg["__version__"],
     description=pkg["__doc__"].split("\n")[0],
-    long_description=(here / "README.md").read_text(),
+    long_description=(here / "README.md").read_text(encoding="utf-8"),
     long_description_content_type="text/markdown",
     license=pkg["__license__"],
     author=pkg["__author__"],
