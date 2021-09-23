@@ -13,17 +13,15 @@ _Attribute-based data structures._
 
 ## Why?
 
-There are three things I repeatedly have to deal with:
+`AttrDict` deals with shortcomings of the standard python `dict`:
 
-1. `AttrDict` deals with shortcomings of the standard python `dict`:
+- You can use attribute syntax (`thing.prop` instead of `thing["prop"]`).
+- Instead of handling `KeyError` or using `.get(None)`, you can just get a `None` by default.
+- It's easy to merge nested `dict` objects using the `<<` operator.
 
-   - You can use attribute syntax (`thing.prop` instead of `thing["prop"]`).
-   - Instead of handling `KeyError` or using `.get(None)`, you can just get a `None` by default.
-   - It's easy to merge nested `dict` objects using the `<<` operator.
+`AttrList` lets you build a powerful container that can easily query attributes of its members.
 
-2. `AttrList` lets you build a powerful container that can easily query attributes of its members.
-
-3. `JSend` is a rough implementation of the [`JSend` sepecification](https://labs.omniti.com/labs/jsend) that makes it easy to create standard JSON responses.
+`JSend` is a rough implementation of the [`JSend` sepecification](https://labs.omniti.com/labs/jsend) that makes it easy to create standard JSON responses.
 
 ## Install
 

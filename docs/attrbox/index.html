@@ -27,25 +27,14 @@
 <a href="https://pypi.org/project/attrbox"><img alt="attrbox on PyPI" src="https://img.shields.io/pypi/v/attrbox.svg?color=blue&amp;style=for-the-badge"></a></p>
 <p><a href="https://github.com/metaist/attrbox/blob/main/CHANGELOG.md">Changelog</a> - <a href="https://github.com/metaist/attrbox/issues">Issues</a> - <a href="https://metaist.github.io/attrbox/">Documentation</a></p>
 <h2 id="why">Why?</h2>
-<p>There are three things I repeatedly have to deal with:</p>
-<ol>
-<li>
 <p><code><a title="attrbox.AttrDict" href="#attrbox.AttrDict">AttrDict</a></code> deals with shortcomings of the standard python <code>dict</code>:</p>
-</li>
-<li>
-<p>You can use attribute syntax (<code>thing.prop</code> instead of <code>thing["prop"]</code>).</p>
-</li>
+<ul>
+<li>You can use attribute syntax (<code>thing.prop</code> instead of <code>thing["prop"]</code>).</li>
 <li>Instead of handling <code>KeyError</code> or using <code>.get(None)</code>, you can just get a <code>None</code> by default.</li>
-<li>
-<p>It's easy to merge nested <code>dict</code> objects using the <code>&lt;&lt;</code> operator.</p>
-</li>
-<li>
+<li>It's easy to merge nested <code>dict</code> objects using the <code>&lt;&lt;</code> operator.</li>
+</ul>
 <p><code><a title="attrbox.AttrList" href="#attrbox.AttrList">AttrList</a></code> lets you build a powerful container that can easily query attributes of its members.</p>
-</li>
-<li>
 <p><code><a title="attrbox.JSend" href="#attrbox.JSend">JSend</a></code> is a rough implementation of the <a href="https://labs.omniti.com/labs/jsend"><code>JSend</code> sepecification</a> that makes it easy to create standard JSON responses.</p>
-</li>
-</ol>
 <h2 id="install">Install</h2>
 <pre><code class="language-bash">pip install attrbox
 </code></pre>
