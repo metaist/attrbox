@@ -11,9 +11,21 @@ The format is based on [Keep a Changelog] and this project adheres to [Semantic 
 
 ## [Unreleased]
 
-[unreleased]: https://github.com/metaist/attrbox/compare/production...main
+[unreleased]: https://github.com/metaist/attrbox/compare/prod...main
 
-These are changes that are on `main` that are not yet in `production`.
+These are changes that are on `main` that are not yet in `prod`.
+
+---
+
+## [0.1.1] - 2021-09-23T20:37:52Z
+
+[0.1.1]: https://github.com/metaist/attrbox/compare/0.1.0...0.1.1
+
+**Fixed**
+
+- PyPI tags
+- GitHub action workflow
+- explicit `encoding="utf-8"` for reading files
 
 ---
 
