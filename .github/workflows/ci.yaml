@@ -43,7 +43,7 @@ jobs:
 
       - name: Lint with pylint
         run: |
-          time pylint -j 0 --rcfile=.pylintrc src *.py
+          time pylint -j 0 --rcfile=.pylintrc src test *.py
 
       - name: Lint with flake8
         run: |

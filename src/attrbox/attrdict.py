@@ -9,7 +9,7 @@ ADict = Dict[Any, Any]
 """`Dict` with `Any` key and `Any` value."""
 
 
-def dict_merge(dest: ADict, *sources: ADict, default: Type[dict] = dict) -> ADict:
+def dict_merge(dest: ADict, *sources: ADict, default: Type[ADict] = dict) -> ADict:
     """Recursively merge dictionaries into the first dictionary.
 
     Args:

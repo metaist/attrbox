@@ -8,7 +8,7 @@ from attrbox import dict_merge
 def test_merge_empty():
     """Expect no change."""
     a = dict(a=1, b=2)
-    b = dict()
+    b = {}
     expect = dict(a=1, b=2)
     assert dict_merge(a, b) == expect, "expect no change"
 
