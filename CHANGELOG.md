@@ -19,6 +19,8 @@ These are changes that are on `main` that are not yet in `prod`.
 
 ## [0.1.1] - 2021-09-23T20:37:52Z
 
+[0.1.1]: https://github.com/metaist/attrbox/compare/0.1.0...0.1.1
+
 **Fixed**
 
 - PyPI tags
