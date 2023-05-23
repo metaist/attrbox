@@ -1,3 +1,83 @@
 [build-system]
 requires = ["setuptools >= 40.8.0", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.dynamic]
+version = { attr = "attrbox.__version__" }
+
+[project.urls]
+Homepage = "https://github.com/metaist/attrbox"
+Documentation = "https://metaist.github.io/attrbox/"
+Repository = "https://github.com/metaist/attrbox.git"
+Changelog = "https://github.com/metaist/attrbox/blob/main/CHANGELOG.md"
+
+[project]
+name = "attrbox"
+description = "Functional-style and attribute-based data structures."
+keywords = ["attr", "attributes", "functional", "dict", "list"]
+
+dynamic = ["version"]
+requires-python = ">=3.8"
+dependencies = []
+optional-dependencies = { dev = [
+  # dev dependencies are latest
+  "black",
+  "coverage",
+  "mypy",
+  "pdm",
+  "pdoc3",
+  "pytest-cov",
+  "pytest",
+  "ruff",
+] }
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Metaist LLC", email = "metaist@metaist.com" }]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Natural Language :: English",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+]
+
+[tool.pdm.scripts]
+black = { shell = "black ." }
+ruff = { shell = "ruff ." }
+mypy = { shell = """\
+  mypy \
+    --strict \
+    --install-types \
+    --non-interactive \
+    src test
+""" }
+test = { shell = """\
+  PYTHONPATH=src \
+  coverage run --branch --source=src -m \
+    pytest \
+      --doctest-modules \
+      --doctest-ignore-import-errors \
+      src test; \
+  coverage report -m
+""" }
+docs = { shell = """\
+  pdoc \
+    --html \
+    --output-dir docs \
+    --force src/$(basename $(pwd)); \
+  mv docs/*/* docs/
+""" }
+
+lint = { composite = ["black", "ruff", "mypy"] }
+dev = { composite = ["lint", "test"] }
+all = { composite = ["lint", "test", "docs"] }
