@@ -1,0 +1,1366 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>attrbox.attrdict API documentation</title>
+<meta name="description" content="`dict` with attribute access, deep selectors, and merging." />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>attrbox.attrdict</code></h1>
+</header>
+<section id="section-intro">
+<p><code>dict</code> with attribute access, deep selectors, and merging.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;`dict` with attribute access, deep selectors, and merging.&#34;&#34;&#34;
+
+# native
+from __future__ import annotations
+from typing import Any
+from typing import Dict
+from typing import Mapping
+from typing import Optional
+from typing import Protocol
+from typing import runtime_checkable
+from typing import Sequence
+from typing import TypeVar
+from typing import Union
+
+__all__ = [&#34;AttrDict&#34;]
+
+
+@runtime_checkable
+class SupportsItem(Protocol):  # pragma: no cover
+    &#34;&#34;&#34;Protocol for `k in x`, `x[k]`, and `x[k] = v`.&#34;&#34;&#34;
+
+    def __contains__(self, key: Any) -&gt; bool:
+        &#34;&#34;&#34;Return `True` if `key` exists, `False` otherwise.&#34;&#34;&#34;
+
+    def __getitem__(self, key: Any) -&gt; Any:
+        &#34;&#34;&#34;Return value of `key`.&#34;&#34;&#34;
+
+    def __setitem__(self, key: Any, value: Any) -&gt; Optional[Any]:
+        &#34;&#34;&#34;Set `key` to `value`.&#34;&#34;&#34;
+
+
+Self = TypeVar(&#34;Self&#34;, bound=&#34;AttrDict&#34;)
+&#34;&#34;&#34;`AttrDict` instance.&#34;&#34;&#34;
+
+AttrDictKey = Union[str, Sequence[Union[str, int, slice]]]
+&#34;&#34;&#34;`AttrDict` key for normal and deeper indexing.&#34;&#34;&#34;
+
+
+class AttrDict(Dict[str, Any]):
+    &#34;&#34;&#34;Like a `dict`, but with attribute syntax.
+
+    NOTE: We do not throw `AttributeError` or `KeyError` because accessing
+    a non-existent key or attribute returns `None`.
+
+    Examples:
+        &gt;&gt;&gt; AttrDict({&#34;a&#34;: 1}).a
+        1
+    &#34;&#34;&#34;
+
+    def copy(self: Self) -&gt; Self:
+        &#34;&#34;&#34;Return a shallow copy.
+
+        Examples:
+            &gt;&gt;&gt; items = AttrDict(a=1)
+            &gt;&gt;&gt; clone = items.copy()
+            &gt;&gt;&gt; items == clone # same contents
+            True
+            &gt;&gt;&gt; items is not clone # different pointers
+            True
+            &gt;&gt;&gt; clone.a = 5
+            &gt;&gt;&gt; items != clone
+            True
+        &#34;&#34;&#34;
+        return self.__class__(super().copy())
+
+    def __getattr__(self, name: str) -&gt; Optional[Any]:
+        &#34;&#34;&#34;Return the value of the attribute or `None`.
+
+        Args:
+            name (str): attribute name
+
+        Returns:
+            Any: attribute value or `None` if the attribute is missing
+
+        Examples:
+            Typically, attributes are the same as key/values:
+            &gt;&gt;&gt; item = AttrDict(a=1)
+            &gt;&gt;&gt; item.a
+            1
+            &gt;&gt;&gt; item[&#39;a&#39;]
+            1
+
+            However, instance attributes supersede key/values:
+            &gt;&gt;&gt; item = AttrDict(b=1)
+            &gt;&gt;&gt; object.__setattr__(item, &#39;b&#39;, 2)
+            &gt;&gt;&gt; item.b
+            2
+            &gt;&gt;&gt; item[&#39;b&#39;]
+            1
+
+            Missing attributes return `None`:
+            &gt;&gt;&gt; item = AttrDict(a=1)
+            &gt;&gt;&gt; item.b is None
+            True
+        &#34;&#34;&#34;
+        # NOTE: This method is only called when the attribute cannot be found.
+        return self[name]
+
+    def __setattr__(self, name: str, value: Any) -&gt; None:
+        &#34;&#34;&#34;Set the value of an attribute.
+
+        Args:
+            name (str): attribute name
+            value (Any): value to set
+
+        Examples:
+            Setting an attribute is usually the same as a key/value:
+            &gt;&gt;&gt; item = AttrDict()
+            &gt;&gt;&gt; item.a = 1
+            &gt;&gt;&gt; item.a
+            1
+            &gt;&gt;&gt; item[&#39;a&#39;]
+            1
+
+            However, instance attributes supersede key/values:
+            &gt;&gt;&gt; item = AttrDict()
+            &gt;&gt;&gt; object.__setattr__(item, &#39;b&#39;, 2)
+            &gt;&gt;&gt; item.b
+            2
+            &gt;&gt;&gt; item.b = 3  # instance attribute updated
+            &gt;&gt;&gt; item.b
+            3
+            &gt;&gt;&gt; item[&#39;b&#39;] is None
+            True
+        &#34;&#34;&#34;
+        try:
+            super().__getattribute__(name)  # is real?
+            super().__setattr__(name, value)
+        except AttributeError:  # use key/value
+            self[name] = value
+
+    def __delattr__(self, name: str) -&gt; None:
+        &#34;&#34;&#34;Delete an attribute.
+
+        Args:
+            name (str): attribute name
+
+        Examples:
+            Deleting an attribute usually deletes the underlying key/value:
+            &gt;&gt;&gt; item = AttrDict(a=1)
+            &gt;&gt;&gt; del item.a
+            &gt;&gt;&gt; item
+            {}
+
+            However, instance attributes supersede key/values:
+            &gt;&gt;&gt; item = AttrDict(b=1)
+            &gt;&gt;&gt; object.__setattr__(item, &#39;b&#39;, 2)
+            &gt;&gt;&gt; item.b  # real attribute supersedes key/value
+            2
+            &gt;&gt;&gt; del item.b  # deletes real attribute
+            &gt;&gt;&gt; object.__getattribute__(item, &#39;b&#39;) # instance attribute gone
+            Traceback (most recent call last):
+             ...
+            AttributeError: &#39;AttrDict&#39; object has no attribute &#39;b&#39;
+            &gt;&gt;&gt; item
+            {&#39;b&#39;: 1}
+        &#34;&#34;&#34;
+        try:
+            super().__getattribute__(name)  # is real?
+            super().__delattr__(name)
+        except AttributeError:  # use key/value
+            del self[name]
+
+    def __getitem__(self, name: AttrDictKey) -&gt; Optional[Any]:
+        &#34;&#34;&#34;Return the value of the key.
+
+        Args:
+            name (AttrDictKey): key name or Sequence of the path to a key
+
+        Returns:
+            Any: value of the key or `None` if it cannot be found
+
+        Examples:
+            &gt;&gt;&gt; item = AttrDict(a=1)
+            &gt;&gt;&gt; item[&#39;a&#39;]
+            1
+            &gt;&gt;&gt; item[&#39;b&#39;] is None
+            True
+        &#34;&#34;&#34;
+        return self.get(name)
+
+    def __setitem__(self, name: AttrDictKey, value: Any) -&gt; None:
+        &#34;&#34;&#34;Set the value of a key.
+
+        Args:
+            name (str): key name
+            value (Any): key value
+
+        Examples:
+            &gt;&gt;&gt; item = AttrDict(a=1)
+            &gt;&gt;&gt; item[&#39;a&#39;] = 5
+            &gt;&gt;&gt; item[&#39;a&#39;]
+            5
+
+            &gt;&gt;&gt; item[[&#39;a&#39;, &#39;b&#39;]] = 10
+            &gt;&gt;&gt; item.a.b
+            10
+        &#34;&#34;&#34;
+        self.set(name, value)
+
+    def __delitem__(self, name: str) -&gt; None:
+        &#34;&#34;&#34;Delete a key.
+
+        Args:
+            name (str): key name
+
+        Examples:
+            &gt;&gt;&gt; item = AttrDict(a=1)
+            &gt;&gt;&gt; del item[&#39;a&#39;]
+            &gt;&gt;&gt; item
+            {}
+
+            Deleting missing keys has no effect:
+            &gt;&gt;&gt; item = AttrDict(a=1)
+            &gt;&gt;&gt; del item[&#39;b&#39;]
+            &gt;&gt;&gt; item
+            {&#39;a&#39;: 1}
+        &#34;&#34;&#34;
+        try:
+            super().__delitem__(name)
+        except KeyError:
+            pass
+
+    def get(self, name: AttrDictKey, default: Optional[Any] = None, /) -&gt; Optional[Any]:
+        &#34;&#34;&#34;Return the value of the key or `default` if it cannot be found.
+
+        Args:
+            name (AttrDictKey): key name or Sequence path to the key
+            default (Any, optional): value to return if `name` is not found.
+                Defaults to `None`.
+
+        Returns:
+            Optional[Any]: key value or `default` if the key is not found
+
+        Examples:
+            Normal `.get` functions work:
+            &gt;&gt;&gt; items = AttrDict(a=dict(b=[{&#34;c&#34;: 3}, {&#34;c&#34;: -10}]), d=4)
+            &gt;&gt;&gt; items.get(&#39;d&#39;) == 4
+            True
+            &gt;&gt;&gt; items.get(&#39;e&#39;) is None
+            True
+            &gt;&gt;&gt; items.get(&#39;e&#39;, 5) == 5
+            True
+
+            But you can also indexing into nested `list` and `dict`:
+            &gt;&gt;&gt; items.get([&#39;a&#39;, &#39;b&#39;, 1, &#39;c&#39;]) == -10
+            True
+
+            Bad indexing will just return the default:
+            &gt;&gt;&gt; items.get([&#39;e&#39;]) is None # key doesn&#39;t exist
+            True
+            &gt;&gt;&gt; items.get([&#39;a&#39;, &#39;b&#39;, 5]) is None  # index unreachable
+            True
+            &gt;&gt;&gt; items.get([&#39;d&#39;, &#39;e&#39;]) is None # int is not indexable
+            True
+        &#34;&#34;&#34;
+        if isinstance(name, str):
+            return super().get(name, default)
+
+        src: SupportsItem = self
+        result: Any = default
+        try:
+            for step in name:
+                result = src[step]  # take step
+                if isinstance(result, SupportsItem):
+                    src = result  # preserve context
+        except (KeyError, IndexError, TypeError):
+            # key doesn&#39;t exist, index is unreachable, or item is not indexable
+            result = default
+        return result
+
+    def set(self: Self, name: AttrDictKey, value: Optional[Any] = None, /) -&gt; Self:
+        &#34;&#34;&#34;Set key with `name` to `value`.
+
+        Args:
+            name (AttrDictKey): key name or `Sequence` to the key
+            value (Any, optional): value to set. Defaults to `None`.
+
+        Returns:
+            Self: for chaining
+
+        Examples:
+            &gt;&gt;&gt; items = AttrDict({&#34;a&#34;: 1})
+            &gt;&gt;&gt; items.set(&#34;b&#34;, 2)
+            {&#39;a&#39;: 1, &#39;b&#39;: 2}
+
+            You can set values deeper:
+            &gt;&gt;&gt; items.set([&#34;b&#34;, &#34;c&#34;, &#34;d&#34;], 5)
+            {&#39;a&#39;: 1, &#39;b&#39;: {&#39;c&#39;: {&#39;d&#39;: 5}}}
+
+            You can also use a `tuple` (or other Sequence):
+            &gt;&gt;&gt; items.set((&#34;b&#34;, &#34;c&#34;, &#34;d&#34;), 10)
+            {&#39;a&#39;: 1, &#39;b&#39;: {&#39;c&#39;: {&#39;d&#39;: 10}}}
+
+            An empty `Sequence` performs no action:
+            &gt;&gt;&gt; items.set((), 20)
+            {&#39;a&#39;: 1, &#39;b&#39;: {&#39;c&#39;: {&#39;d&#39;: 10}}}
+        &#34;&#34;&#34;
+        if isinstance(name, str):
+            super().__setitem__(name, value)
+            return self
+
+        if not name:  # empty sequence
+            return self
+
+        cls = self.__class__
+        dest: SupportsItem = self
+        for step in name[:-1]:
+            if step not in dest or not isinstance(dest[step], Mapping):
+                dest[step] = cls()
+            dest = dest[step]
+        dest[name[-1]] = value
+        return self
+
+    def __lshift__(self, other: Mapping[str, Any]) -&gt; AttrDict:
+        &#34;&#34;&#34;Merge `other` into `self`.
+
+        NOTE: Any nested dictionaries will be converted to `AttrDict` objects.
+
+        Args:
+            other (Mapping[str, Any]): other dictionary to merge
+
+        Returns:
+            AttrDict: merged dictionary
+
+        Examples:
+            &gt;&gt;&gt; item = AttrDict(a=1, b=2)
+            &gt;&gt;&gt; item &lt;&lt;= {&#34;b&#34;: 3}
+            &gt;&gt;&gt; item.b
+            3
+
+            &gt;&gt;&gt; item &lt;&lt; {&#34;b&#34;: 2, &#34;c&#34;: {&#34;d&#34;: 4}} &lt;&lt; {&#34;c&#34;: {&#34;d&#34;: {&#34;e&#34;: 5}}}
+            {&#39;a&#39;: 1, &#39;b&#39;: 2, &#39;c&#39;: {&#39;d&#39;: {&#39;e&#39;: 5}}}
+            &gt;&gt;&gt; item.c.d.e
+            5
+        &#34;&#34;&#34;
+        cls = self.__class__
+        for key, value in other.items():
+            if not isinstance(value, Mapping):  # new value is will overwrite
+                self[key] = value
+                continue
+
+            prev = self.get(key, {})
+            if isinstance(prev, Mapping):  # extend previous value
+                self[key] = cls(prev) &lt;&lt; value
+            else:  # previous value cannot be extended
+                self[key] = cls() &lt;&lt; value
+
+        return self
+
+
+__pdoc__ = {
+    &#34;AttrDict.__getattr__&#34;: True,
+    &#34;AttrDict.__setattr__&#34;: True,
+    &#34;AttrDict.__delattr__&#34;: True,
+    &#34;AttrDict.__getitem__&#34;: True,
+    &#34;AttrDict.__delitem__&#34;: True,
+    &#34;AttrDict.__lshift__&#34;: True,
+}</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="attrbox.attrdict.AttrDict"><code class="flex name class">
+<span>class <span class="ident">AttrDict</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Like a <code>dict</code>, but with attribute syntax.</p>
+<p>NOTE: We do not throw <code>AttributeError</code> or <code>KeyError</code> because accessing
+a non-existent key or attribute returns <code>None</code>.</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; AttrDict({&quot;a&quot;: 1}).a
+1
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class AttrDict(Dict[str, Any]):
+    &#34;&#34;&#34;Like a `dict`, but with attribute syntax.
+
+    NOTE: We do not throw `AttributeError` or `KeyError` because accessing
+    a non-existent key or attribute returns `None`.
+
+    Examples:
+        &gt;&gt;&gt; AttrDict({&#34;a&#34;: 1}).a
+        1
+    &#34;&#34;&#34;
+
+    def copy(self: Self) -&gt; Self:
+        &#34;&#34;&#34;Return a shallow copy.
+
+        Examples:
+            &gt;&gt;&gt; items = AttrDict(a=1)
+            &gt;&gt;&gt; clone = items.copy()
+            &gt;&gt;&gt; items == clone # same contents
+            True
+            &gt;&gt;&gt; items is not clone # different pointers
+            True
+            &gt;&gt;&gt; clone.a = 5
+            &gt;&gt;&gt; items != clone
+            True
+        &#34;&#34;&#34;
+        return self.__class__(super().copy())
+
+    def __getattr__(self, name: str) -&gt; Optional[Any]:
+        &#34;&#34;&#34;Return the value of the attribute or `None`.
+
+        Args:
+            name (str): attribute name
+
+        Returns:
+            Any: attribute value or `None` if the attribute is missing
+
+        Examples:
+            Typically, attributes are the same as key/values:
+            &gt;&gt;&gt; item = AttrDict(a=1)
+            &gt;&gt;&gt; item.a
+            1
+            &gt;&gt;&gt; item[&#39;a&#39;]
+            1
+
+            However, instance attributes supersede key/values:
+            &gt;&gt;&gt; item = AttrDict(b=1)
+            &gt;&gt;&gt; object.__setattr__(item, &#39;b&#39;, 2)
+            &gt;&gt;&gt; item.b
+            2
+            &gt;&gt;&gt; item[&#39;b&#39;]
+            1
+
+            Missing attributes return `None`:
+            &gt;&gt;&gt; item = AttrDict(a=1)
+            &gt;&gt;&gt; item.b is None
+            True
+        &#34;&#34;&#34;
+        # NOTE: This method is only called when the attribute cannot be found.
+        return self[name]
+
+    def __setattr__(self, name: str, value: Any) -&gt; None:
+        &#34;&#34;&#34;Set the value of an attribute.
+
+        Args:
+            name (str): attribute name
+            value (Any): value to set
+
+        Examples:
+            Setting an attribute is usually the same as a key/value:
+            &gt;&gt;&gt; item = AttrDict()
+            &gt;&gt;&gt; item.a = 1
+            &gt;&gt;&gt; item.a
+            1
+            &gt;&gt;&gt; item[&#39;a&#39;]
+            1
+
+            However, instance attributes supersede key/values:
+            &gt;&gt;&gt; item = AttrDict()
+            &gt;&gt;&gt; object.__setattr__(item, &#39;b&#39;, 2)
+            &gt;&gt;&gt; item.b
+            2
+            &gt;&gt;&gt; item.b = 3  # instance attribute updated
+            &gt;&gt;&gt; item.b
+            3
+            &gt;&gt;&gt; item[&#39;b&#39;] is None
+            True
+        &#34;&#34;&#34;
+        try:
+            super().__getattribute__(name)  # is real?
+            super().__setattr__(name, value)
+        except AttributeError:  # use key/value
+            self[name] = value
+
+    def __delattr__(self, name: str) -&gt; None:
+        &#34;&#34;&#34;Delete an attribute.
+
+        Args:
+            name (str): attribute name
+
+        Examples:
+            Deleting an attribute usually deletes the underlying key/value:
+            &gt;&gt;&gt; item = AttrDict(a=1)
+            &gt;&gt;&gt; del item.a
+            &gt;&gt;&gt; item
+            {}
+
+            However, instance attributes supersede key/values:
+            &gt;&gt;&gt; item = AttrDict(b=1)
+            &gt;&gt;&gt; object.__setattr__(item, &#39;b&#39;, 2)
+            &gt;&gt;&gt; item.b  # real attribute supersedes key/value
+            2
+            &gt;&gt;&gt; del item.b  # deletes real attribute
+            &gt;&gt;&gt; object.__getattribute__(item, &#39;b&#39;) # instance attribute gone
+            Traceback (most recent call last):
+             ...
+            AttributeError: &#39;AttrDict&#39; object has no attribute &#39;b&#39;
+            &gt;&gt;&gt; item
+            {&#39;b&#39;: 1}
+        &#34;&#34;&#34;
+        try:
+            super().__getattribute__(name)  # is real?
+            super().__delattr__(name)
+        except AttributeError:  # use key/value
+            del self[name]
+
+    def __getitem__(self, name: AttrDictKey) -&gt; Optional[Any]:
+        &#34;&#34;&#34;Return the value of the key.
+
+        Args:
+            name (AttrDictKey): key name or Sequence of the path to a key
+
+        Returns:
+            Any: value of the key or `None` if it cannot be found
+
+        Examples:
+            &gt;&gt;&gt; item = AttrDict(a=1)
+            &gt;&gt;&gt; item[&#39;a&#39;]
+            1
+            &gt;&gt;&gt; item[&#39;b&#39;] is None
+            True
+        &#34;&#34;&#34;
+        return self.get(name)
+
+    def __setitem__(self, name: AttrDictKey, value: Any) -&gt; None:
+        &#34;&#34;&#34;Set the value of a key.
+
+        Args:
+            name (str): key name
+            value (Any): key value
+
+        Examples:
+            &gt;&gt;&gt; item = AttrDict(a=1)
+            &gt;&gt;&gt; item[&#39;a&#39;] = 5
+            &gt;&gt;&gt; item[&#39;a&#39;]
+            5
+
+            &gt;&gt;&gt; item[[&#39;a&#39;, &#39;b&#39;]] = 10
+            &gt;&gt;&gt; item.a.b
+            10
+        &#34;&#34;&#34;
+        self.set(name, value)
+
+    def __delitem__(self, name: str) -&gt; None:
+        &#34;&#34;&#34;Delete a key.
+
+        Args:
+            name (str): key name
+
+        Examples:
+            &gt;&gt;&gt; item = AttrDict(a=1)
+            &gt;&gt;&gt; del item[&#39;a&#39;]
+            &gt;&gt;&gt; item
+            {}
+
+            Deleting missing keys has no effect:
+            &gt;&gt;&gt; item = AttrDict(a=1)
+            &gt;&gt;&gt; del item[&#39;b&#39;]
+            &gt;&gt;&gt; item
+            {&#39;a&#39;: 1}
+        &#34;&#34;&#34;
+        try:
+            super().__delitem__(name)
+        except KeyError:
+            pass
+
+    def get(self, name: AttrDictKey, default: Optional[Any] = None, /) -&gt; Optional[Any]:
+        &#34;&#34;&#34;Return the value of the key or `default` if it cannot be found.
+
+        Args:
+            name (AttrDictKey): key name or Sequence path to the key
+            default (Any, optional): value to return if `name` is not found.
+                Defaults to `None`.
+
+        Returns:
+            Optional[Any]: key value or `default` if the key is not found
+
+        Examples:
+            Normal `.get` functions work:
+            &gt;&gt;&gt; items = AttrDict(a=dict(b=[{&#34;c&#34;: 3}, {&#34;c&#34;: -10}]), d=4)
+            &gt;&gt;&gt; items.get(&#39;d&#39;) == 4
+            True
+            &gt;&gt;&gt; items.get(&#39;e&#39;) is None
+            True
+            &gt;&gt;&gt; items.get(&#39;e&#39;, 5) == 5
+            True
+
+            But you can also indexing into nested `list` and `dict`:
+            &gt;&gt;&gt; items.get([&#39;a&#39;, &#39;b&#39;, 1, &#39;c&#39;]) == -10
+            True
+
+            Bad indexing will just return the default:
+            &gt;&gt;&gt; items.get([&#39;e&#39;]) is None # key doesn&#39;t exist
+            True
+            &gt;&gt;&gt; items.get([&#39;a&#39;, &#39;b&#39;, 5]) is None  # index unreachable
+            True
+            &gt;&gt;&gt; items.get([&#39;d&#39;, &#39;e&#39;]) is None # int is not indexable
+            True
+        &#34;&#34;&#34;
+        if isinstance(name, str):
+            return super().get(name, default)
+
+        src: SupportsItem = self
+        result: Any = default
+        try:
+            for step in name:
+                result = src[step]  # take step
+                if isinstance(result, SupportsItem):
+                    src = result  # preserve context
+        except (KeyError, IndexError, TypeError):
+            # key doesn&#39;t exist, index is unreachable, or item is not indexable
+            result = default
+        return result
+
+    def set(self: Self, name: AttrDictKey, value: Optional[Any] = None, /) -&gt; Self:
+        &#34;&#34;&#34;Set key with `name` to `value`.
+
+        Args:
+            name (AttrDictKey): key name or `Sequence` to the key
+            value (Any, optional): value to set. Defaults to `None`.
+
+        Returns:
+            Self: for chaining
+
+        Examples:
+            &gt;&gt;&gt; items = AttrDict({&#34;a&#34;: 1})
+            &gt;&gt;&gt; items.set(&#34;b&#34;, 2)
+            {&#39;a&#39;: 1, &#39;b&#39;: 2}
+
+            You can set values deeper:
+            &gt;&gt;&gt; items.set([&#34;b&#34;, &#34;c&#34;, &#34;d&#34;], 5)
+            {&#39;a&#39;: 1, &#39;b&#39;: {&#39;c&#39;: {&#39;d&#39;: 5}}}
+
+            You can also use a `tuple` (or other Sequence):
+            &gt;&gt;&gt; items.set((&#34;b&#34;, &#34;c&#34;, &#34;d&#34;), 10)
+            {&#39;a&#39;: 1, &#39;b&#39;: {&#39;c&#39;: {&#39;d&#39;: 10}}}
+
+            An empty `Sequence` performs no action:
+            &gt;&gt;&gt; items.set((), 20)
+            {&#39;a&#39;: 1, &#39;b&#39;: {&#39;c&#39;: {&#39;d&#39;: 10}}}
+        &#34;&#34;&#34;
+        if isinstance(name, str):
+            super().__setitem__(name, value)
+            return self
+
+        if not name:  # empty sequence
+            return self
+
+        cls = self.__class__
+        dest: SupportsItem = self
+        for step in name[:-1]:
+            if step not in dest or not isinstance(dest[step], Mapping):
+                dest[step] = cls()
+            dest = dest[step]
+        dest[name[-1]] = value
+        return self
+
+    def __lshift__(self, other: Mapping[str, Any]) -&gt; AttrDict:
+        &#34;&#34;&#34;Merge `other` into `self`.
+
+        NOTE: Any nested dictionaries will be converted to `AttrDict` objects.
+
+        Args:
+            other (Mapping[str, Any]): other dictionary to merge
+
+        Returns:
+            AttrDict: merged dictionary
+
+        Examples:
+            &gt;&gt;&gt; item = AttrDict(a=1, b=2)
+            &gt;&gt;&gt; item &lt;&lt;= {&#34;b&#34;: 3}
+            &gt;&gt;&gt; item.b
+            3
+
+            &gt;&gt;&gt; item &lt;&lt; {&#34;b&#34;: 2, &#34;c&#34;: {&#34;d&#34;: 4}} &lt;&lt; {&#34;c&#34;: {&#34;d&#34;: {&#34;e&#34;: 5}}}
+            {&#39;a&#39;: 1, &#39;b&#39;: 2, &#39;c&#39;: {&#39;d&#39;: {&#39;e&#39;: 5}}}
+            &gt;&gt;&gt; item.c.d.e
+            5
+        &#34;&#34;&#34;
+        cls = self.__class__
+        for key, value in other.items():
+            if not isinstance(value, Mapping):  # new value is will overwrite
+                self[key] = value
+                continue
+
+            prev = self.get(key, {})
+            if isinstance(prev, Mapping):  # extend previous value
+                self[key] = cls(prev) &lt;&lt; value
+            else:  # previous value cannot be extended
+                self[key] = cls() &lt;&lt; value
+
+        return self</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.dict</li>
+<li>typing.Generic</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="attrbox.jsend.JSend" href="jsend.html#attrbox.jsend.JSend">JSend</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="attrbox.attrdict.AttrDict.copy"><code class="name flex">
+<span>def <span class="ident">copy</span></span>(<span>self: Self) ‑> ~Self</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return a shallow copy.</p>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; items = AttrDict(a=1)
+&gt;&gt;&gt; clone = items.copy()
+&gt;&gt;&gt; items == clone # same contents
+True
+&gt;&gt;&gt; items is not clone # different pointers
+True
+&gt;&gt;&gt; clone.a = 5
+&gt;&gt;&gt; items != clone
+True
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def copy(self: Self) -&gt; Self:
+    &#34;&#34;&#34;Return a shallow copy.
+
+    Examples:
+        &gt;&gt;&gt; items = AttrDict(a=1)
+        &gt;&gt;&gt; clone = items.copy()
+        &gt;&gt;&gt; items == clone # same contents
+        True
+        &gt;&gt;&gt; items is not clone # different pointers
+        True
+        &gt;&gt;&gt; clone.a = 5
+        &gt;&gt;&gt; items != clone
+        True
+    &#34;&#34;&#34;
+    return self.__class__(super().copy())</code></pre>
+</details>
+</dd>
+<dt id="attrbox.attrdict.AttrDict.__getattr__"><code class="name flex">
+<span>def <span class="ident">__getattr__</span></span>(<span>self, name: str) ‑> Optional[Any]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return the value of the attribute or <code>None</code>.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>attribute name</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Any</code></dt>
+<dd>attribute value or <code>None</code> if the attribute is missing</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<p>Typically, attributes are the same as key/values:</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; item = AttrDict(a=1)
+&gt;&gt;&gt; item.a
+1
+&gt;&gt;&gt; item['a']
+1
+</code></pre>
+<p>However, instance attributes supersede key/values:</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; item = AttrDict(b=1)
+&gt;&gt;&gt; object.__setattr__(item, 'b', 2)
+&gt;&gt;&gt; item.b
+2
+&gt;&gt;&gt; item['b']
+1
+</code></pre>
+<p>Missing attributes return <code>None</code>:</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; item = AttrDict(a=1)
+&gt;&gt;&gt; item.b is None
+True
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __getattr__(self, name: str) -&gt; Optional[Any]:
+    &#34;&#34;&#34;Return the value of the attribute or `None`.
+
+    Args:
+        name (str): attribute name
+
+    Returns:
+        Any: attribute value or `None` if the attribute is missing
+
+    Examples:
+        Typically, attributes are the same as key/values:
+        &gt;&gt;&gt; item = AttrDict(a=1)
+        &gt;&gt;&gt; item.a
+        1
+        &gt;&gt;&gt; item[&#39;a&#39;]
+        1
+
+        However, instance attributes supersede key/values:
+        &gt;&gt;&gt; item = AttrDict(b=1)
+        &gt;&gt;&gt; object.__setattr__(item, &#39;b&#39;, 2)
+        &gt;&gt;&gt; item.b
+        2
+        &gt;&gt;&gt; item[&#39;b&#39;]
+        1
+
+        Missing attributes return `None`:
+        &gt;&gt;&gt; item = AttrDict(a=1)
+        &gt;&gt;&gt; item.b is None
+        True
+    &#34;&#34;&#34;
+    # NOTE: This method is only called when the attribute cannot be found.
+    return self[name]</code></pre>
+</details>
+</dd>
+<dt id="attrbox.attrdict.AttrDict.__setattr__"><code class="name flex">
+<span>def <span class="ident">__setattr__</span></span>(<span>self, name: str, value: Any) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set the value of an attribute.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>attribute name</dd>
+<dt><strong><code>value</code></strong> :&ensp;<code>Any</code></dt>
+<dd>value to set</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<p>Setting an attribute is usually the same as a key/value:</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; item = AttrDict()
+&gt;&gt;&gt; item.a = 1
+&gt;&gt;&gt; item.a
+1
+&gt;&gt;&gt; item['a']
+1
+</code></pre>
+<p>However, instance attributes supersede key/values:</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; item = AttrDict()
+&gt;&gt;&gt; object.__setattr__(item, 'b', 2)
+&gt;&gt;&gt; item.b
+2
+&gt;&gt;&gt; item.b = 3  # instance attribute updated
+&gt;&gt;&gt; item.b
+3
+&gt;&gt;&gt; item['b'] is None
+True
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __setattr__(self, name: str, value: Any) -&gt; None:
+    &#34;&#34;&#34;Set the value of an attribute.
+
+    Args:
+        name (str): attribute name
+        value (Any): value to set
+
+    Examples:
+        Setting an attribute is usually the same as a key/value:
+        &gt;&gt;&gt; item = AttrDict()
+        &gt;&gt;&gt; item.a = 1
+        &gt;&gt;&gt; item.a
+        1
+        &gt;&gt;&gt; item[&#39;a&#39;]
+        1
+
+        However, instance attributes supersede key/values:
+        &gt;&gt;&gt; item = AttrDict()
+        &gt;&gt;&gt; object.__setattr__(item, &#39;b&#39;, 2)
+        &gt;&gt;&gt; item.b
+        2
+        &gt;&gt;&gt; item.b = 3  # instance attribute updated
+        &gt;&gt;&gt; item.b
+        3
+        &gt;&gt;&gt; item[&#39;b&#39;] is None
+        True
+    &#34;&#34;&#34;
+    try:
+        super().__getattribute__(name)  # is real?
+        super().__setattr__(name, value)
+    except AttributeError:  # use key/value
+        self[name] = value</code></pre>
+</details>
+</dd>
+<dt id="attrbox.attrdict.AttrDict.__delattr__"><code class="name flex">
+<span>def <span class="ident">__delattr__</span></span>(<span>self, name: str) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Delete an attribute.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>attribute name</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<p>Deleting an attribute usually deletes the underlying key/value:</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; item = AttrDict(a=1)
+&gt;&gt;&gt; del item.a
+&gt;&gt;&gt; item
+{}
+</code></pre>
+<p>However, instance attributes supersede key/values:</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; item = AttrDict(b=1)
+&gt;&gt;&gt; object.__setattr__(item, 'b', 2)
+&gt;&gt;&gt; item.b  # real attribute supersedes key/value
+2
+&gt;&gt;&gt; del item.b  # deletes real attribute
+&gt;&gt;&gt; object.__getattribute__(item, 'b') # instance attribute gone
+Traceback (most recent call last):
+ ...
+AttributeError: 'AttrDict' object has no attribute 'b'
+&gt;&gt;&gt; item
+{'b': 1}
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __delattr__(self, name: str) -&gt; None:
+    &#34;&#34;&#34;Delete an attribute.
+
+    Args:
+        name (str): attribute name
+
+    Examples:
+        Deleting an attribute usually deletes the underlying key/value:
+        &gt;&gt;&gt; item = AttrDict(a=1)
+        &gt;&gt;&gt; del item.a
+        &gt;&gt;&gt; item
+        {}
+
+        However, instance attributes supersede key/values:
+        &gt;&gt;&gt; item = AttrDict(b=1)
+        &gt;&gt;&gt; object.__setattr__(item, &#39;b&#39;, 2)
+        &gt;&gt;&gt; item.b  # real attribute supersedes key/value
+        2
+        &gt;&gt;&gt; del item.b  # deletes real attribute
+        &gt;&gt;&gt; object.__getattribute__(item, &#39;b&#39;) # instance attribute gone
+        Traceback (most recent call last):
+         ...
+        AttributeError: &#39;AttrDict&#39; object has no attribute &#39;b&#39;
+        &gt;&gt;&gt; item
+        {&#39;b&#39;: 1}
+    &#34;&#34;&#34;
+    try:
+        super().__getattribute__(name)  # is real?
+        super().__delattr__(name)
+    except AttributeError:  # use key/value
+        del self[name]</code></pre>
+</details>
+</dd>
+<dt id="attrbox.attrdict.AttrDict.__getitem__"><code class="name flex">
+<span>def <span class="ident">__getitem__</span></span>(<span>self, name: AttrDictKey) ‑> Optional[Any]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return the value of the key.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>AttrDictKey</code></dt>
+<dd>key name or Sequence of the path to a key</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Any</code></dt>
+<dd>value of the key or <code>None</code> if it cannot be found</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; item = AttrDict(a=1)
+&gt;&gt;&gt; item['a']
+1
+&gt;&gt;&gt; item['b'] is None
+True
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __getitem__(self, name: AttrDictKey) -&gt; Optional[Any]:
+    &#34;&#34;&#34;Return the value of the key.
+
+    Args:
+        name (AttrDictKey): key name or Sequence of the path to a key
+
+    Returns:
+        Any: value of the key or `None` if it cannot be found
+
+    Examples:
+        &gt;&gt;&gt; item = AttrDict(a=1)
+        &gt;&gt;&gt; item[&#39;a&#39;]
+        1
+        &gt;&gt;&gt; item[&#39;b&#39;] is None
+        True
+    &#34;&#34;&#34;
+    return self.get(name)</code></pre>
+</details>
+</dd>
+<dt id="attrbox.attrdict.AttrDict.__delitem__"><code class="name flex">
+<span>def <span class="ident">__delitem__</span></span>(<span>self, name: str) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Delete a key.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>key name</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; item = AttrDict(a=1)
+&gt;&gt;&gt; del item['a']
+&gt;&gt;&gt; item
+{}
+</code></pre>
+<p>Deleting missing keys has no effect:</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; item = AttrDict(a=1)
+&gt;&gt;&gt; del item['b']
+&gt;&gt;&gt; item
+{'a': 1}
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __delitem__(self, name: str) -&gt; None:
+    &#34;&#34;&#34;Delete a key.
+
+    Args:
+        name (str): key name
+
+    Examples:
+        &gt;&gt;&gt; item = AttrDict(a=1)
+        &gt;&gt;&gt; del item[&#39;a&#39;]
+        &gt;&gt;&gt; item
+        {}
+
+        Deleting missing keys has no effect:
+        &gt;&gt;&gt; item = AttrDict(a=1)
+        &gt;&gt;&gt; del item[&#39;b&#39;]
+        &gt;&gt;&gt; item
+        {&#39;a&#39;: 1}
+    &#34;&#34;&#34;
+    try:
+        super().__delitem__(name)
+    except KeyError:
+        pass</code></pre>
+</details>
+</dd>
+<dt id="attrbox.attrdict.AttrDict.get"><code class="name flex">
+<span>def <span class="ident">get</span></span>(<span>self, name: AttrDictKey, default: Optional[Any] = None, /) ‑> Optional[Any]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return the value of the key or <code>default</code> if it cannot be found.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>AttrDictKey</code></dt>
+<dd>key name or Sequence path to the key</dd>
+<dt><strong><code>default</code></strong> :&ensp;<code>Any</code>, optional</dt>
+<dd>value to return if <code>name</code> is not found.
+Defaults to <code>None</code>.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Optional[Any]</code></dt>
+<dd>key value or <code>default</code> if the key is not found</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<p>Normal <code>.get</code> functions work:</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; items = AttrDict(a=dict(b=[{&quot;c&quot;: 3}, {&quot;c&quot;: -10}]), d=4)
+&gt;&gt;&gt; items.get('d') == 4
+True
+&gt;&gt;&gt; items.get('e') is None
+True
+&gt;&gt;&gt; items.get('e', 5) == 5
+True
+</code></pre>
+<p>But you can also indexing into nested <code>list</code> and <code>dict</code>:</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; items.get(['a', 'b', 1, 'c']) == -10
+True
+</code></pre>
+<p>Bad indexing will just return the default:</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; items.get(['e']) is None # key doesn't exist
+True
+&gt;&gt;&gt; items.get(['a', 'b', 5]) is None  # index unreachable
+True
+&gt;&gt;&gt; items.get(['d', 'e']) is None # int is not indexable
+True
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get(self, name: AttrDictKey, default: Optional[Any] = None, /) -&gt; Optional[Any]:
+    &#34;&#34;&#34;Return the value of the key or `default` if it cannot be found.
+
+    Args:
+        name (AttrDictKey): key name or Sequence path to the key
+        default (Any, optional): value to return if `name` is not found.
+            Defaults to `None`.
+
+    Returns:
+        Optional[Any]: key value or `default` if the key is not found
+
+    Examples:
+        Normal `.get` functions work:
+        &gt;&gt;&gt; items = AttrDict(a=dict(b=[{&#34;c&#34;: 3}, {&#34;c&#34;: -10}]), d=4)
+        &gt;&gt;&gt; items.get(&#39;d&#39;) == 4
+        True
+        &gt;&gt;&gt; items.get(&#39;e&#39;) is None
+        True
+        &gt;&gt;&gt; items.get(&#39;e&#39;, 5) == 5
+        True
+
+        But you can also indexing into nested `list` and `dict`:
+        &gt;&gt;&gt; items.get([&#39;a&#39;, &#39;b&#39;, 1, &#39;c&#39;]) == -10
+        True
+
+        Bad indexing will just return the default:
+        &gt;&gt;&gt; items.get([&#39;e&#39;]) is None # key doesn&#39;t exist
+        True
+        &gt;&gt;&gt; items.get([&#39;a&#39;, &#39;b&#39;, 5]) is None  # index unreachable
+        True
+        &gt;&gt;&gt; items.get([&#39;d&#39;, &#39;e&#39;]) is None # int is not indexable
+        True
+    &#34;&#34;&#34;
+    if isinstance(name, str):
+        return super().get(name, default)
+
+    src: SupportsItem = self
+    result: Any = default
+    try:
+        for step in name:
+            result = src[step]  # take step
+            if isinstance(result, SupportsItem):
+                src = result  # preserve context
+    except (KeyError, IndexError, TypeError):
+        # key doesn&#39;t exist, index is unreachable, or item is not indexable
+        result = default
+    return result</code></pre>
+</details>
+</dd>
+<dt id="attrbox.attrdict.AttrDict.set"><code class="name flex">
+<span>def <span class="ident">set</span></span>(<span>self: Self, name: AttrDictKey, value: Optional[Any] = None, /) ‑> ~Self</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set key with <code>name</code> to <code>value</code>.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>AttrDictKey</code></dt>
+<dd>key name or <code>Sequence</code> to the key</dd>
+<dt><strong><code>value</code></strong> :&ensp;<code>Any</code>, optional</dt>
+<dd>value to set. Defaults to <code>None</code>.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Self</code></dt>
+<dd>for chaining</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; items = AttrDict({&quot;a&quot;: 1})
+&gt;&gt;&gt; items.set(&quot;b&quot;, 2)
+{'a': 1, 'b': 2}
+</code></pre>
+<p>You can set values deeper:</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; items.set([&quot;b&quot;, &quot;c&quot;, &quot;d&quot;], 5)
+{'a': 1, 'b': {'c': {'d': 5}}}
+</code></pre>
+<p>You can also use a <code>tuple</code> (or other Sequence):</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; items.set((&quot;b&quot;, &quot;c&quot;, &quot;d&quot;), 10)
+{'a': 1, 'b': {'c': {'d': 10}}}
+</code></pre>
+<p>An empty <code>Sequence</code> performs no action:</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; items.set((), 20)
+{'a': 1, 'b': {'c': {'d': 10}}}
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set(self: Self, name: AttrDictKey, value: Optional[Any] = None, /) -&gt; Self:
+    &#34;&#34;&#34;Set key with `name` to `value`.
+
+    Args:
+        name (AttrDictKey): key name or `Sequence` to the key
+        value (Any, optional): value to set. Defaults to `None`.
+
+    Returns:
+        Self: for chaining
+
+    Examples:
+        &gt;&gt;&gt; items = AttrDict({&#34;a&#34;: 1})
+        &gt;&gt;&gt; items.set(&#34;b&#34;, 2)
+        {&#39;a&#39;: 1, &#39;b&#39;: 2}
+
+        You can set values deeper:
+        &gt;&gt;&gt; items.set([&#34;b&#34;, &#34;c&#34;, &#34;d&#34;], 5)
+        {&#39;a&#39;: 1, &#39;b&#39;: {&#39;c&#39;: {&#39;d&#39;: 5}}}
+
+        You can also use a `tuple` (or other Sequence):
+        &gt;&gt;&gt; items.set((&#34;b&#34;, &#34;c&#34;, &#34;d&#34;), 10)
+        {&#39;a&#39;: 1, &#39;b&#39;: {&#39;c&#39;: {&#39;d&#39;: 10}}}
+
+        An empty `Sequence` performs no action:
+        &gt;&gt;&gt; items.set((), 20)
+        {&#39;a&#39;: 1, &#39;b&#39;: {&#39;c&#39;: {&#39;d&#39;: 10}}}
+    &#34;&#34;&#34;
+    if isinstance(name, str):
+        super().__setitem__(name, value)
+        return self
+
+    if not name:  # empty sequence
+        return self
+
+    cls = self.__class__
+    dest: SupportsItem = self
+    for step in name[:-1]:
+        if step not in dest or not isinstance(dest[step], Mapping):
+            dest[step] = cls()
+        dest = dest[step]
+    dest[name[-1]] = value
+    return self</code></pre>
+</details>
+</dd>
+<dt id="attrbox.attrdict.AttrDict.__lshift__"><code class="name flex">
+<span>def <span class="ident">__lshift__</span></span>(<span>self, other: Mapping[str, Any]) ‑> <a title="attrbox.attrdict.AttrDict" href="#attrbox.attrdict.AttrDict">AttrDict</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Merge <code>other</code> into <code>self</code>.</p>
+<p>NOTE: Any nested dictionaries will be converted to <code><a title="attrbox.attrdict.AttrDict" href="#attrbox.attrdict.AttrDict">AttrDict</a></code> objects.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>other</code></strong> :&ensp;<code>Mapping[str, Any]</code></dt>
+<dd>other dictionary to merge</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="attrbox.attrdict.AttrDict" href="#attrbox.attrdict.AttrDict">AttrDict</a></code></dt>
+<dd>merged dictionary</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; item = AttrDict(a=1, b=2)
+&gt;&gt;&gt; item &lt;&lt;= {&quot;b&quot;: 3}
+&gt;&gt;&gt; item.b
+3
+</code></pre>
+<pre><code class="language-python-repl">&gt;&gt;&gt; item &lt;&lt; {&quot;b&quot;: 2, &quot;c&quot;: {&quot;d&quot;: 4}} &lt;&lt; {&quot;c&quot;: {&quot;d&quot;: {&quot;e&quot;: 5}}}
+{'a': 1, 'b': 2, 'c': {'d': {'e': 5}}}
+&gt;&gt;&gt; item.c.d.e
+5
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __lshift__(self, other: Mapping[str, Any]) -&gt; AttrDict:
+    &#34;&#34;&#34;Merge `other` into `self`.
+
+    NOTE: Any nested dictionaries will be converted to `AttrDict` objects.
+
+    Args:
+        other (Mapping[str, Any]): other dictionary to merge
+
+    Returns:
+        AttrDict: merged dictionary
+
+    Examples:
+        &gt;&gt;&gt; item = AttrDict(a=1, b=2)
+        &gt;&gt;&gt; item &lt;&lt;= {&#34;b&#34;: 3}
+        &gt;&gt;&gt; item.b
+        3
+
+        &gt;&gt;&gt; item &lt;&lt; {&#34;b&#34;: 2, &#34;c&#34;: {&#34;d&#34;: 4}} &lt;&lt; {&#34;c&#34;: {&#34;d&#34;: {&#34;e&#34;: 5}}}
+        {&#39;a&#39;: 1, &#39;b&#39;: 2, &#39;c&#39;: {&#39;d&#39;: {&#39;e&#39;: 5}}}
+        &gt;&gt;&gt; item.c.d.e
+        5
+    &#34;&#34;&#34;
+    cls = self.__class__
+    for key, value in other.items():
+        if not isinstance(value, Mapping):  # new value is will overwrite
+            self[key] = value
+            continue
+
+        prev = self.get(key, {})
+        if isinstance(prev, Mapping):  # extend previous value
+            self[key] = cls(prev) &lt;&lt; value
+        else:  # previous value cannot be extended
+            self[key] = cls() &lt;&lt; value
+
+    return self</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="attrbox" href="index.html">attrbox</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="attrbox.attrdict.AttrDict" href="#attrbox.attrdict.AttrDict">AttrDict</a></code></h4>
+<ul class="two-column">
+<li><code><a title="attrbox.attrdict.AttrDict.copy" href="#attrbox.attrdict.AttrDict.copy">copy</a></code></li>
+<li><code><a title="attrbox.attrdict.AttrDict.__getattr__" href="#attrbox.attrdict.AttrDict.__getattr__">__getattr__</a></code></li>
+<li><code><a title="attrbox.attrdict.AttrDict.__setattr__" href="#attrbox.attrdict.AttrDict.__setattr__">__setattr__</a></code></li>
+<li><code><a title="attrbox.attrdict.AttrDict.__delattr__" href="#attrbox.attrdict.AttrDict.__delattr__">__delattr__</a></code></li>
+<li><code><a title="attrbox.attrdict.AttrDict.__getitem__" href="#attrbox.attrdict.AttrDict.__getitem__">__getitem__</a></code></li>
+<li><code><a title="attrbox.attrdict.AttrDict.__delitem__" href="#attrbox.attrdict.AttrDict.__delitem__">__delitem__</a></code></li>
+<li><code><a title="attrbox.attrdict.AttrDict.get" href="#attrbox.attrdict.AttrDict.get">get</a></code></li>
+<li><code><a title="attrbox.attrdict.AttrDict.set" href="#attrbox.attrdict.AttrDict.set">set</a></code></li>
+<li><code><a title="attrbox.attrdict.AttrDict.__lshift__" href="#attrbox.attrdict.AttrDict.__lshift__">__lshift__</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

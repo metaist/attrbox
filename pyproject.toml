@@ -32,6 +32,9 @@ optional-dependencies = { dev = [
   "pytest-cov",
   "pytest",
   "ruff",
+
+  # for tests
+  "toml",
 ] }
 readme = "README.md"
 license = { text = "MIT" }
@@ -74,8 +77,10 @@ docs = { shell = """\
   pdoc \
     --html \
     --output-dir docs \
-    --force src/$(basename $(pwd)); \
-  mv docs/*/* docs/
+    --config sort_identifiers=False \
+    --config show_inherited_members=True \
+    --force src/$(basename $(pwd));
+  mv docs/**/* docs/
 """ }
 
 lint = { composite = ["black", "ruff", "mypy"] }

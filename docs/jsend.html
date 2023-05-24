@@ -48,12 +48,12 @@ Msg = Optional[str]
 class JSend(AttrDict):
     &#34;&#34;&#34;Service response object.
 
-    This object loosely conforms to the JSend specification:
-    &lt;https://labs.omniti.com/labs/jsend&gt;
+    This object loosely conforms to the
+    [JSend specification](https://labs.omniti.com/labs/jsend).
     &#34;&#34;&#34;
 
     def __init__(self, *args: Any, **kwargs: Dict[str, Any]):
-        &#34;&#34;&#34;Construct a response.
+        &#34;&#34;&#34;Construct a JSend object.
 
         Examples:
             &gt;&gt;&gt; result = JSend()
@@ -76,7 +76,7 @@ class JSend(AttrDict):
             message (str): human-readable explanation of the failure
 
         Returns:
-            (JSend): self for chaining
+            JSend: self for chaining
 
         Examples:
             &gt;&gt;&gt; result = JSend()
@@ -98,10 +98,10 @@ class JSend(AttrDict):
 
         Args:
             message (str): human-readable explanation of the error
-            code (any): technical indication of the error
+            code (Any, optional): technical indication of the error
 
         Returns:
-            (JSend): self for chaining
+            JSend: self for chaining
 
         Examples:
             &gt;&gt;&gt; result = JSend()
@@ -121,14 +121,14 @@ class JSend(AttrDict):
         self.update(ok=False, status=STATUS_ERROR, message=message, code=code)
         return self
 
-    def success(self, data: Any = None) -&gt; &#34;JSend&#34;:
+    def success(self, data: Optional[Any] = None) -&gt; &#34;JSend&#34;:
         &#34;&#34;&#34;Indicate a successful response.
 
         Args:
-            data (any): response payload
+            data (Any, optional): response payload
 
         Returns:
-            (JSend): self for chaining
+            JSend: self for chaining
 
         Examples:
             &gt;&gt;&gt; data = &#34;Works&#34;
@@ -157,9 +157,9 @@ class JSend(AttrDict):
 </code></dt>
 <dd>
 <div class="desc"><p>Service response object.</p>
-<p>This object loosely conforms to the JSend specification:
-<a href="https://labs.omniti.com/labs/jsend">https://labs.omniti.com/labs/jsend</a></p>
-<p>Construct a response.</p>
+<p>This object loosely conforms to the
+<a href="https://labs.omniti.com/labs/jsend">JSend specification</a>.</p>
+<p>Construct a JSend object.</p>
 <h2 id="examples">Examples</h2>
 <pre><code class="language-python-repl">&gt;&gt;&gt; result = JSend()
 &gt;&gt;&gt; result.ok
@@ -178,12 +178,12 @@ True
 <pre><code class="python">class JSend(AttrDict):
     &#34;&#34;&#34;Service response object.
 
-    This object loosely conforms to the JSend specification:
-    &lt;https://labs.omniti.com/labs/jsend&gt;
+    This object loosely conforms to the
+    [JSend specification](https://labs.omniti.com/labs/jsend).
     &#34;&#34;&#34;
 
     def __init__(self, *args: Any, **kwargs: Dict[str, Any]):
-        &#34;&#34;&#34;Construct a response.
+        &#34;&#34;&#34;Construct a JSend object.
 
         Examples:
             &gt;&gt;&gt; result = JSend()
@@ -206,7 +206,7 @@ True
             message (str): human-readable explanation of the failure
 
         Returns:
-            (JSend): self for chaining
+            JSend: self for chaining
 
         Examples:
             &gt;&gt;&gt; result = JSend()
@@ -228,10 +228,10 @@ True
 
         Args:
             message (str): human-readable explanation of the error
-            code (any): technical indication of the error
+            code (Any, optional): technical indication of the error
 
         Returns:
-            (JSend): self for chaining
+            JSend: self for chaining
 
         Examples:
             &gt;&gt;&gt; result = JSend()
@@ -251,14 +251,14 @@ True
         self.update(ok=False, status=STATUS_ERROR, message=message, code=code)
         return self
 
-    def success(self, data: Any = None) -&gt; &#34;JSend&#34;:
+    def success(self, data: Optional[Any] = None) -&gt; &#34;JSend&#34;:
         &#34;&#34;&#34;Indicate a successful response.
 
         Args:
-            data (any): response payload
+            data (Any, optional): response payload
 
         Returns:
-            (JSend): self for chaining
+            JSend: self for chaining
 
         Examples:
             &gt;&gt;&gt; data = &#34;Works&#34;
@@ -279,6 +279,62 @@ True
 </ul>
 <h3>Methods</h3>
 <dl>
+<dt id="attrbox.jsend.JSend.fail"><code class="name flex">
+<span>def <span class="ident">fail</span></span>(<span>self, message: Optional[str] = None) ‑> <a title="attrbox.jsend.JSend" href="#attrbox.jsend.JSend">JSend</a></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Indicate a controlled failure.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>message</code></strong> :&ensp;<code>str</code></dt>
+<dd>human-readable explanation of the failure</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="attrbox.jsend.JSend" href="#attrbox.jsend.JSend">JSend</a></code></dt>
+<dd>self for chaining</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; result = JSend()
+&gt;&gt;&gt; msg = 'Missing a phone number.'
+&gt;&gt;&gt; result.fail(msg) is result
+True
+&gt;&gt;&gt; result.ok is False
+True
+&gt;&gt;&gt; result.status == 'fail'
+True
+&gt;&gt;&gt; result.message == msg
+True
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def fail(self, message: Msg = None) -&gt; &#34;JSend&#34;:
+    &#34;&#34;&#34;Indicate a controlled failure.
+
+    Args:
+        message (str): human-readable explanation of the failure
+
+    Returns:
+        JSend: self for chaining
+
+    Examples:
+        &gt;&gt;&gt; result = JSend()
+        &gt;&gt;&gt; msg = &#39;Missing a phone number.&#39;
+        &gt;&gt;&gt; result.fail(msg) is result
+        True
+        &gt;&gt;&gt; result.ok is False
+        True
+        &gt;&gt;&gt; result.status == &#39;fail&#39;
+        True
+        &gt;&gt;&gt; result.message == msg
+        True
+    &#34;&#34;&#34;
+    self.update(ok=False, status=STATUS_FAIL, message=message)
+    return self</code></pre>
+</details>
+</dd>
 <dt id="attrbox.jsend.JSend.error"><code class="name flex">
 <span>def <span class="ident">error</span></span>(<span>self, message: Optional[str] = None, code: Optional[Any] = None) ‑> <a title="attrbox.jsend.JSend" href="#attrbox.jsend.JSend">JSend</a></span>
 </code></dt>
@@ -288,11 +344,14 @@ True
 <dl>
 <dt><strong><code>message</code></strong> :&ensp;<code>str</code></dt>
 <dd>human-readable explanation of the error</dd>
-<dt><strong><code>code</code></strong> :&ensp;<code>any</code></dt>
+<dt><strong><code>code</code></strong> :&ensp;<code>Any</code>, optional</dt>
 <dd>technical indication of the error</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<p>(JSend): self for chaining</p>
+<dl>
+<dt><code><a title="attrbox.jsend.JSend" href="#attrbox.jsend.JSend">JSend</a></code></dt>
+<dd>self for chaining</dd>
+</dl>
 <h2 id="examples">Examples</h2>
 <pre><code class="language-python-repl">&gt;&gt;&gt; result = JSend()
 &gt;&gt;&gt; msg = 'No such file [file.text].'
@@ -317,10 +376,10 @@ True
 
     Args:
         message (str): human-readable explanation of the error
-        code (any): technical indication of the error
+        code (Any, optional): technical indication of the error
 
     Returns:
-        (JSend): self for chaining
+        JSend: self for chaining
 
     Examples:
         &gt;&gt;&gt; result = JSend()
@@ -341,71 +400,21 @@ True
     return self</code></pre>
 </details>
 </dd>
-<dt id="attrbox.jsend.JSend.fail"><code class="name flex">
-<span>def <span class="ident">fail</span></span>(<span>self, message: Optional[str] = None) ‑> <a title="attrbox.jsend.JSend" href="#attrbox.jsend.JSend">JSend</a></span>
-</code></dt>
-<dd>
-<div class="desc"><p>Indicate a controlled failure.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>message</code></strong> :&ensp;<code>str</code></dt>
-<dd>human-readable explanation of the failure</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<p>(JSend): self for chaining</p>
-<h2 id="examples">Examples</h2>
-<pre><code class="language-python-repl">&gt;&gt;&gt; result = JSend()
-&gt;&gt;&gt; msg = 'Missing a phone number.'
-&gt;&gt;&gt; result.fail(msg) is result
-True
-&gt;&gt;&gt; result.ok is False
-True
-&gt;&gt;&gt; result.status == 'fail'
-True
-&gt;&gt;&gt; result.message == msg
-True
-</code></pre></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def fail(self, message: Msg = None) -&gt; &#34;JSend&#34;:
-    &#34;&#34;&#34;Indicate a controlled failure.
-
-    Args:
-        message (str): human-readable explanation of the failure
-
-    Returns:
-        (JSend): self for chaining
-
-    Examples:
-        &gt;&gt;&gt; result = JSend()
-        &gt;&gt;&gt; msg = &#39;Missing a phone number.&#39;
-        &gt;&gt;&gt; result.fail(msg) is result
-        True
-        &gt;&gt;&gt; result.ok is False
-        True
-        &gt;&gt;&gt; result.status == &#39;fail&#39;
-        True
-        &gt;&gt;&gt; result.message == msg
-        True
-    &#34;&#34;&#34;
-    self.update(ok=False, status=STATUS_FAIL, message=message)
-    return self</code></pre>
-</details>
-</dd>
 <dt id="attrbox.jsend.JSend.success"><code class="name flex">
-<span>def <span class="ident">success</span></span>(<span>self, data: Any = None) ‑> <a title="attrbox.jsend.JSend" href="#attrbox.jsend.JSend">JSend</a></span>
+<span>def <span class="ident">success</span></span>(<span>self, data: Optional[Any] = None) ‑> <a title="attrbox.jsend.JSend" href="#attrbox.jsend.JSend">JSend</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Indicate a successful response.</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>data</code></strong> :&ensp;<code>any</code></dt>
+<dt><strong><code>data</code></strong> :&ensp;<code>Any</code>, optional</dt>
 <dd>response payload</dd>
 </dl>
 <h2 id="returns">Returns</h2>
-<p>(JSend): self for chaining</p>
+<dl>
+<dt><code><a title="attrbox.jsend.JSend" href="#attrbox.jsend.JSend">JSend</a></code></dt>
+<dd>self for chaining</dd>
+</dl>
 <h2 id="examples">Examples</h2>
 <pre><code class="language-python-repl">&gt;&gt;&gt; data = &quot;Works&quot;
 &gt;&gt;&gt; result = JSend()
@@ -418,14 +427,14 @@ True
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def success(self, data: Any = None) -&gt; &#34;JSend&#34;:
+<pre><code class="python">def success(self, data: Optional[Any] = None) -&gt; &#34;JSend&#34;:
     &#34;&#34;&#34;Indicate a successful response.
 
     Args:
-        data (any): response payload
+        data (Any, optional): response payload
 
     Returns:
-        (JSend): self for chaining
+        JSend: self for chaining
 
     Examples:
         &gt;&gt;&gt; data = &#34;Works&#34;
@@ -438,6 +447,96 @@ True
     self.update(ok=True, status=STATUS_SUCCESS, data=data)
     return self</code></pre>
 </details>
+</dd>
+<dt id="attrbox.jsend.JSend.copy"><code class="name flex">
+<span>def <span class="ident">copy</span></span>(<span>self: Self) ‑> ~Self</span>
+</code></dt>
+<dd>
+<p class="inheritance">
+<em>Inherited from:</em>
+<code><a title="attrbox.attrdict.AttrDict" href="attrdict.html#attrbox.attrdict.AttrDict">AttrDict</a></code>.<code><a title="attrbox.attrdict.AttrDict.copy" href="attrdict.html#attrbox.attrdict.AttrDict.copy">copy</a></code>
+</p>
+<div class="desc inherited"><p>Return a shallow copy …</p></div>
+</dd>
+<dt id="attrbox.jsend.JSend.__getattr__"><code class="name flex">
+<span>def <span class="ident">__getattr__</span></span>(<span>self, name: str) ‑> Optional[Any]</span>
+</code></dt>
+<dd>
+<p class="inheritance">
+<em>Inherited from:</em>
+<code><a title="attrbox.attrdict.AttrDict" href="attrdict.html#attrbox.attrdict.AttrDict">AttrDict</a></code>.<code><a title="attrbox.attrdict.AttrDict.__getattr__" href="attrdict.html#attrbox.attrdict.AttrDict.__getattr__">__getattr__</a></code>
+</p>
+<div class="desc inherited"><p>Return the value of the attribute or <code>None</code> …</p></div>
+</dd>
+<dt id="attrbox.jsend.JSend.__setattr__"><code class="name flex">
+<span>def <span class="ident">__setattr__</span></span>(<span>self, name: str, value: Any) ‑> None</span>
+</code></dt>
+<dd>
+<p class="inheritance">
+<em>Inherited from:</em>
+<code><a title="attrbox.attrdict.AttrDict" href="attrdict.html#attrbox.attrdict.AttrDict">AttrDict</a></code>.<code><a title="attrbox.attrdict.AttrDict.__setattr__" href="attrdict.html#attrbox.attrdict.AttrDict.__setattr__">__setattr__</a></code>
+</p>
+<div class="desc inherited"><p>Set the value of an attribute …</p></div>
+</dd>
+<dt id="attrbox.jsend.JSend.__delattr__"><code class="name flex">
+<span>def <span class="ident">__delattr__</span></span>(<span>self, name: str) ‑> None</span>
+</code></dt>
+<dd>
+<p class="inheritance">
+<em>Inherited from:</em>
+<code><a title="attrbox.attrdict.AttrDict" href="attrdict.html#attrbox.attrdict.AttrDict">AttrDict</a></code>.<code><a title="attrbox.attrdict.AttrDict.__delattr__" href="attrdict.html#attrbox.attrdict.AttrDict.__delattr__">__delattr__</a></code>
+</p>
+<div class="desc inherited"><p>Delete an attribute …</p></div>
+</dd>
+<dt id="attrbox.jsend.JSend.__getitem__"><code class="name flex">
+<span>def <span class="ident">__getitem__</span></span>(<span>self, name: AttrDictKey) ‑> Optional[Any]</span>
+</code></dt>
+<dd>
+<p class="inheritance">
+<em>Inherited from:</em>
+<code><a title="attrbox.attrdict.AttrDict" href="attrdict.html#attrbox.attrdict.AttrDict">AttrDict</a></code>.<code><a title="attrbox.attrdict.AttrDict.__getitem__" href="attrdict.html#attrbox.attrdict.AttrDict.__getitem__">__getitem__</a></code>
+</p>
+<div class="desc inherited"><p>Return the value of the key …</p></div>
+</dd>
+<dt id="attrbox.jsend.JSend.__delitem__"><code class="name flex">
+<span>def <span class="ident">__delitem__</span></span>(<span>self, name: str) ‑> None</span>
+</code></dt>
+<dd>
+<p class="inheritance">
+<em>Inherited from:</em>
+<code><a title="attrbox.attrdict.AttrDict" href="attrdict.html#attrbox.attrdict.AttrDict">AttrDict</a></code>.<code><a title="attrbox.attrdict.AttrDict.__delitem__" href="attrdict.html#attrbox.attrdict.AttrDict.__delitem__">__delitem__</a></code>
+</p>
+<div class="desc inherited"><p>Delete a key …</p></div>
+</dd>
+<dt id="attrbox.jsend.JSend.get"><code class="name flex">
+<span>def <span class="ident">get</span></span>(<span>self, name: AttrDictKey, default: Optional[Any] = None, /) ‑> Optional[Any]</span>
+</code></dt>
+<dd>
+<p class="inheritance">
+<em>Inherited from:</em>
+<code><a title="attrbox.attrdict.AttrDict" href="attrdict.html#attrbox.attrdict.AttrDict">AttrDict</a></code>.<code><a title="attrbox.attrdict.AttrDict.get" href="attrdict.html#attrbox.attrdict.AttrDict.get">get</a></code>
+</p>
+<div class="desc inherited"><p>Return the value of the key or <code>default</code> if it cannot be found …</p></div>
+</dd>
+<dt id="attrbox.jsend.JSend.set"><code class="name flex">
+<span>def <span class="ident">set</span></span>(<span>self: Self, name: AttrDictKey, value: Optional[Any] = None, /) ‑> ~Self</span>
+</code></dt>
+<dd>
+<p class="inheritance">
+<em>Inherited from:</em>
+<code><a title="attrbox.attrdict.AttrDict" href="attrdict.html#attrbox.attrdict.AttrDict">AttrDict</a></code>.<code><a title="attrbox.attrdict.AttrDict.set" href="attrdict.html#attrbox.attrdict.AttrDict.set">set</a></code>
+</p>
+<div class="desc inherited"><p>Set key with <code>name</code> to <code>value</code> …</p></div>
+</dd>
+<dt id="attrbox.jsend.JSend.__lshift__"><code class="name flex">
+<span>def <span class="ident">__lshift__</span></span>(<span>self, other: Mapping[str, Any]) ‑> <a title="attrbox.attrdict.AttrDict" href="attrdict.html#attrbox.attrdict.AttrDict">AttrDict</a></span>
+</code></dt>
+<dd>
+<p class="inheritance">
+<em>Inherited from:</em>
+<code><a title="attrbox.attrdict.AttrDict" href="attrdict.html#attrbox.attrdict.AttrDict">AttrDict</a></code>.<code><a title="attrbox.attrdict.AttrDict.__lshift__" href="attrdict.html#attrbox.attrdict.AttrDict.__lshift__">__lshift__</a></code>
+</p>
+<div class="desc inherited"><p>Merge <code>other</code> into <code>self</code> …</p></div>
 </dd>
 </dl>
 </dd>
@@ -459,10 +558,19 @@ True
 <ul>
 <li>
 <h4><code><a title="attrbox.jsend.JSend" href="#attrbox.jsend.JSend">JSend</a></code></h4>
-<ul class="">
-<li><code><a title="attrbox.jsend.JSend.error" href="#attrbox.jsend.JSend.error">error</a></code></li>
+<ul class="two-column">
 <li><code><a title="attrbox.jsend.JSend.fail" href="#attrbox.jsend.JSend.fail">fail</a></code></li>
+<li><code><a title="attrbox.jsend.JSend.error" href="#attrbox.jsend.JSend.error">error</a></code></li>
 <li><code><a title="attrbox.jsend.JSend.success" href="#attrbox.jsend.JSend.success">success</a></code></li>
+<li><code><a title="attrbox.jsend.JSend.copy" href="attrdict.html#attrbox.jsend.JSend.copy">copy</a></code></li>
+<li><code><a title="attrbox.jsend.JSend.__getattr__" href="attrdict.html#attrbox.jsend.JSend.__getattr__">__getattr__</a></code></li>
+<li><code><a title="attrbox.jsend.JSend.__setattr__" href="attrdict.html#attrbox.jsend.JSend.__setattr__">__setattr__</a></code></li>
+<li><code><a title="attrbox.jsend.JSend.__delattr__" href="attrdict.html#attrbox.jsend.JSend.__delattr__">__delattr__</a></code></li>
+<li><code><a title="attrbox.jsend.JSend.__getitem__" href="attrdict.html#attrbox.jsend.JSend.__getitem__">__getitem__</a></code></li>
+<li><code><a title="attrbox.jsend.JSend.__delitem__" href="attrdict.html#attrbox.jsend.JSend.__delitem__">__delitem__</a></code></li>
+<li><code><a title="attrbox.jsend.JSend.get" href="attrdict.html#attrbox.jsend.JSend.get">get</a></code></li>
+<li><code><a title="attrbox.jsend.JSend.set" href="attrdict.html#attrbox.jsend.JSend.set">set</a></code></li>
+<li><code><a title="attrbox.jsend.JSend.__lshift__" href="attrdict.html#attrbox.jsend.JSend.__lshift__">__lshift__</a></code></li>
 </ul>
 </li>
 </ul>
