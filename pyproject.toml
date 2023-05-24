@@ -57,6 +57,7 @@ classifiers = [
 [tool.pdm.scripts]
 black = { shell = "black ." }
 ruff = { shell = "ruff ." }
+
 mypy = { shell = """\
   mypy \
     --strict \
@@ -64,6 +65,7 @@ mypy = { shell = """\
     --non-interactive \
     src test
 """ }
+
 test = { shell = """\
   PYTHONPATH=src \
   coverage run --branch --source=src -m \
@@ -73,6 +75,7 @@ test = { shell = """\
       src test; \
   coverage report -m
 """ }
+
 docs = { shell = """\
   pdoc \
     --html \

@@ -47,7 +47,7 @@ jobs:
 
       - name: Type check (mypy)
         run: |
-          pdm run mypy --verbose
+          pdm run mypy
 
       - name: Run tests
         run: |

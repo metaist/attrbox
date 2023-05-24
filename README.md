@@ -1,9 +1,10 @@
 # attrbox
 
-_Attribute-based data structures._
+_Functional-style and attribute-based data structures._
 
-[![Build Status](https://img.shields.io/github/workflow/status/metaist/attrbox/CI?style=for-the-badge)](https://github.com/metaist/attrbox/actions)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/metaist/attrbox/.github/workflows/ci.yaml?branch=main&style=for-the-badge)](https://github.com/metaist/attrbox/actions)
 [![attrbox on PyPI](https://img.shields.io/pypi/v/attrbox.svg?color=blue&style=for-the-badge)](https://pypi.org/project/attrbox)
+[![Supported Python versions](https://img.shields.io/pypi/pyversions/attrbox?style=for-the-badge)](https://pypi.org/project/attrbox)
 
 [Changelog] - [Issues] - [Documentation]
 
