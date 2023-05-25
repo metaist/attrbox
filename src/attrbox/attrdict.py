@@ -12,6 +12,9 @@ from typing import Sequence
 from typing import TypeVar
 from typing import Union
 
+# pkg
+from .algo import dict_merge
+
 __all__ = ["AttrDict"]
 
 
@@ -334,18 +337,7 @@ class AttrDict(Dict[str, Any]):
             >>> item.c.d.e
             5
         """
-        cls = self.__class__
-        for key, value in other.items():
-            if not isinstance(value, Mapping):  # new value is will overwrite
-                self[key] = value
-                continue
-
-            prev = self.get(key, {})
-            if isinstance(prev, Mapping):  # extend previous value
-                self[key] = cls(prev) << value
-            else:  # previous value cannot be extended
-                self[key] = cls() << value
-
+        dict_merge(self, other, default=self.__class__)
         return self
 
 
