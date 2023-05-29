@@ -7,7 +7,6 @@
 # pkg
 from .attrdict import AttrDict, __pdoc__ as doc1
 from .attrlist import AttrList, __pdoc__ as doc2
-from .fn import Fn
 
 from .jsend import JSend
 
