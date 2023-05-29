@@ -110,7 +110,7 @@ def dict_merge(
     dest: GenericDict,
     *sources: Mapping[Any, Any],  # read-only
     default: Type[GenericDict] = dict,
-) -> T[GenericDict]:
+) -> GenericDict:
     """Generic recursive merge for dict-like objects.
 
     NOTE: Every nested `dict` will pass through `default`.
@@ -147,3 +147,22 @@ def dict_merge(
             else:  # cannot extend
                 dest[key] = value
     return dest
+
+
+def dict_get(items: GenericDict, key: ItemKey, default: Optional[Any] = None, /) -> Any:
+    if isinstance(key, str):
+        return dict.get(items, key, default)
+    if isinstance(key, slice):
+        return items[key]
+
+    src: SupportsItem = items
+    result: Any = default
+    try:
+        for step in key:
+            result = src[step]  # take step
+            if isinstance(result, SupportsItem):
+                src = result  # preserve context
+    except (KeyError, IndexError, TypeError):
+        # key doesn't exist, index is unreachable, or item is not indexable
+        result = default
+    return result
