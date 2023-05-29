@@ -1,6 +1,6 @@
 # attrbox
 
-_Functional-style and attribute-based data structures._
+_Attribute-based data structures._
 
 [![Build Status](https://img.shields.io/github/actions/workflow/status/metaist/attrbox/.github/workflows/ci.yaml?branch=main&style=for-the-badge)](https://github.com/metaist/attrbox/actions)
 [![attrbox on PyPI](https://img.shields.io/pypi/v/attrbox.svg?color=blue&style=for-the-badge)](https://pypi.org/project/attrbox)
@@ -14,20 +14,22 @@ _Functional-style and attribute-based data structures._
 
 ## Why?
 
-`AttrDict` deals with shortcomings of the standard python `dict`:
+I have some specific things I wish python `dict` and `list` could do:
 
-- You can use attribute syntax (`thing.prop` instead of `thing["prop"]`).
-- Instead of handling `KeyError` or using `.get(None)`, you can just get a `None` by default.
-- It's easy to merge nested `dict` objects using the `<<` operator.
+- (`dict`) **Attribute Syntax**: `thing.prop` to mean `thing["prop"]`.
+- (`dict`) **Suppress `KeyError`**: instead of `.get()` just give me `None` if I ask for a key that's not there.
+- (`dict`) **Better Merge**: I want to merge nested `dict` objects.
+- (`list`) **Broadcast to Members**: accessing an attribute or making a function call on the list should apply it to all the members.
 
-`AttrList` lets you build a powerful container that can easily query attributes of its members.
+`attrbox` also packages the most common use cases:
 
-`JSend` is a rough implementation of the [`JSend` sepecification](https://labs.omniti.com/labs/jsend) that makes it easy to create standard JSON responses.
+- `AttrDict`, `AttrList`: basic attribute-based improvements
+- `JSend`: approximate implementation of the [`JSend` specification](https://labs.omniti.com/labs/jsend) that makes it easy to create standard JSON responses.
 
 ## Install
 
 ```bash
-pip install attrbox
+python -m pip install attrbox
 ```
 
 ## Example
@@ -37,7 +39,7 @@ import json
 from attrbox import AttrDict
 
 config = AttrDict() << json.load(open('test/example-appengine.json'))
-print(config.deployment.files["example-resource-file1"].sourceUrl)
+print(config.get(["deployment", "files", "example-resource-file1", "sourceUrl"])
 # => "https://storage.googleapis.com/[MY_BUCKET_ID]/example-application/example-resource-file1"
 ```
 

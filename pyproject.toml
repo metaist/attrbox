@@ -16,8 +16,8 @@ Changelog = "https://github.com/metaist/attrbox/blob/main/CHANGELOG.md"
 
 [project]
 name = "attrbox"
-description = "Functional-style and attribute-based data structures."
-keywords = ["attr", "attributes", "functional", "dict", "list"]
+description = "Attribute-based data structures."
+keywords = ["attr", "attributes", "dict", "list"]
 
 dynamic = ["version"]
 requires-python = ">=3.8"

@@ -1,4 +1,4 @@
-"""Functional-style and attribute-based data structures.
+"""Attribute-based data structures.
 
 .. include:: ../../README.md
    :start-line: 4
@@ -15,7 +15,6 @@ __all__ = (
     "__version__",
     "AttrDict",
     "AttrList",
-    "Fn",
     "JSend",
 )
 

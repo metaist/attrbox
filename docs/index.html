@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>attrbox API documentation</title>
-<meta name="description" content="Functional-style and attribute-based data structures …" />
+<meta name="description" content="Attribute-based data structures …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,7 +22,7 @@
 <h1 class="title">Package <code>attrbox</code></h1>
 </header>
 <section id="section-intro">
-<p>Functional-style and attribute-based data structures.</p>
+<p>Attribute-based data structures.</p>
 <p><a href="https://github.com/metaist/attrbox/actions"><img alt="Build Status" src="https://img.shields.io/github/actions/workflow/status/metaist/attrbox/.github/workflows/ci.yaml?branch=main&amp;style=for-the-badge"></a>
 <a href="https://pypi.org/project/attrbox"><img alt="attrbox on PyPI" src="https://img.shields.io/pypi/v/attrbox.svg?color=blue&amp;style=for-the-badge"></a>
 <a href="https://pypi.org/project/attrbox"><img alt="Supported Python versions" src="https://img.shields.io/pypi/pyversions/attrbox?style=for-the-badge"></a></p>
@@ -30,8 +30,6 @@
 <h2 id="why">Why?</h2>
 <p>I have some specific things I wish python <code>dict</code> and <code>list</code> could do:</p>
 <ul>
-<li><strong>More Uniform Interface</strong>: Not sure why they couldn't be more uniform.</li>
-<li><strong>More Functional Interface</strong>: It's annoying that certain methods can't be chained.</li>
 <li>(<code>dict</code>) <strong>Attribute Syntax</strong>: <code>thing.prop</code> to mean <code>thing["prop"]</code>.</li>
 <li>(<code>dict</code>) <strong>Suppress <code>KeyError</code></strong>: instead of <code>.get()</code> just give me <code>None</code> if I ask for a key that's not there.</li>
 <li>(<code>dict</code>) <strong>Better Merge</strong>: I want to merge nested <code>dict</code> objects.</li>
@@ -40,7 +38,6 @@
 <p><code><a title="attrbox" href="#attrbox">attrbox</a></code> also packages the most common use cases:</p>
 <ul>
 <li><code><a title="attrbox.AttrDict" href="#attrbox.AttrDict">AttrDict</a></code>, <code><a title="attrbox.AttrList" href="#attrbox.AttrList">AttrList</a></code>: basic attribute-based improvements</li>
-<li><code><a title="attrbox.Fn" href="#attrbox.Fn">Fn</a></code>: wrap a <code>list</code> or a <code>dict</code> in a uniform, functional interface.</li>
 <li><code><a title="attrbox.JSend" href="#attrbox.JSend">JSend</a></code>: approximate implementation of the <a href="https://labs.omniti.com/labs/jsend"><code>JSend</code> specification</a> that makes it easy to create standard JSON responses.</li>
 </ul>
 <h2 id="install">Install</h2>
@@ -48,10 +45,10 @@
 </code></pre>
 <h2 id="example">Example</h2>
 <pre><code class="language-python">import json
-from attrbox import SuperDict
+from attrbox import AttrDict
 
-config = SuperDict() &lt;&lt; json.load(open('test/example-appengine.json'))
-print(config.deployment.files[&quot;example-resource-file1&quot;].sourceUrl)
+config = AttrDict() &lt;&lt; json.load(open('test/example-appengine.json'))
+print(config.get([&quot;deployment&quot;, &quot;files&quot;, &quot;example-resource-file1&quot;, &quot;sourceUrl&quot;])
 # =&gt; &quot;https://storage.googleapis.com/[MY_BUCKET_ID]/example-application/example-resource-file1&quot;
 </code></pre>
 <h2 id="license">License</h2>
@@ -60,7 +57,7 @@ print(config.deployment.files[&quot;example-resource-file1&quot;].sourceUrl)
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">&#34;&#34;&#34;Functional-style and attribute-based data structures.
+<pre><code class="python">&#34;&#34;&#34;Attribute-based data structures.
 
 .. include:: ../../README.md
    :start-line: 4
@@ -69,7 +66,6 @@ print(config.deployment.files[&quot;example-resource-file1&quot;].sourceUrl)
 # pkg
 from .attrdict import AttrDict, __pdoc__ as doc1
 from .attrlist import AttrList, __pdoc__ as doc2
-from .fn import Fn
 
 from .jsend import JSend
 
@@ -78,7 +74,6 @@ __all__ = (
     &#34;__version__&#34;,
     &#34;AttrDict&#34;,
     &#34;AttrList&#34;,
-    &#34;Fn&#34;,
     &#34;JSend&#34;,
 )
 
@@ -91,6 +86,10 @@ for doc in [doc1, doc2]:
 <section>
 <h2 class="section-title" id="header-submodules">Sub-modules</h2>
 <dl>
+<dt><code class="name"><a title="attrbox.algo" href="algo.html">attrbox.algo</a></code></dt>
+<dd>
+<div class="desc"><p>Generic container-based algorithms.</p></div>
+</dd>
 <dt><code class="name"><a title="attrbox.attrdict" href="attrdict.html">attrbox.attrdict</a></code></dt>
 <dd>
 <div class="desc"><p><code>dict</code> with attribute access, deep selectors, and merging.</p></div>
@@ -98,10 +97,6 @@ for doc in [doc1, doc2]:
 <dt><code class="name"><a title="attrbox.attrlist" href="attrlist.html">attrbox.attrlist</a></code></dt>
 <dd>
 <div class="desc"><p><code>list</code> that broadcasts attribute access to its elements.</p></div>
-</dd>
-<dt><code class="name"><a title="attrbox.fn" href="fn.html">attrbox.fn</a></code></dt>
-<dd>
-<div class="desc"><p>Convert <code>dict</code> and <code>list</code> into functional objects.</p></div>
 </dd>
 <dt><code class="name"><a title="attrbox.jsend" href="jsend.html">attrbox.jsend</a></code></dt>
 <dd>
@@ -430,18 +425,7 @@ a non-existent key or attribute returns <code>None</code>.</p>
             &gt;&gt;&gt; item.c.d.e
             5
         &#34;&#34;&#34;
-        cls = self.__class__
-        for key, value in other.items():
-            if not isinstance(value, Mapping):  # new value is will overwrite
-                self[key] = value
-                continue
-
-            prev = self.get(key, {})
-            if isinstance(prev, Mapping):  # extend previous value
-                self[key] = cls(prev) &lt;&lt; value
-            else:  # previous value cannot be extended
-                self[key] = cls() &lt;&lt; value
-
+        dict_merge(self, other, default=self.__class__)
         return self</code></pre>
 </details>
 <h3>Ancestors</h3>
@@ -1026,18 +1010,7 @@ True
         &gt;&gt;&gt; item.c.d.e
         5
     &#34;&#34;&#34;
-    cls = self.__class__
-    for key, value in other.items():
-        if not isinstance(value, Mapping):  # new value is will overwrite
-            self[key] = value
-            continue
-
-        prev = self.get(key, {})
-        if isinstance(prev, Mapping):  # extend previous value
-            self[key] = cls(prev) &lt;&lt; value
-        else:  # previous value cannot be extended
-            self[key] = cls() &lt;&lt; value
-
+    dict_merge(self, other, default=self.__class__)
     return self</code></pre>
 </details>
 </dd>
@@ -1809,297 +1782,6 @@ kwargs (</em>*any): keyword arguments to the callable</p>
 </dd>
 </dl>
 </dd>
-<dt id="attrbox.Fn"><code class="flex name class">
-<span>class <span class="ident">Fn</span></span>
-<span>(</span><span>item: Union[<a title="attrbox.Fn" href="#attrbox.Fn">Fn</a>, Wrappable])</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Functional wrapper for a <code>List</code> or <code>Mapping</code>.</p>
-<p>Construct a new functional wrapper.</p>
-<pre><code class="language-python-repl">&gt;&gt;&gt; Fn(Fn([1, 2, 3])) == [1, 2, 3]
-True
-&gt;&gt;&gt; Fn(5)
-Traceback (most recent call last):
-     ...
-ValueError: Cannot wrap this type: &lt;class 'int'&gt;
-</code></pre></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class Fn:
-    &#34;&#34;&#34;Functional wrapper for a `List` or `Mapping`.&#34;&#34;&#34;
-
-    _item: Wrappable
-    &#34;&#34;&#34;The wrapped item.&#34;&#34;&#34;
-
-    # constructors #
-
-    def __init__(self, item: Union[Fn, Wrappable]):
-        &#34;&#34;&#34;Construct a new functional wrapper.
-
-        &gt;&gt;&gt; Fn(Fn([1, 2, 3])) == [1, 2, 3]
-        True
-        &gt;&gt;&gt; Fn(5)
-        Traceback (most recent call last):
-             ...
-        ValueError: Cannot wrap this type: &lt;class &#39;int&#39;&gt;
-        &#34;&#34;&#34;
-        if isinstance(item, Fn):
-            self._item = item._item
-        elif isinstance(item, List):
-            self._item = wrap_list(item)
-        elif isinstance(item, Mapping):
-            self._item = wrap_dict(item)
-        else:
-            raise ValueError(f&#34;Cannot wrap this type: {type(item)}&#34;)
-
-    def copy(self) -&gt; Fn:
-        &#34;&#34;&#34;Return a shallow copy.
-
-        &gt;&gt;&gt; items = Fn([1, 2, 3])
-        &gt;&gt;&gt; copy = items.copy()
-        &gt;&gt;&gt; copy is not items
-        True
-        &gt;&gt;&gt; copy == items
-        True
-        &#34;&#34;&#34;
-        return self.__class__(copy(self._item))
-
-    @classmethod
-    def wrap(cls, item: Wrappable) -&gt; Union[Fn, Any]:
-        &#34;&#34;&#34;Recursively replace `dict` and `list` with functional equivalents.
-
-        Args:
-            item (Any): typically a `dict` or `list`
-
-        Returns:
-            Any: `item` or a wrapped version of `item`
-
-        Examples:
-
-            Wrapping simple values returns those values:
-            &gt;&gt;&gt; items = Fn.wrap([{&#34;a&#34;: [1, {&#34;b&#34;: 2}, 3]}, {&#34;a&#34;: [4, {&#34;b&#34;: 5}, 6]}])
-            &gt;&gt;&gt; isinstance(items, Fn)
-            True
-
-            Wrapping multiple times has no impact:
-            &gt;&gt;&gt; items = Fn.wrap([1, 2, 3])
-            &gt;&gt;&gt; Fn.wrap(items) is items
-            True
-        &#34;&#34;&#34;
-        result: Union[Fn, Any] = item
-        if isinstance(item, Fn):
-            pass
-        elif isinstance(item, List):
-            result = Fn(wrap_list(item))
-        elif isinstance(item, Mapping):
-            result = Fn(wrap_dict(item))
-        return result
-
-    @classmethod
-    def fromkeys(cls, iterable: Iterable[str], value: Optional[Any] = None, /) -&gt; Fn:
-        &#34;&#34;&#34;Create a new dictionary with keys from iterable and values set to value.
-
-        Args:
-            iterable (Iterable[str]): iterable of strings that will be used for keys
-            value (Any, optional): value for each new key. Defaults to `None`.
-
-        Returns:
-            Fn: new wrapped dict
-
-        Examples:
-            &gt;&gt;&gt; items = Fn.fromkeys(&#34;abc&#34;)
-            &gt;&gt;&gt; isinstance(items, Fn)
-            True
-            &gt;&gt;&gt; items == {&#34;a&#34;: None, &#34;b&#34;: None, &#34;c&#34;: None}
-            True
-        &#34;&#34;&#34;
-        return cls({k: value for k in iterable})
-
-    # contents #
-
-    def __repr__(self) -&gt; str:
-        &#34;&#34;&#34;Return `repr` of the wrapped item.
-
-        Example:
-            &gt;&gt;&gt; repr(Fn([1, 2, 3]))
-            &#39;Fn([1, 2, 3])&#39;
-        &#34;&#34;&#34;
-        return f&#34;{self.__class__.__name__}({repr(self._item)})&#34;
-
-    def __eq__(self, other: Any) -&gt; Any:
-        &#34;&#34;&#34;Return `True` if `other` has the same contents.
-
-        Args:
-            other (Any): other item to compare
-
-        Returns:
-            Any: `True` if it has the same contents
-
-        Examples:
-            &gt;&gt;&gt; items = Fn([1, 2, 3])
-            &gt;&gt;&gt; items == [1, 2, 3]
-            True
-
-            &gt;&gt;&gt; other = Fn([1, 2, 3])
-            &gt;&gt;&gt; items is other
-            False
-            &gt;&gt;&gt; items == other
-            True
-        &#34;&#34;&#34;
-        if isinstance(other, self.__class__):
-            return self._item == other._item
-        else:
-            return self._item == other</code></pre>
-</details>
-<h3>Static methods</h3>
-<dl>
-<dt id="attrbox.Fn.wrap"><code class="name flex">
-<span>def <span class="ident">wrap</span></span>(<span>item: Wrappable) ‑> Union[<a title="attrbox.fn.Fn" href="fn.html#attrbox.fn.Fn">Fn</a>, Any]</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Recursively replace <code>dict</code> and <code>list</code> with functional equivalents.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>item</code></strong> :&ensp;<code>Any</code></dt>
-<dd>typically a <code>dict</code> or <code>list</code></dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>Any</code></dt>
-<dd><code>item</code> or a wrapped version of <code>item</code></dd>
-</dl>
-<h2 id="examples">Examples</h2>
-<p>Wrapping simple values returns those values:</p>
-<pre><code class="language-python-repl">&gt;&gt;&gt; items = Fn.wrap([{&quot;a&quot;: [1, {&quot;b&quot;: 2}, 3]}, {&quot;a&quot;: [4, {&quot;b&quot;: 5}, 6]}])
-&gt;&gt;&gt; isinstance(items, Fn)
-True
-</code></pre>
-<p>Wrapping multiple times has no impact:</p>
-<pre><code class="language-python-repl">&gt;&gt;&gt; items = Fn.wrap([1, 2, 3])
-&gt;&gt;&gt; Fn.wrap(items) is items
-True
-</code></pre></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@classmethod
-def wrap(cls, item: Wrappable) -&gt; Union[Fn, Any]:
-    &#34;&#34;&#34;Recursively replace `dict` and `list` with functional equivalents.
-
-    Args:
-        item (Any): typically a `dict` or `list`
-
-    Returns:
-        Any: `item` or a wrapped version of `item`
-
-    Examples:
-
-        Wrapping simple values returns those values:
-        &gt;&gt;&gt; items = Fn.wrap([{&#34;a&#34;: [1, {&#34;b&#34;: 2}, 3]}, {&#34;a&#34;: [4, {&#34;b&#34;: 5}, 6]}])
-        &gt;&gt;&gt; isinstance(items, Fn)
-        True
-
-        Wrapping multiple times has no impact:
-        &gt;&gt;&gt; items = Fn.wrap([1, 2, 3])
-        &gt;&gt;&gt; Fn.wrap(items) is items
-        True
-    &#34;&#34;&#34;
-    result: Union[Fn, Any] = item
-    if isinstance(item, Fn):
-        pass
-    elif isinstance(item, List):
-        result = Fn(wrap_list(item))
-    elif isinstance(item, Mapping):
-        result = Fn(wrap_dict(item))
-    return result</code></pre>
-</details>
-</dd>
-<dt id="attrbox.Fn.fromkeys"><code class="name flex">
-<span>def <span class="ident">fromkeys</span></span>(<span>iterable: Iterable[str], value: Optional[Any] = None, /) ‑> <a title="attrbox.fn.Fn" href="fn.html#attrbox.fn.Fn">Fn</a></span>
-</code></dt>
-<dd>
-<div class="desc"><p>Create a new dictionary with keys from iterable and values set to value.</p>
-<h2 id="args">Args</h2>
-<dl>
-<dt><strong><code>iterable</code></strong> :&ensp;<code>Iterable[str]</code></dt>
-<dd>iterable of strings that will be used for keys</dd>
-<dt><strong><code>value</code></strong> :&ensp;<code>Any</code>, optional</dt>
-<dd>value for each new key. Defaults to <code>None</code>.</dd>
-</dl>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code><a title="attrbox.Fn" href="#attrbox.Fn">Fn</a></code></dt>
-<dd>new wrapped dict</dd>
-</dl>
-<h2 id="examples">Examples</h2>
-<pre><code class="language-python-repl">&gt;&gt;&gt; items = Fn.fromkeys(&quot;abc&quot;)
-&gt;&gt;&gt; isinstance(items, Fn)
-True
-&gt;&gt;&gt; items == {&quot;a&quot;: None, &quot;b&quot;: None, &quot;c&quot;: None}
-True
-</code></pre></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@classmethod
-def fromkeys(cls, iterable: Iterable[str], value: Optional[Any] = None, /) -&gt; Fn:
-    &#34;&#34;&#34;Create a new dictionary with keys from iterable and values set to value.
-
-    Args:
-        iterable (Iterable[str]): iterable of strings that will be used for keys
-        value (Any, optional): value for each new key. Defaults to `None`.
-
-    Returns:
-        Fn: new wrapped dict
-
-    Examples:
-        &gt;&gt;&gt; items = Fn.fromkeys(&#34;abc&#34;)
-        &gt;&gt;&gt; isinstance(items, Fn)
-        True
-        &gt;&gt;&gt; items == {&#34;a&#34;: None, &#34;b&#34;: None, &#34;c&#34;: None}
-        True
-    &#34;&#34;&#34;
-    return cls({k: value for k in iterable})</code></pre>
-</details>
-</dd>
-</dl>
-<h3>Methods</h3>
-<dl>
-<dt id="attrbox.Fn.copy"><code class="name flex">
-<span>def <span class="ident">copy</span></span>(<span>self) ‑> <a title="attrbox.fn.Fn" href="fn.html#attrbox.fn.Fn">Fn</a></span>
-</code></dt>
-<dd>
-<div class="desc"><p>Return a shallow copy.</p>
-<pre><code class="language-python-repl">&gt;&gt;&gt; items = Fn([1, 2, 3])
-&gt;&gt;&gt; copy = items.copy()
-&gt;&gt;&gt; copy is not items
-True
-&gt;&gt;&gt; copy == items
-True
-</code></pre></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def copy(self) -&gt; Fn:
-    &#34;&#34;&#34;Return a shallow copy.
-
-    &gt;&gt;&gt; items = Fn([1, 2, 3])
-    &gt;&gt;&gt; copy = items.copy()
-    &gt;&gt;&gt; copy is not items
-    True
-    &gt;&gt;&gt; copy == items
-    True
-    &#34;&#34;&#34;
-    return self.__class__(copy(self._item))</code></pre>
-</details>
-</dd>
-</dl>
-</dd>
 <dt id="attrbox.JSend"><code class="flex name class">
 <span>class <span class="ident">JSend</span></span>
 <span>(</span><span>*args: Any, **kwargs: Dict[str, Any])</span>
@@ -2505,9 +2187,9 @@ True
 <ul id="index">
 <li><h3><a href="#header-submodules">Sub-modules</a></h3>
 <ul>
+<li><code><a title="attrbox.algo" href="algo.html">attrbox.algo</a></code></li>
 <li><code><a title="attrbox.attrdict" href="attrdict.html">attrbox.attrdict</a></code></li>
 <li><code><a title="attrbox.attrlist" href="attrlist.html">attrbox.attrlist</a></code></li>
-<li><code><a title="attrbox.fn" href="fn.html">attrbox.fn</a></code></li>
 <li><code><a title="attrbox.jsend" href="jsend.html">attrbox.jsend</a></code></li>
 </ul>
 </li>
@@ -2537,14 +2219,6 @@ True
 <li><code><a title="attrbox.AttrList.__setitem__" href="#attrbox.AttrList.__setitem__">__setitem__</a></code></li>
 <li><code><a title="attrbox.AttrList.__delitem__" href="#attrbox.AttrList.__delitem__">__delitem__</a></code></li>
 <li><code><a title="attrbox.AttrList.__call__" href="#attrbox.AttrList.__call__">__call__</a></code></li>
-</ul>
-</li>
-<li>
-<h4><code><a title="attrbox.Fn" href="#attrbox.Fn">Fn</a></code></h4>
-<ul class="">
-<li><code><a title="attrbox.Fn.wrap" href="#attrbox.Fn.wrap">wrap</a></code></li>
-<li><code><a title="attrbox.Fn.fromkeys" href="#attrbox.Fn.fromkeys">fromkeys</a></code></li>
-<li><code><a title="attrbox.Fn.copy" href="#attrbox.Fn.copy">copy</a></code></li>
 </ul>
 </li>
 <li>
