@@ -7,9 +7,9 @@ verify_ssl = true
 black = "*"
 mypy = "*"
 pdoc3 = "*"
-pylint = "*"
 pytest = "*"
 pytest-cov = "*"
+ruff = "*"
 
 [packages]
 
