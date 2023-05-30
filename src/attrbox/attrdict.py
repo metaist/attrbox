@@ -9,11 +9,9 @@ from typing import Optional
 from typing import Protocol
 from typing import runtime_checkable
 from typing import Sequence
+from typing import Type
 from typing import TypeVar
 from typing import Union
-
-# pkg
-from .algo import dict_merge
 
 __all__ = ["AttrDict"]
 
@@ -37,6 +35,52 @@ Self = TypeVar("Self", bound="AttrDict")
 
 AttrDictKey = Union[str, Sequence[Union[str, int, slice]]]
 """`AttrDict` key for normal and deeper indexing."""
+
+GenericDict = Dict[Any, Any]
+"""Generic `dict` any kind of key to any kind of value."""
+
+
+def dict_merge(
+    dest: GenericDict,
+    *sources: Mapping[Any, Any],  # read-only
+    default: Type[GenericDict] = dict,
+) -> GenericDict:
+    """Generic recursive merge for dict-like objects.
+
+    NOTE: Every nested `dict` will pass through `default`.
+
+    Args:
+        dest (GenericDict): dict into which `sources` are merged
+        *sources (Mapping[Any, Any]): dicts to merge (read-only)
+        default (Type[GenericDict], optional): constructor for default `dict`.
+            Defaults to `dict`.
+
+    Returns:
+        GenericDict: `dest` now with merged values
+
+    Examples:
+        >>> a = {"b": {"c": 1}, "d": 2}
+        >>> b = {"b": {"c": 2, "e": 3}, "d": 2}
+        >>> c = {"d": {"e": 5}}
+        >>> dict_merge(a, b, c)
+        {'b': {'c': 2, 'e': 3}, 'd': {'e': 5}}
+    """
+    for src in sources:
+        for key, value in src.items():
+            if not isinstance(value, Mapping):
+                # overwrite with simple value
+                dest[key] = value
+                continue
+
+            value = default(value)
+            prev = dest.get(key, {})
+            if isinstance(prev, dict):  # extendable
+                if not isinstance(prev, default):
+                    prev = default(prev)
+                dest[key] = dict_merge(prev, value, default=default)
+            else:  # cannot extend
+                dest[key] = value
+    return dest
 
 
 class AttrDict(Dict[str, Any]):
