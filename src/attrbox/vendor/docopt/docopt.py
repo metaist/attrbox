@@ -6,8 +6,18 @@
  * Copyright (c) 2013 Vladimir Keleshev, vladimir@keleshev.com
 
 """
-import sys
+
+# native
+from __future__ import annotations
+from typing import Dict
+from typing import List
+from typing import Optional
+from typing import Sequence
+from typing import Tuple
+from typing import Union
+from typing import Type
 import re
+import sys
 
 
 __all__ = ["docopt"]
@@ -23,14 +33,14 @@ class DocoptExit(SystemExit):
 
     """Exit in case user invoked program with incorrect arguments."""
 
-    usage = ""
+    usage: str = ""
 
-    def __init__(self, message=""):
+    def __init__(self, message: str = ""):
         SystemExit.__init__(self, (message + "\n" + self.usage).strip())
 
 
 class Pattern(object):
-    def __eq__(self, other):
+    def __eq__(self, other: Pattern):
         return repr(self) == repr(other)
 
     def __hash__(self):
@@ -45,6 +55,7 @@ class Pattern(object):
         """Make pattern-tree tips point to same object if they are equal."""
         if not hasattr(self, "children"):
             return self
+
         uniq = list(set(self.flat())) if uniq is None else uniq
         for i, child in enumerate(self.children):
             if not hasattr(child, "children"):
@@ -79,7 +90,7 @@ def transform(pattern):
     groups = [[pattern]]
     while groups:
         children = groups.pop(0)
-        parents = [Required, Optional, OptionsShortcut, Either, OneOrMore]
+        parents = [Required, Elective, OptionsShortcut, Either, OneOrMore]
         if any(t in map(type, children) for t in parents):
             child = [c for c in children if type(c) in parents][0]
             children.remove(child)
@@ -99,13 +110,13 @@ class LeafPattern(Pattern):
 
     """Leaf/terminal node of a pattern tree."""
 
-    def __init__(self, name, value=None):
+    def __init__(self, name: Optional[str], value: Optional[str] = None):
         self.name, self.value = name, value
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "%s(%r, %r)" % (self.__class__.__name__, self.name, self.value)
 
-    def flat(self, *types):
+    def flat(self, *types: Type[Pattern]) -> Union[Sequence[LeafPattern], bool]:
         return [self] if not types or type(self) in types else []
 
     def match(self, left, collected=None):
@@ -132,40 +143,42 @@ class BranchPattern(Pattern):
 
     """Branch/inner node of a pattern tree."""
 
-    def __init__(self, *children):
+    def __init__(self, *children: Pattern):
         self.children = list(children)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "%s(%s)" % (
             self.__class__.__name__,
             ", ".join(repr(a) for a in self.children),
         )
 
-    def flat(self, *types):
+    def flat(self, *types: Type[Pattern]) -> Sequence[Pattern]:
         if type(self) in types:
             return [self]
         return sum([child.flat(*types) for child in self.children], [])
 
 
 class Argument(LeafPattern):
-    def single_match(self, left):
+    def single_match(
+        self, left: Sequence[Pattern]
+    ) -> Tuple[Optional[int], Optional[Argument]]:
         for n, pattern in enumerate(left):
             if type(pattern) is Argument:
                 return n, Argument(self.name, pattern.value)
         return None, None
 
     @classmethod
-    def parse(class_, source):
+    def parse(cls, source: str) -> Argument:
         name = re.findall("(<\S*?>)", source)[0]
         value = re.findall("\[default: (.*)\]", source, flags=re.I)
-        return class_(name, value[0] if value else None)
+        return cls(name, value[0] if value else None)
 
 
 class Command(Argument):
-    def __init__(self, name, value=False):
+    def __init__(self, name: Optional[str], value: bool = False):
         self.name, self.value = name, value
 
-    def single_match(self, left):
+    def single_match(self, left) -> Tuple[Optional[int], Optional[Pattern]]:
         for n, pattern in enumerate(left):
             if type(pattern) is Argument:
                 if pattern.value == self.name:
@@ -182,7 +195,7 @@ class Option(LeafPattern):
         self.value = None if value is False and argcount else value
 
     @classmethod
-    def parse(class_, option_description):
+    def parse(cls, option_description: str) -> Option:
         short, long, argcount, value = None, None, 0, False
         options, _, description = option_description.strip().partition("  ")
         options = options.replace(",", " ").replace("=", " ")
@@ -196,9 +209,9 @@ class Option(LeafPattern):
         if argcount:
             matched = re.findall("\[default: (.*)\]", description, flags=re.I)
             value = matched[0] if matched else None
-        return class_(short, long, argcount, value)
+        return cls(short, long, argcount, value)
 
-    def single_match(self, left):
+    def single_match(self, left: Sequence[Pattern]) -> Tuple[None, None]:
         for n, pattern in enumerate(left):
             if self.name == pattern.name:
                 return n, pattern
@@ -220,16 +233,16 @@ class Option(LeafPattern):
 class Required(BranchPattern):
     def match(self, left, collected=None):
         collected = [] if collected is None else collected
-        l = left
-        c = collected
+        left_ = left
+        collected_ = collected
         for pattern in self.children:
-            matched, l, c = pattern.match(l, c)
+            matched, left_, collected_ = pattern.match(left_, collected_)
             if not matched:
                 return False, left, collected
-        return True, l, c
+        return True, left_, collected_
 
 
-class Optional(BranchPattern):
+class Elective(BranchPattern):
     def match(self, left, collected=None):
         collected = [] if collected is None else collected
         for pattern in self.children:
@@ -237,7 +250,7 @@ class Optional(BranchPattern):
         return True, left, collected
 
 
-class OptionsShortcut(Optional):
+class OptionsShortcut(Elective):
 
     """Marker/placeholder for [options] shortcut."""
 
@@ -246,20 +259,20 @@ class OneOrMore(BranchPattern):
     def match(self, left, collected=None):
         assert len(self.children) == 1
         collected = [] if collected is None else collected
-        l = left
+        left_ = left
         c = collected
         l_ = None
         matched = True
         times = 0
         while matched:
             # could it be that something didn't match but changed l or c?
-            matched, l, c = self.children[0].match(l, c)
+            matched, left_, c = self.children[0].match(left_, c)
             times += 1 if matched else 0
-            if l_ == l:
+            if l_ == left_:
                 break
-            l_ = l
+            l_ = left_
         if times >= 1:
-            return True, l, c
+            return True, left_, c
         return False, left, collected
 
 
@@ -277,24 +290,24 @@ class Either(BranchPattern):
 
 
 class Tokens(list):
-    def __init__(self, source, error=DocoptExit):
+    def __init__(self, source: Union[str, Sequence[str]], error=DocoptExit):
         self += source.split() if hasattr(source, "split") else source
         self.error = error
 
     @staticmethod
-    def from_pattern(source):
+    def from_pattern(source: str):
         source = re.sub(r"([\[\]\(\)\|]|\.\.\.)", r" \1 ", source)
         source = [s for s in re.split("\s+|(\S*<.*?>)", source) if s]
         return Tokens(source, error=DocoptLanguageError)
 
-    def move(self):
+    def move(self) -> Optional[str]:
         return self.pop(0) if len(self) else None
 
-    def current(self):
+    def current(self) -> Optional[str]:
         return self[0] if len(self) else None
 
 
-def parse_long(tokens, options):
+def parse_long(tokens: Tokens, options: Sequence[Option]) -> Sequence[Option]:
     """long ::= '--' chars [ ( ' ' | '=' ) chars ] ;"""
     long, eq, value = tokens.move().partition("=")
     assert long.startswith("--")
@@ -330,7 +343,7 @@ def parse_long(tokens, options):
     return [o]
 
 
-def parse_shorts(tokens, options):
+def parse_shorts(tokens: Tokens, options: Sequence[Option]) -> Sequence[Option]:
     """shorts ::= '-' ( chars )* [ [ ' ' ] chars ] ;"""
     token = tokens.move()
     assert token.startswith("-") and not token.startswith("--")
@@ -365,7 +378,7 @@ def parse_shorts(tokens, options):
     return parsed
 
 
-def parse_pattern(source, options):
+def parse_pattern(source: str, options: Sequence[Option]):
     tokens = Tokens.from_pattern(source)
     result = parse_expr(tokens, options)
     if tokens.current() is not None:
@@ -373,7 +386,7 @@ def parse_pattern(source, options):
     return Required(*result)
 
 
-def parse_expr(tokens, options):
+def parse_expr(tokens: Tokens, options: Sequence[Option]):
     """expr ::= seq ( '|' seq )* ;"""
     seq = parse_seq(tokens, options)
     if tokens.current() != "|":
@@ -386,7 +399,7 @@ def parse_expr(tokens, options):
     return [Either(*result)] if len(result) > 1 else result
 
 
-def parse_seq(tokens, options):
+def parse_seq(tokens: Tokens, options: Sequence[Option]):
     """seq ::= ( atom [ '...' ] )* ;"""
     result = []
     while tokens.current() not in [None, "]", ")", "|"]:
@@ -398,16 +411,19 @@ def parse_seq(tokens, options):
     return result
 
 
-def parse_atom(tokens, options):
+def parse_atom(tokens: Tokens, options: Sequence[Option]) -> Sequence[Pattern]:
     """atom ::= '(' expr ')' | '[' expr ']' | 'options'
     | long | shorts | argument | command ;
     """
     token = tokens.current()
     result = []
+    if token is None:
+        return result
+
     if token in "([":
         tokens.move()
-        matching, pattern = {"(": [")", Required], "[": ["]", Optional]}[token]
-        result = pattern(*parse_expr(tokens, options))
+        matching, pattern = {"(": [")", Required], "[": ["]", Elective]}[token]
+        result: Union[Required, Elective] = pattern(*parse_expr(tokens, options))
         if tokens.move() != matching:
             raise tokens.error("unmatched '%s'" % token)
         return [result]
@@ -424,7 +440,9 @@ def parse_atom(tokens, options):
         return [Command(tokens.move())]
 
 
-def parse_argv(tokens, options, options_first=False):
+def parse_argv(
+    tokens: Tokens, options: List[Option], options_first: bool = False
+) -> Sequence[LeafPattern]:
     """Parse command-line argument vector.
 
     If options_first:
@@ -433,22 +451,24 @@ def parse_argv(tokens, options, options_first=False):
         argv ::= [ long | shorts | argument ]* [ '--' [ argument ]* ] ;
 
     """
-    parsed = []
-    while tokens.current() is not None:
-        if tokens.current() == "--":
+    parsed: List[LeafPattern] = []
+    current = tokens.current()
+    while current is not None:
+        if current == "--":
             return parsed + [Argument(None, v) for v in tokens]
-        elif tokens.current().startswith("--"):
+        elif current.startswith("--"):
             parsed += parse_long(tokens, options)
-        elif tokens.current().startswith("-") and tokens.current() != "-":
+        elif current.startswith("-") and current != "-":
             parsed += parse_shorts(tokens, options)
         elif options_first:
             return parsed + [Argument(None, v) for v in tokens]
         else:
             parsed.append(Argument(None, tokens.move()))
+        current = tokens.current()
     return parsed
 
 
-def parse_defaults(doc):
+def parse_defaults(doc: str) -> Sequence[Option]:
     defaults = []
     for s in parse_section("options:", doc):
         # FIXME corner case "bla: options: --foo"
@@ -460,7 +480,7 @@ def parse_defaults(doc):
     return defaults
 
 
-def parse_section(name, source):
+def parse_section(name: str, source: str) -> Sequence[str]:
     pattern = re.compile(
         "^([^\n]*" + name + "[^\n]*\n?(?:[ \t].*?(?:\n|$))*)",
         re.IGNORECASE | re.MULTILINE,
@@ -468,13 +488,15 @@ def parse_section(name, source):
     return [s.strip() for s in pattern.findall(source)]
 
 
-def formal_usage(section):
+def formal_usage(section: str) -> str:
     _, _, section = section.partition(":")  # drop "usage:"
     pu = section.split()
     return "( " + " ".join(") | (" if s == pu[0] else s for s in pu[1:]) + " )"
 
 
-def extras(help, version, options, doc):
+def extras(
+    help: bool, version: Optional[str], options: Sequence[LeafPattern], doc: str
+) -> None:
     if help and any((o.name in ("-h", "--help")) and o.value for o in options):
         print(doc.strip("\n"))
         sys.exit()
@@ -483,12 +505,18 @@ def extras(help, version, options, doc):
         sys.exit()
 
 
-class Dict(dict):
-    def __repr__(self):
+class DocoptDict(Dict[str, Union[bool, str]]):
+    def __repr__(self) -> str:
         return "{%s}" % ",\n ".join("%r: %r" % i for i in sorted(self.items()))
 
 
-def docopt(doc, argv=None, help=True, version=None, options_first=False):
+def docopt(
+    doc: str,
+    argv: Optional[Sequence[str]] = None,
+    help: bool = True,
+    version: Optional[str] = None,
+    options_first: bool = False,
+) -> DocoptDict:
     """Parse `argv` based on command-line interface described in `doc`.
 
     `docopt` creates your command-line interface based on its
@@ -551,7 +579,7 @@ def docopt(doc, argv=None, help=True, version=None, options_first=False):
       at https://github.com/docopt/docopt#readme
 
     """
-    argv = sys.argv[1:] if argv is None else argv
+    argv_: Sequence[str] = sys.argv[1:] if argv is None else argv
 
     usage_sections = parse_section("usage:", doc)
     if len(usage_sections) == 0:
@@ -567,7 +595,7 @@ def docopt(doc, argv=None, help=True, version=None, options_first=False):
     #    same_name = [d for d in arguments if d.name == a.name]
     #    if same_name:
     #        a.value = same_name[0].value
-    argv = parse_argv(Tokens(argv), list(options), options_first)
+    args = parse_argv(Tokens(argv_), list(options), options_first)
     pattern_options = set(pattern.flat(Option))
     for options_shortcut in pattern.flat(OptionsShortcut):
         doc_options = parse_defaults(doc)
@@ -575,8 +603,8 @@ def docopt(doc, argv=None, help=True, version=None, options_first=False):
         # if any_options:
         #    options_shortcut.children += [Option(o.short, o.long, o.argcount)
         #                    for o in argv if type(o) is Option]
-    extras(help, version, argv, doc)
-    matched, left, collected = pattern.fix().match(argv)
+    extras(help, version, args, doc)
+    matched, left, collected = pattern.fix().match(argv_)
     if matched and left == []:  # better error message if left?
-        return Dict((a.name, a.value) for a in (pattern.flat() + collected))
+        return DocoptDict((a.name, a.value) for a in (pattern.flat() + collected))
     raise DocoptExit()
