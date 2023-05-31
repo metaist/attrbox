@@ -60,6 +60,7 @@ classifiers = [
 [tool.pdm.scripts]
 black = { shell = "black ." }
 ruff = { shell = "ruff ." }
+cspell = { shell = "cspell --gitignore '**/*.{py,txt,md,markdown}'" }
 
 mypy = { shell = """\
   mypy \
@@ -90,6 +91,6 @@ docs = { shell = """\
   mv docs/**/* docs/
 """ }
 
-lint = { composite = ["black", "ruff", "mypy"] }
+lint = { composite = ["black", "ruff", "cspell", "mypy"] }
 dev = { composite = ["lint", "test"] }
 all = { composite = ["lint", "test", "docs"] }
