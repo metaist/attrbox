@@ -95,7 +95,7 @@ def expand(value: str, store: Optional[Mapping[str, str]] = None) -> str:
     def _repl(m: Match[str]) -> str:
         value = m.group(0)
         name = m.group(1)
-        if len(name) > 2 and name[0] == "{" and name[-1] == "}":
+        if name.startswith("{") and name.endswith("}"):
             name = name[1:-1]
 
         if name in values:
@@ -183,17 +183,15 @@ def loads(
         key, value = line.split("=", 1)
 
         key = key.strip()
-        if len(key) >= 2 and key[0] == key[-1] == "'":
+        if len(key) >= 2 and key.startswith("'") and key.endswith("'"):
             key = key[1:-1]  # unquote key
 
         value = expand(value, result)  # expand with current vars
         value = expand(value)  # expand env vars
         value = value.strip()
-        if (
-            len(value) >= 2
-            and value[0] in "\"'"
-            and value[-1] in "\"'"
-            and value[0] == value[-1]
+        if len(value) >= 2 and (
+            (value.startswith("'") and value.endswith("'"))
+            or (value.startswith('"') and value.endswith('"'))
         ):
             value = value[1:-1]  # unquote value
 
