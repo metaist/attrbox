@@ -3,6 +3,7 @@
 """Standard JSON responses."""
 
 # native
+from __future__ import annotations
 from typing import Any, Dict, Optional
 
 # pkg
@@ -40,7 +41,7 @@ class JSend(AttrDict):
         self.update(ok=True, status=STATUS_SUCCESS, data=None)
         super().__init__(*args, **kwargs)
 
-    def fail(self, message: Msg = None) -> "JSend":
+    def fail(self, message: Msg = None) -> JSend:
         """Indicate a controlled failure.
 
         Args:
@@ -64,7 +65,7 @@ class JSend(AttrDict):
         self.update(ok=False, status=STATUS_FAIL, message=message)
         return self
 
-    def error(self, message: Msg = None, code: Optional[Any] = None) -> "JSend":
+    def error(self, message: Msg = None, code: Optional[Any] = None) -> JSend:
         """Indicate an uncontrolled error.
 
         Args:
@@ -92,7 +93,7 @@ class JSend(AttrDict):
         self.update(ok=False, status=STATUS_ERROR, message=message, code=code)
         return self
 
-    def success(self, data: Optional[Any] = None) -> "JSend":
+    def success(self, data: Optional[Any] = None) -> JSend:
         """Indicate a successful response.
 
         Args:
