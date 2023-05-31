@@ -39,6 +39,9 @@ AttrDictKey = Union[str, Sequence[Union[str, int, slice]]]
 GenericDict = Dict[Any, Any]
 """Generic `dict` any kind of key to any kind of value."""
 
+NOT_FOUND = object()
+"""Sentinel for a missing object."""
+
 
 def dict_merge(
     dest: GenericDict,
@@ -109,6 +112,34 @@ class AttrDict(Dict[str, Any]):
             True
         """
         return self.__class__(super().copy())
+
+    def __contains__(self, name: Any) -> bool:
+        """Return `True` if `name` is a key.
+
+        Args:
+            name (Any): typically a `AttrDictKey`. If it's a string,
+                the check proceeds as usual. If it's a `Sequence`, the
+                checks are performed using `.get()`.
+
+        Returns:
+            bool: `True` if the `name` is a valid key, `False` otherwise.
+
+        Examples:
+            Normal checking works as expected:
+            >>> items = AttrDict(a=1, b=2)
+            >>> 'a' in items
+            True
+            >>> 'x' in items
+            False
+
+            Nested checks are also possible:
+            >>> items = AttrDict(a=[{"b": 2}, {"b": 3}])
+            >>> ['a', 0, 'b'] in items
+            True
+            >>> ['a', 1, 'x'] in items
+            False
+        """
+        return self.get(name, NOT_FOUND) is not NOT_FOUND
 
     def __getattr__(self, name: str) -> Optional[Any]:
         """Return the value of the attribute or `None`.
