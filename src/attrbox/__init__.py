@@ -13,6 +13,7 @@ from .attrlist import AttrList
 from .jsend import JSend
 
 from .env import load_env
+from .config import load_config
 from .config import parse_docopt
 
 

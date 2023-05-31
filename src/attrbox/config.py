@@ -32,7 +32,7 @@ PYTHON_KEYWORDS: List[
     assert     del        global     not        with
     async      elif       if         or         yield
 """.lower().split()
-"""[Official Python keywords](https://docs.python.org/3/reference/lexical_analysis.html#keywords)."""
+"""[All Python keywords](https://docs.python.org/3/reference/lexical_analysis.html#keywords)."""
 
 LoaderFunc = Callable[[str], Any]
 """Function signature to load configuration from a string."""
@@ -52,7 +52,6 @@ def set_loader(suffix: str, loader: LoaderFunc) -> None:
         loader (LoaderFunc): function that takes a string and returns
             an object, typically a `Dict[str, Any]` of key/value pairs.
     """
-    global LOADERS
     LOADERS[suffix] = loader
 
 
@@ -103,12 +102,12 @@ def load_config(
     data = loader(path.read_text())
     if load_imports and "imports" in data:
         imports = [(path.parent / p).resolve() for p in data.pop("imports")]
-        for p in imports:
-            if p in done:
+        for file in imports:
+            if file in done:
                 continue
 
             result <<= load_config(
-                p,
+                file,
                 load_imports=True,
                 loaders=loaders,
                 done=done + imports,
@@ -261,7 +260,7 @@ def parse_docopt(
     if read_config and "config" in args:
         result <<= load_config(Path(args["config"]))
 
-    for k, v in args.items():
-        k = optvar(k, shadow_builtins=True)
-        result[k.split(".")] = v
+    for key, val in args.items():
+        key = optvar(key, shadow_builtins=True)
+        result[key.split(".")] = val
     return result

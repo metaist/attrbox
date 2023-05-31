@@ -51,7 +51,7 @@ _RE_EXPAND = re.compile(r"\$(\w+|\{[^}]*\})", re.ASCII)
 """Regex for finding variable expansions."""
 
 
-class SupportsRead(Protocol):
+class SupportsRead(Protocol):  # pylint: disable=too-few-public-methods
     """Protocol for a class that implements a `.read()` method."""
 
     def read(self) -> str:
@@ -108,9 +108,9 @@ def expand(
     if dotted_keys and not isinstance(values, AttrDict):
         values = AttrDict(values)
 
-    def _repl(m: Match[str]) -> str:
-        value = m.group(0)
-        name = m.group(1)
+    def _repl(match: Match[str]) -> str:
+        value = match.group(0)
+        name = match.group(1)
         if name.startswith("{") and name.endswith("}"):
             name = name[1:-1]
 
@@ -298,4 +298,4 @@ def load_env(path: Optional[PathStr] = None) -> Dict[str, str]:
     path = find_env(path)
     if not path or not path.exists():
         raise FileNotFoundError("Cannot find .env file to load.")
-    return loads(path.read_text(), update_env=True, dotted_keys=True)
+    return loads(path.read_text(encoding="utf-8"), update_env=True, dotted_keys=True)
