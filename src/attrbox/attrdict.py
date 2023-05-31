@@ -417,6 +417,7 @@ class AttrDict(Dict[str, Any]):
 
 
 __pdoc__ = {
+    "AttrDict.__contains__": True,
     "AttrDict.__getattr__": True,
     "AttrDict.__setattr__": True,
     "AttrDict.__delattr__": True,

@@ -5,8 +5,10 @@
 """
 
 # pkg
-from .attrdict import AttrDict, __pdoc__ as doc1
-from .attrlist import AttrList, __pdoc__ as doc2
+from .attrdict import __pdoc__ as doc1
+from .attrdict import AttrDict
+from .attrlist import __pdoc__ as doc2
+from .attrlist import AttrList
 
 from .jsend import JSend
 
