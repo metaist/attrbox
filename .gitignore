@@ -3,7 +3,7 @@
 # general
 _ignore*
 _seed.py
-.venv
+.venv*
 *.db
 
 # editors
@@ -11,14 +11,16 @@ _seed.py
 .vim
 .vscode
 *.code-workspace
+.DS_Store
 
 # run
 __pycache__
 
 # test
-.coverage
-.pytest_cache
+.coverage*
 .mypy_cache
+.pytest_cache
+.ruff_cache
 /htmlcov
 
 # build

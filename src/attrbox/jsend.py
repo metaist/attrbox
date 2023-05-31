@@ -19,12 +19,12 @@ Msg = Optional[str]
 class JSend(AttrDict):
     """Service response object.
 
-    This object loosely conforms to the JSend specification:
-    <https://labs.omniti.com/labs/jsend>
+    This object loosely conforms to the
+    [JSend specification](https://labs.omniti.com/labs/jsend).
     """
 
     def __init__(self, *args: Any, **kwargs: Dict[str, Any]):
-        """Construct a response.
+        """Construct a JSend object.
 
         Examples:
             >>> result = JSend()
@@ -47,7 +47,7 @@ class JSend(AttrDict):
             message (str): human-readable explanation of the failure
 
         Returns:
-            (JSend): self for chaining
+            JSend: self for chaining
 
         Examples:
             >>> result = JSend()
@@ -69,10 +69,10 @@ class JSend(AttrDict):
 
         Args:
             message (str): human-readable explanation of the error
-            code (any): technical indication of the error
+            code (Any, optional): technical indication of the error
 
         Returns:
-            (JSend): self for chaining
+            JSend: self for chaining
 
         Examples:
             >>> result = JSend()
@@ -92,14 +92,14 @@ class JSend(AttrDict):
         self.update(ok=False, status=STATUS_ERROR, message=message, code=code)
         return self
 
-    def success(self, data: Any = None) -> "JSend":
+    def success(self, data: Optional[Any] = None) -> "JSend":
         """Indicate a successful response.
 
         Args:
-            data (any): response payload
+            data (Any, optional): response payload
 
         Returns:
-            (JSend): self for chaining
+            JSend: self for chaining
 
         Examples:
             >>> data = "Works"

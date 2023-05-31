@@ -10,7 +10,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        python-version: ["3.8", "3.9", "3.10", "3.11"]
 
     steps:
       - name: Set up Python ${{ matrix.python-version }}
@@ -35,31 +35,24 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip setuptools wheel
-          pip install black flake8 mypy pdoc3 pylint pytest pytest-cov
+          pip install -e ".[dev]"
 
-      - name: Format with black
+      - name: Format (black)
         run: |
-          black .
+          pdm run black
 
-      - name: Lint with pylint
+      - name: Lint (ruff)
         run: |
-          time pylint -j 0 --rcfile=.pylintrc src test *.py
+          pdm run ruff
 
-      - name: Lint with flake8
+      - name: Type check (mypy)
         run: |
-          # stop the build if there are Python syntax errors or undefined names
-          flake8 --exclude .git,.venv,build,dist,__pycache__ --count --select=E9,F63,F7,F82 --show-source --statistics
-          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-          time flake8 --exclude .git,.venv,build,dist,__pycache__ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+          pdm run mypy
 
-      - name: Static type check with mypy
+      - name: Run tests
         run: |
-          mypy --verbose --strict --install-types --non-interactive src/attrbox
-
-      - name: Test with pytest
-        run: |
-          PYTHONPATH=src pytest --doctest-modules --cov=attrbox --cov-branch
+          pdm run test
 
       - name: Build docs
         run: |
-          pdoc --html --output-dir docs --force src/attrbox
+          pdm run docs

@@ -1,3 +1,96 @@
 [build-system]
 requires = ["setuptools >= 40.8.0", "wheel"]
 build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.dynamic]
+version = { attr = "attrbox.__version__" }
+
+[project.urls]
+Homepage = "https://github.com/metaist/attrbox"
+Documentation = "https://metaist.github.io/attrbox/"
+Repository = "https://github.com/metaist/attrbox.git"
+Changelog = "https://github.com/metaist/attrbox/blob/main/CHANGELOG.md"
+
+[project]
+name = "attrbox"
+description = "Attribute-based data structures."
+keywords = ["attr", "attributes", "dict", "list"]
+
+dynamic = ["version"]
+requires-python = ">=3.8"
+dependencies = [
+  "docopt==0.6.2",  # TODO: vendorize
+  "tomli >= 1.1.0", # TODO 2026-10-04 [3.10 EOL]: remove
+]
+optional-dependencies = { dev = [
+  # dev dependencies are latest
+  "black",
+  "coverage",
+  "mypy",
+  "pdm",
+  "pdoc3",
+  "pytest-cov",
+  "pytest",
+  "ruff",
+
+  # for tests
+  "toml",
+] }
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Metaist LLC", email = "metaist@metaist.com" }]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Natural Language :: English",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+]
+
+[tool.pdm.scripts]
+black = { shell = "black ." }
+ruff = { shell = "ruff ." }
+cspell = { shell = "cspell --gitignore '**/*.{py,txt,md,markdown}'" }
+
+mypy = { shell = """\
+  mypy \
+    --strict \
+    --install-types \
+    --non-interactive \
+    src test
+""" }
+
+test = { shell = """\
+  PYTHONPATH=src \
+  coverage run --branch --source=src -m \
+    pytest \
+      --doctest-modules \
+      --doctest-ignore-import-errors \
+      src test; \
+  coverage report -m
+""" }
+
+docs = { shell = """\
+  rm -rf docs; \
+  pdoc \
+    --html \
+    --output-dir docs \
+    --config sort_identifiers=False \
+    --config show_inherited_members=True \
+    --force src/$(basename $(pwd));
+  mv docs/**/* docs/
+""" }
+
+lint = { composite = ["black", "ruff", "cspell", "mypy"] }
+dev = { composite = ["lint", "test"] }
+all = { composite = ["lint", "test", "docs"] }

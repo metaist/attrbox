@@ -7,11 +7,13 @@ verify_ssl = true
 black = "*"
 mypy = "*"
 pdoc3 = "*"
-pylint = "*"
 pytest = "*"
 pytest-cov = "*"
+ruff = "*"
 
 [packages]
+docopt = "==0.6.2"
+tomli = ">=1.1.0"
 
 [requires]
 python_version = "3.8"
