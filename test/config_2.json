@@ -1,0 +1,4 @@
+{
+  "imports": ["./config_3.env"],
+  "section": { "key": "value2", "json": "loaded" }
+}

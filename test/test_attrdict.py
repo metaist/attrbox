@@ -9,7 +9,7 @@ from typing import Dict
 import json
 
 # lib
-import toml  # TODO 2026-10-04 [3.10 EOL]: switch to tomllib
+import tomli as tomllib  # TODO 2026-10-04 [3.10 EOL]: switch to native tomllib
 
 # pkg
 from attrbox import AttrDict
@@ -32,7 +32,7 @@ def test_lshift_toml() -> None:
     """Expect to load TOML document."""
     # See: https://github.com/toml-lang/toml
     path = HERE / "example-toml.toml"
-    config = AttrDict() << toml.load(path.open(encoding="utf-8"))
+    config = AttrDict() << tomllib.loads(path.read_text())
 
     want = "10.0.0.1"
     have = config.get("servers.alpha.ip".split("."))

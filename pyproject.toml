@@ -21,7 +21,10 @@ keywords = ["attr", "attributes", "dict", "list"]
 
 dynamic = ["version"]
 requires-python = ">=3.8"
-dependencies = []
+dependencies = [
+  "docopt==0.6.2",  # TODO: vendorize
+  "tomli >= 1.1.0", # TODO 2026-10-04 [3.10 EOL]: remove
+]
 optional-dependencies = { dev = [
   # dev dependencies are latest
   "black",

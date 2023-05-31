@@ -13,6 +13,7 @@ from .jsend import JSend
 from .env import load_env
 from .config import parse_docopt
 
+
 __version__ = "0.1.1"
 __all__ = (
     "__version__",
@@ -20,6 +21,8 @@ __all__ = (
     "AttrList",
     "JSend",
     "load_env",
+    "load_config",
+    "parse_docopt",
 )
 
 # Update pdoc at all levels.

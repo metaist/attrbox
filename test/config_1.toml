@@ -1,0 +1,5 @@
+imports = ["./config_2.json", "./config_3.env"]
+
+[section]
+key = "value1"
+toml = "loaded"
