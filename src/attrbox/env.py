@@ -58,7 +58,12 @@ class SupportsRead(Protocol):
         """Read the contents of the file-like object."""
 
 
-def expand(value: str, store: Optional[Mapping[str, str]] = None) -> str:
+def expand(
+    value: str,
+    store: Optional[Mapping[str, str]] = None,
+    *,
+    dotted_keys: bool = False,
+) -> str:
     """Expand variables of the form `$var` and `${var}`.
 
     A simplified form of `os.path.expandvars`.
@@ -68,6 +73,10 @@ def expand(value: str, store: Optional[Mapping[str, str]] = None) -> str:
 
         store (Mapping[str, str], optional): valid substitutions.
             If `None`, `os.environ` is used. Defaults to `None`.
+
+        dotted_keys (bool): if `True` allow `${dotted.name}` to map
+            to nested values `{"dotted": {"name": "value"}}`.
+            Defaults to `False`.
 
     Returns:
         str: expanded value. Unknown variables are left unchanged.
@@ -86,17 +95,27 @@ def expand(value: str, store: Optional[Mapping[str, str]] = None) -> str:
         Values are passed to `str`:
         >>> expand("$a", {'a': 5})
         '5'
+
+        Dotted names are optionally possible:
+        >>> expand("${a.b}", {"a": {"b": "works"}}, dotted_keys=True)
+        'works'
     """
     if "$" not in value:
         return value
 
     values = store or ENV
 
+    if dotted_keys and not isinstance(values, AttrDict):
+        values = AttrDict(values)
+
     def _repl(m: Match[str]) -> str:
         value = m.group(0)
         name = m.group(1)
         if name.startswith("{") and name.endswith("}"):
             name = name[1:-1]
+
+        if dotted_keys:
+            name = name.split(".")
 
         if name in values:
             value = str(values[name])
@@ -186,8 +205,11 @@ def loads(
         if len(key) >= 2 and key.startswith("'") and key.endswith("'"):
             key = key[1:-1]  # unquote key
 
-        value = expand(value, result)  # expand with current vars
-        value = expand(value)  # expand env vars
+        # We expand the value with the current values which may have
+        # nested structure and then with the environment values (which do not).
+        value = expand(value, result, dotted_keys=dotted_keys)
+        value = expand(value)
+
         value = value.strip()
         if len(value) >= 2 and (
             (value.startswith("'") and value.endswith("'"))
