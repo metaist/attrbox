@@ -10,12 +10,16 @@ from .attrlist import AttrList, __pdoc__ as doc2
 
 from .jsend import JSend
 
+from .env import load_env
+from .config import parse_docopt
+
 __version__ = "0.1.1"
 __all__ = (
     "__version__",
     "AttrDict",
     "AttrList",
     "JSend",
+    "load_env",
 )
 
 # Update pdoc at all levels.
