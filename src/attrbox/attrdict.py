@@ -6,84 +6,22 @@ from typing import Any
 from typing import Dict
 from typing import Mapping
 from typing import Optional
-from typing import Protocol
-from typing import runtime_checkable
-from typing import Sequence
-from typing import Type
 from typing import TypeVar
-from typing import Union
+
+# pkg
+from .fn import AnyIndex
+from .fn import dict_merge
+from .fn import get_path
+from .fn import set_path
 
 __all__ = ["AttrDict"]
-
-
-@runtime_checkable
-class SupportsItem(Protocol):  # pragma: no cover
-    """Protocol for `k in x`, `x[k]`, and `x[k] = v`."""
-
-    def __contains__(self, key: Any) -> bool:
-        """Return `True` if `key` exists, `False` otherwise."""
-
-    def __getitem__(self, key: Any) -> Any:
-        """Return value of `key`."""
-
-    def __setitem__(self, key: Any, value: Any) -> Optional[Any]:
-        """Set `key` to `value`."""
 
 
 Self = TypeVar("Self", bound="AttrDict")
 """`AttrDict` instance."""
 
-AttrDictKey = Union[str, Sequence[Union[str, int, slice]]]
-"""`AttrDict` key for normal and deeper indexing."""
-
-GenericDict = Dict[Any, Any]
-"""Generic `dict` any kind of key to any kind of value."""
-
 NOT_FOUND = object()
 """Sentinel for a missing object."""
-
-
-def dict_merge(
-    dest: GenericDict,
-    *sources: Mapping[Any, Any],  # read-only
-    default: Type[GenericDict] = dict,
-) -> GenericDict:
-    """Generic recursive merge for dict-like objects.
-
-    NOTE: Every nested `dict` will pass through `default`.
-
-    Args:
-        dest (GenericDict): dict into which `sources` are merged
-        *sources (Mapping[Any, Any]): dicts to merge (read-only)
-        default (Type[GenericDict], optional): constructor for default `dict`.
-            Defaults to `dict`.
-
-    Returns:
-        GenericDict: `dest` now with merged values
-
-    Examples:
-        >>> a = {"b": {"c": 1}, "d": 2}
-        >>> b = {"b": {"c": 2, "e": 3}, "d": 2}
-        >>> c = {"d": {"e": 5}}
-        >>> dict_merge(a, b, c)
-        {'b': {'c': 2, 'e': 3}, 'd': {'e': 5}}
-    """
-    for src in sources:
-        for key, value in src.items():
-            if not isinstance(value, Mapping):
-                # overwrite with simple value
-                dest[key] = value
-                continue
-
-            value = default(value)
-            prev = dest.get(key, {})
-            if isinstance(prev, dict):  # extendable
-                if not isinstance(prev, default):
-                    prev = default(prev)
-                dest[key] = dict_merge(prev, value, default=default)
-            else:  # cannot extend
-                dest[key] = value
-    return dest
 
 
 class AttrDict(Dict[str, Any]):
@@ -117,7 +55,7 @@ class AttrDict(Dict[str, Any]):
         """Return `True` if `name` is a key.
 
         Args:
-            name (Any): typically a `AttrDictKey`. If it's a string,
+            name (Any): typically a `AnyIndex`. If it's a string,
                 the check proceeds as usual. If it's a `Sequence`, the
                 checks are performed using `.get()`.
 
@@ -239,11 +177,11 @@ class AttrDict(Dict[str, Any]):
         except AttributeError:  # use key/value
             del self[name]
 
-    def __getitem__(self, name: AttrDictKey) -> Optional[Any]:
+    def __getitem__(self, name: AnyIndex) -> Optional[Any]:
         """Return the value of the key.
 
         Args:
-            name (AttrDictKey): key name or Sequence of the path to a key
+            name (AnyIndex): key name or Sequence of the path to a key
 
         Returns:
             Any: value of the key or `None` if it cannot be found
@@ -257,11 +195,11 @@ class AttrDict(Dict[str, Any]):
         """
         return self.get(name)
 
-    def __setitem__(self, name: AttrDictKey, value: Any) -> None:
+    def __setitem__(self, name: AnyIndex, value: Any) -> None:
         """Set the value of a key.
 
         Args:
-            name (str): key name
+            name (BoxIndex): key name
             value (Any): key value
 
         Examples:
@@ -299,11 +237,11 @@ class AttrDict(Dict[str, Any]):
         except KeyError:
             pass
 
-    def get(self, name: AttrDictKey, default: Optional[Any] = None, /) -> Optional[Any]:
-        """Return the value of the key or `default` if it cannot be found.
+    def get(self, path: AnyIndex, default: Optional[Any] = None, /) -> Optional[Any]:
+        """Return the value at `path` or `default` if it cannot be found.
 
         Args:
-            name (AttrDictKey): key name or Sequence path to the key
+            path (AnyIndex): path to the value
             default (Any, optional): value to return if `name` is not found.
                 Defaults to `None`.
 
@@ -332,26 +270,15 @@ class AttrDict(Dict[str, Any]):
             >>> items.get(['d', 'e']) is None # int is not indexable
             True
         """
-        if isinstance(name, str):
-            return super().get(name, default)
+        if isinstance(path, str):
+            return super().get(path, default)
+        return get_path(self, path, default)
 
-        src: SupportsItem = self
-        result: Any = default
-        try:
-            for step in name:
-                result = src[step]  # take step
-                if isinstance(result, SupportsItem):
-                    src = result  # preserve context
-        except (KeyError, IndexError, TypeError):
-            # key doesn't exist, index is unreachable, or item is not indexable
-            result = default
-        return result
-
-    def set(self: Self, name: AttrDictKey, value: Optional[Any] = None, /) -> Self:
-        """Set key with `name` to `value`.
+    def set(self: Self, path: AnyIndex, value: Optional[Any] = None, /) -> Self:
+        """Set key at `path` to `value`.
 
         Args:
-            name (AttrDictKey): key name or `Sequence` to the key
+            path (AnyIndex): path to the key to set.
             value (Any, optional): value to set. Defaults to `None`.
 
         Returns:
@@ -374,23 +301,14 @@ class AttrDict(Dict[str, Any]):
             >>> items.set((), 20)
             {'a': 1, 'b': {'c': {'d': 10}}}
         """
-        if isinstance(name, str):
-            super().__setitem__(name, value)
+        if isinstance(path, str):
+            super().__setitem__(path, value)
             return self
 
-        if not name:  # empty sequence
-            return self
-
-        cls = self.__class__
-        dest: SupportsItem = self
-        for step in name[:-1]:
-            if step not in dest or not isinstance(dest[step], Mapping):
-                dest[step] = cls()
-            dest = dest[step]
-        dest[name[-1]] = value
+        set_path(self, path, value, self.__class__)
         return self
 
-    def __lshift__(self, other: Mapping[str, Any]) -> AttrDict:
+    def __lshift__(self: Self, other: Mapping[str, Any]) -> Self:
         """Merge `other` into `self`.
 
         NOTE: Any nested dictionaries will be converted to `AttrDict` objects.
@@ -422,6 +340,7 @@ __pdoc__ = {
     "AttrDict.__setattr__": True,
     "AttrDict.__delattr__": True,
     "AttrDict.__getitem__": True,
+    "AttrDict.__setitem__": True,
     "AttrDict.__delitem__": True,
     "AttrDict.__lshift__": True,
 }
