@@ -1,0 +1,581 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>attrbox.fn API documentation</title>
+<meta name="description" content="Generally useful functions." />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>attrbox.fn</code></h1>
+</header>
+<section id="section-intro">
+<p>Generally useful functions.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;Generally useful functions.&#34;&#34;&#34;
+
+# native
+from typing import Any
+from typing import cast
+from typing import Dict
+from typing import List
+from typing import Mapping
+from typing import Optional
+from typing import Protocol
+from typing import runtime_checkable
+from typing import Sequence
+from typing import Type
+from typing import Union
+
+AnyList = List[Any]
+&#34;&#34;&#34;Generic `list`.&#34;&#34;&#34;
+
+AnyDict = Dict[Any, Any]
+&#34;&#34;&#34;Generic `dict`.&#34;&#34;&#34;
+
+OnlyReadDict = Mapping[Any, Any]
+&#34;&#34;&#34;`dict` that will only be read.&#34;&#34;&#34;
+
+AnyListDict = Union[AnyList, AnyDict]
+&#34;&#34;&#34;Generic `list` or `dict`.&#34;&#34;&#34;
+
+AnyIndex = Union[str, int, Sequence[Union[str, int]]]
+&#34;&#34;&#34;Index into a `list` or `dict`.&#34;&#34;&#34;
+
+
+@runtime_checkable
+class SupportsItem(Protocol):  # pragma: no cover
+    &#34;&#34;&#34;Protocol for `k in x`, `x[k]`, and `x[k] = v`.&#34;&#34;&#34;
+
+    def __contains__(self, key: Any) -&gt; bool:
+        &#34;&#34;&#34;Return `True` if `key` exists, `False` otherwise.&#34;&#34;&#34;
+
+    def __getitem__(self, key: Any) -&gt; Any:
+        &#34;&#34;&#34;Return value of `key`.&#34;&#34;&#34;
+
+    def __setitem__(self, key: Any, value: Any) -&gt; Optional[Any]:
+        &#34;&#34;&#34;Set `key` to `value`.&#34;&#34;&#34;
+
+
+def get_path(src: SupportsItem, path: AnyIndex, default: Optional[Any] = None) -&gt; Any:
+    &#34;&#34;&#34;Get the value indicated by `path` or return `default` if it is not found.
+
+    Args:
+        src (SupportsItem): typically a `list` or a `dict`
+        path (AnyIndex): path to the value
+        default (Any, optional): value to return if `path` is not found.
+            Defaults to `None`.
+
+    Returns:
+        Any: path value or `default` if it is not found.
+
+    Examples:
+        &gt;&gt;&gt; get_path({&#39;a&#39;: 1}, &#39;a&#39;)
+        1
+        &gt;&gt;&gt; get_path({&#39;a&#39;: [1, {&#39;b&#39;: 2}]}, [&#39;a&#39;, 1, &#39;b&#39;])
+        2
+    &#34;&#34;&#34;
+    if isinstance(path, str) or not isinstance(path, Sequence):
+        path = [path]
+
+    result: Any = default
+    try:
+        for key in path:
+            result = src[key]  # take step
+            if isinstance(result, SupportsItem):
+                src = result  # preserve context
+    except (KeyError, IndexError, TypeError):
+        # key doesn&#39;t exist, index is unreachable, or item is not indexable
+        result = default
+    return result
+
+
+def set_path(
+    dest: AnyListDict,
+    path: AnyIndex,
+    value: Any,
+    cls_dict: Type[AnyDict] = dict,
+    cls_list: Type[AnyList] = list,
+) -&gt; AnyListDict:
+    &#34;&#34;&#34;Set a deeply nested value.
+
+    Args:
+        dest (Box): a `list` or `dict`
+
+        path (BoxIndex): index or `Sequence` into `dest`
+
+        value (Any): the value to set
+
+        cls_dict (Type[dict], optional): Constructor for `Mapping` objects.
+            Defaults to `dict`.
+
+        cls_list (Type[list], optional): Constructor for `List` objects.
+            Defaults to `list`.
+
+    Returns:
+        Box: `dest` modified according to the `path`. New `dict` and `list`
+            objects will be created if they do not exist.
+
+    Examples:
+        &gt;&gt;&gt; item = {&#39;a&#39;: [{&#39;b&#39;: {&#39;c&#39;: 3}}]}
+        &gt;&gt;&gt; set_path(item, [&#39;a&#39;, 0, &#39;b&#39;, &#39;c&#39;], 4)
+        {&#39;a&#39;: [{&#39;b&#39;: {&#39;c&#39;: 4}}]}
+        &gt;&gt;&gt; set_path(item, [&#39;a&#39;, 1, &#39;d&#39;], 5)
+        {&#39;a&#39;: [{&#39;b&#39;: {&#39;c&#39;: 4}}, {&#39;d&#39;: 5}]}
+    &#34;&#34;&#34;
+    if isinstance(path, str) or not isinstance(path, Sequence):
+        path = [path]
+
+    last = len(path) - 1
+    nested = dest
+    for index, key in enumerate(path):
+        if isinstance(nested, Mapping) and key not in nested:
+            nested[key] = None
+
+        if isinstance(nested, List):
+            if isinstance(key, int):
+                if key &gt;= len(nested):
+                    nested.extend([None] * (key + 1 - len(nested)))
+            else:  # trying to index into a list with a str
+                nested.append(cls_dict([(key, None)]))
+                nested = cast(AnyDict, nested[-1])  # switch to dict context
+        # nested[key] exists for dict[str | int] and list[int | str]
+
+        # NOTE: `mypy` can&#39;t be sure that we aren&#39;t trying to index into
+        # a `list` with a `str` down below. But we handled this case, so
+        # to avoid much duplication, we just call it an `int` which works
+        # for `list` and `dict`.
+        key = cast(int, key)
+
+        if index == last:
+            nested[key] = value
+            break  # done
+
+        curr_val = nested[key]
+        next_key = path[index + 1]
+        if isinstance(next_key, (int, slice)) and not isinstance(curr_val, List):
+            nested[key] = cls_list()
+        elif isinstance(next_key, str) and not isinstance(curr_val, Mapping):
+            nested[key] = cls_dict()
+
+        nested = nested[key]  # move to next step
+    return dest
+
+
+def dict_merge(
+    dest: AnyDict,
+    *sources: OnlyReadDict,
+    cls_dict: Type[AnyDict] = dict,
+) -&gt; AnyDict:
+    &#34;&#34;&#34;Generic recursive merge for dict-like objects.
+
+    NOTE: Every nested `dict` will pass through `cls_dict`.
+
+    Args:
+        dest (AnyDict): dict into which `sources` are merged
+
+        *sources (OnlyReadDict): dicts to merge
+
+        cls_dict (Type[AnyDict], optional): constructor for default `dict`.
+            Defaults to `dict`.
+
+    Returns:
+        AnyDict: `dest` now with merged values
+
+    Examples:
+        &gt;&gt;&gt; a = {&#34;b&#34;: {&#34;c&#34;: 1}, &#34;d&#34;: 2}
+        &gt;&gt;&gt; b = {&#34;b&#34;: {&#34;c&#34;: 2, &#34;e&#34;: 3}, &#34;d&#34;: 2}
+        &gt;&gt;&gt; c = {&#34;d&#34;: {&#34;e&#34;: 5}}
+        &gt;&gt;&gt; dict_merge(a, b, c)
+        {&#39;b&#39;: {&#39;c&#39;: 2, &#39;e&#39;: 3}, &#39;d&#39;: {&#39;e&#39;: 5}}
+    &#34;&#34;&#34;
+    for src in sources:
+        for key, value in src.items():
+            if not isinstance(value, Mapping):
+                # overwrite with simple value
+                dest[key] = value
+                continue
+
+            value = cls_dict(value)
+            prev = dest.get(key, {})
+            if isinstance(prev, dict):  # extendable
+                if not isinstance(prev, cls_dict):
+                    prev = cls_dict(prev)
+                dest[key] = dict_merge(prev, value, cls_dict=cls_dict)
+            else:  # cannot extend
+                dest[key] = value
+    return dest</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-variables">Global variables</h2>
+<dl>
+<dt id="attrbox.fn.AnyList"><code class="name">var <span class="ident">AnyList</span></code></dt>
+<dd>
+<div class="desc"><p>Generic <code>list</code>.</p></div>
+</dd>
+<dt id="attrbox.fn.AnyDict"><code class="name">var <span class="ident">AnyDict</span></code></dt>
+<dd>
+<div class="desc"><p>Generic <code>dict</code>.</p></div>
+</dd>
+<dt id="attrbox.fn.OnlyReadDict"><code class="name">var <span class="ident">OnlyReadDict</span></code></dt>
+<dd>
+<div class="desc"><p><code>dict</code> that will only be read.</p></div>
+</dd>
+<dt id="attrbox.fn.AnyListDict"><code class="name">var <span class="ident">AnyListDict</span></code></dt>
+<dd>
+<div class="desc"><p>Generic <code>list</code> or <code>dict</code>.</p></div>
+</dd>
+<dt id="attrbox.fn.AnyIndex"><code class="name">var <span class="ident">AnyIndex</span></code></dt>
+<dd>
+<div class="desc"><p>Index into a <code>list</code> or <code>dict</code>.</p></div>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="attrbox.fn.get_path"><code class="name flex">
+<span>def <span class="ident">get_path</span></span>(<span>src: <a title="attrbox.fn.SupportsItem" href="#attrbox.fn.SupportsItem">SupportsItem</a>, path: Union[str, int, Sequence[Union[str, int]]], default: Optional[Any] = None) ‑> Any</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the value indicated by <code>path</code> or return <code>default</code> if it is not found.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>src</code></strong> :&ensp;<code><a title="attrbox.fn.SupportsItem" href="#attrbox.fn.SupportsItem">SupportsItem</a></code></dt>
+<dd>typically a <code>list</code> or a <code>dict</code></dd>
+<dt><strong><code>path</code></strong> :&ensp;<code><a title="attrbox.fn.AnyIndex" href="#attrbox.fn.AnyIndex">AnyIndex</a></code></dt>
+<dd>path to the value</dd>
+<dt><strong><code>default</code></strong> :&ensp;<code>Any</code>, optional</dt>
+<dd>value to return if <code>path</code> is not found.
+Defaults to <code>None</code>.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Any</code></dt>
+<dd>path value or <code>default</code> if it is not found.</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; get_path({'a': 1}, 'a')
+1
+&gt;&gt;&gt; get_path({'a': [1, {'b': 2}]}, ['a', 1, 'b'])
+2
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_path(src: SupportsItem, path: AnyIndex, default: Optional[Any] = None) -&gt; Any:
+    &#34;&#34;&#34;Get the value indicated by `path` or return `default` if it is not found.
+
+    Args:
+        src (SupportsItem): typically a `list` or a `dict`
+        path (AnyIndex): path to the value
+        default (Any, optional): value to return if `path` is not found.
+            Defaults to `None`.
+
+    Returns:
+        Any: path value or `default` if it is not found.
+
+    Examples:
+        &gt;&gt;&gt; get_path({&#39;a&#39;: 1}, &#39;a&#39;)
+        1
+        &gt;&gt;&gt; get_path({&#39;a&#39;: [1, {&#39;b&#39;: 2}]}, [&#39;a&#39;, 1, &#39;b&#39;])
+        2
+    &#34;&#34;&#34;
+    if isinstance(path, str) or not isinstance(path, Sequence):
+        path = [path]
+
+    result: Any = default
+    try:
+        for key in path:
+            result = src[key]  # take step
+            if isinstance(result, SupportsItem):
+                src = result  # preserve context
+    except (KeyError, IndexError, TypeError):
+        # key doesn&#39;t exist, index is unreachable, or item is not indexable
+        result = default
+    return result</code></pre>
+</details>
+</dd>
+<dt id="attrbox.fn.set_path"><code class="name flex">
+<span>def <span class="ident">set_path</span></span>(<span>dest: Union[List[Any], Dict[Any, Any]], path: Union[str, int, Sequence[Union[str, int]]], value: Any, cls_dict: Type[Dict[Any, Any]] = builtins.dict, cls_list: Type[List[Any]] = builtins.list) ‑> Union[List[Any], Dict[Any, Any]]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set a deeply nested value.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>dest</code></strong> :&ensp;<code>Box</code></dt>
+<dd>a <code>list</code> or <code>dict</code></dd>
+<dt><strong><code>path</code></strong> :&ensp;<code>BoxIndex</code></dt>
+<dd>index or <code>Sequence</code> into <code>dest</code></dd>
+<dt><strong><code>value</code></strong> :&ensp;<code>Any</code></dt>
+<dd>the value to set</dd>
+<dt><strong><code>cls_dict</code></strong> :&ensp;<code>Type[dict]</code>, optional</dt>
+<dd>Constructor for <code>Mapping</code> objects.
+Defaults to <code>dict</code>.</dd>
+<dt><strong><code>cls_list</code></strong> :&ensp;<code>Type[list]</code>, optional</dt>
+<dd>Constructor for <code>List</code> objects.
+Defaults to <code>list</code>.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Box</code></dt>
+<dd><code>dest</code> modified according to the <code>path</code>. New <code>dict</code> and <code>list</code>
+objects will be created if they do not exist.</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; item = {'a': [{'b': {'c': 3}}]}
+&gt;&gt;&gt; set_path(item, ['a', 0, 'b', 'c'], 4)
+{'a': [{'b': {'c': 4}}]}
+&gt;&gt;&gt; set_path(item, ['a', 1, 'd'], 5)
+{'a': [{'b': {'c': 4}}, {'d': 5}]}
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_path(
+    dest: AnyListDict,
+    path: AnyIndex,
+    value: Any,
+    cls_dict: Type[AnyDict] = dict,
+    cls_list: Type[AnyList] = list,
+) -&gt; AnyListDict:
+    &#34;&#34;&#34;Set a deeply nested value.
+
+    Args:
+        dest (Box): a `list` or `dict`
+
+        path (BoxIndex): index or `Sequence` into `dest`
+
+        value (Any): the value to set
+
+        cls_dict (Type[dict], optional): Constructor for `Mapping` objects.
+            Defaults to `dict`.
+
+        cls_list (Type[list], optional): Constructor for `List` objects.
+            Defaults to `list`.
+
+    Returns:
+        Box: `dest` modified according to the `path`. New `dict` and `list`
+            objects will be created if they do not exist.
+
+    Examples:
+        &gt;&gt;&gt; item = {&#39;a&#39;: [{&#39;b&#39;: {&#39;c&#39;: 3}}]}
+        &gt;&gt;&gt; set_path(item, [&#39;a&#39;, 0, &#39;b&#39;, &#39;c&#39;], 4)
+        {&#39;a&#39;: [{&#39;b&#39;: {&#39;c&#39;: 4}}]}
+        &gt;&gt;&gt; set_path(item, [&#39;a&#39;, 1, &#39;d&#39;], 5)
+        {&#39;a&#39;: [{&#39;b&#39;: {&#39;c&#39;: 4}}, {&#39;d&#39;: 5}]}
+    &#34;&#34;&#34;
+    if isinstance(path, str) or not isinstance(path, Sequence):
+        path = [path]
+
+    last = len(path) - 1
+    nested = dest
+    for index, key in enumerate(path):
+        if isinstance(nested, Mapping) and key not in nested:
+            nested[key] = None
+
+        if isinstance(nested, List):
+            if isinstance(key, int):
+                if key &gt;= len(nested):
+                    nested.extend([None] * (key + 1 - len(nested)))
+            else:  # trying to index into a list with a str
+                nested.append(cls_dict([(key, None)]))
+                nested = cast(AnyDict, nested[-1])  # switch to dict context
+        # nested[key] exists for dict[str | int] and list[int | str]
+
+        # NOTE: `mypy` can&#39;t be sure that we aren&#39;t trying to index into
+        # a `list` with a `str` down below. But we handled this case, so
+        # to avoid much duplication, we just call it an `int` which works
+        # for `list` and `dict`.
+        key = cast(int, key)
+
+        if index == last:
+            nested[key] = value
+            break  # done
+
+        curr_val = nested[key]
+        next_key = path[index + 1]
+        if isinstance(next_key, (int, slice)) and not isinstance(curr_val, List):
+            nested[key] = cls_list()
+        elif isinstance(next_key, str) and not isinstance(curr_val, Mapping):
+            nested[key] = cls_dict()
+
+        nested = nested[key]  # move to next step
+    return dest</code></pre>
+</details>
+</dd>
+<dt id="attrbox.fn.dict_merge"><code class="name flex">
+<span>def <span class="ident">dict_merge</span></span>(<span>dest: Dict[Any, Any], *sources: Mapping[Any, Any], cls_dict: Type[Dict[Any, Any]] = builtins.dict) ‑> Dict[Any, Any]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Generic recursive merge for dict-like objects.</p>
+<p>NOTE: Every nested <code>dict</code> will pass through <code>cls_dict</code>.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>dest</code></strong> :&ensp;<code><a title="attrbox.fn.AnyDict" href="#attrbox.fn.AnyDict">AnyDict</a></code></dt>
+<dd>dict into which <code>sources</code> are merged</dd>
+<dt><strong><code>*sources</code></strong> :&ensp;<code><a title="attrbox.fn.OnlyReadDict" href="#attrbox.fn.OnlyReadDict">OnlyReadDict</a></code></dt>
+<dd>dicts to merge</dd>
+<dt><strong><code>cls_dict</code></strong> :&ensp;<code>Type[<a title="attrbox.fn.AnyDict" href="#attrbox.fn.AnyDict">AnyDict</a>]</code>, optional</dt>
+<dd>constructor for default <code>dict</code>.
+Defaults to <code>dict</code>.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="attrbox.fn.AnyDict" href="#attrbox.fn.AnyDict">AnyDict</a></code></dt>
+<dd><code>dest</code> now with merged values</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; a = {&quot;b&quot;: {&quot;c&quot;: 1}, &quot;d&quot;: 2}
+&gt;&gt;&gt; b = {&quot;b&quot;: {&quot;c&quot;: 2, &quot;e&quot;: 3}, &quot;d&quot;: 2}
+&gt;&gt;&gt; c = {&quot;d&quot;: {&quot;e&quot;: 5}}
+&gt;&gt;&gt; dict_merge(a, b, c)
+{'b': {'c': 2, 'e': 3}, 'd': {'e': 5}}
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def dict_merge(
+    dest: AnyDict,
+    *sources: OnlyReadDict,
+    cls_dict: Type[AnyDict] = dict,
+) -&gt; AnyDict:
+    &#34;&#34;&#34;Generic recursive merge for dict-like objects.
+
+    NOTE: Every nested `dict` will pass through `cls_dict`.
+
+    Args:
+        dest (AnyDict): dict into which `sources` are merged
+
+        *sources (OnlyReadDict): dicts to merge
+
+        cls_dict (Type[AnyDict], optional): constructor for default `dict`.
+            Defaults to `dict`.
+
+    Returns:
+        AnyDict: `dest` now with merged values
+
+    Examples:
+        &gt;&gt;&gt; a = {&#34;b&#34;: {&#34;c&#34;: 1}, &#34;d&#34;: 2}
+        &gt;&gt;&gt; b = {&#34;b&#34;: {&#34;c&#34;: 2, &#34;e&#34;: 3}, &#34;d&#34;: 2}
+        &gt;&gt;&gt; c = {&#34;d&#34;: {&#34;e&#34;: 5}}
+        &gt;&gt;&gt; dict_merge(a, b, c)
+        {&#39;b&#39;: {&#39;c&#39;: 2, &#39;e&#39;: 3}, &#39;d&#39;: {&#39;e&#39;: 5}}
+    &#34;&#34;&#34;
+    for src in sources:
+        for key, value in src.items():
+            if not isinstance(value, Mapping):
+                # overwrite with simple value
+                dest[key] = value
+                continue
+
+            value = cls_dict(value)
+            prev = dest.get(key, {})
+            if isinstance(prev, dict):  # extendable
+                if not isinstance(prev, cls_dict):
+                    prev = cls_dict(prev)
+                dest[key] = dict_merge(prev, value, cls_dict=cls_dict)
+            else:  # cannot extend
+                dest[key] = value
+    return dest</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="attrbox.fn.SupportsItem"><code class="flex name class">
+<span>class <span class="ident">SupportsItem</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Protocol for <code>k in x</code>, <code>x[k]</code>, and <code>x[k] = v</code>.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class SupportsItem(Protocol):  # pragma: no cover
+    &#34;&#34;&#34;Protocol for `k in x`, `x[k]`, and `x[k] = v`.&#34;&#34;&#34;
+
+    def __contains__(self, key: Any) -&gt; bool:
+        &#34;&#34;&#34;Return `True` if `key` exists, `False` otherwise.&#34;&#34;&#34;
+
+    def __getitem__(self, key: Any) -&gt; Any:
+        &#34;&#34;&#34;Return value of `key`.&#34;&#34;&#34;
+
+    def __setitem__(self, key: Any, value: Any) -&gt; Optional[Any]:
+        &#34;&#34;&#34;Set `key` to `value`.&#34;&#34;&#34;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>typing.Protocol</li>
+<li>typing.Generic</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="attrbox" href="index.html">attrbox</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-variables">Global variables</a></h3>
+<ul class="">
+<li><code><a title="attrbox.fn.AnyList" href="#attrbox.fn.AnyList">AnyList</a></code></li>
+<li><code><a title="attrbox.fn.AnyDict" href="#attrbox.fn.AnyDict">AnyDict</a></code></li>
+<li><code><a title="attrbox.fn.OnlyReadDict" href="#attrbox.fn.OnlyReadDict">OnlyReadDict</a></code></li>
+<li><code><a title="attrbox.fn.AnyListDict" href="#attrbox.fn.AnyListDict">AnyListDict</a></code></li>
+<li><code><a title="attrbox.fn.AnyIndex" href="#attrbox.fn.AnyIndex">AnyIndex</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="attrbox.fn.get_path" href="#attrbox.fn.get_path">get_path</a></code></li>
+<li><code><a title="attrbox.fn.set_path" href="#attrbox.fn.set_path">set_path</a></code></li>
+<li><code><a title="attrbox.fn.dict_merge" href="#attrbox.fn.dict_merge">dict_merge</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="attrbox.fn.SupportsItem" href="#attrbox.fn.SupportsItem">SupportsItem</a></code></h4>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

@@ -35,37 +35,22 @@ from typing import Any
 from typing import Dict
 from typing import Mapping
 from typing import Optional
-from typing import Protocol
-from typing import runtime_checkable
-from typing import Sequence
 from typing import TypeVar
-from typing import Union
 
 # pkg
-from .algo import dict_merge
+from .fn import AnyIndex
+from .fn import dict_merge
+from .fn import get_path
+from .fn import set_path
 
 __all__ = [&#34;AttrDict&#34;]
-
-
-@runtime_checkable
-class SupportsItem(Protocol):  # pragma: no cover
-    &#34;&#34;&#34;Protocol for `k in x`, `x[k]`, and `x[k] = v`.&#34;&#34;&#34;
-
-    def __contains__(self, key: Any) -&gt; bool:
-        &#34;&#34;&#34;Return `True` if `key` exists, `False` otherwise.&#34;&#34;&#34;
-
-    def __getitem__(self, key: Any) -&gt; Any:
-        &#34;&#34;&#34;Return value of `key`.&#34;&#34;&#34;
-
-    def __setitem__(self, key: Any, value: Any) -&gt; Optional[Any]:
-        &#34;&#34;&#34;Set `key` to `value`.&#34;&#34;&#34;
 
 
 Self = TypeVar(&#34;Self&#34;, bound=&#34;AttrDict&#34;)
 &#34;&#34;&#34;`AttrDict` instance.&#34;&#34;&#34;
 
-AttrDictKey = Union[str, Sequence[Union[str, int, slice]]]
-&#34;&#34;&#34;`AttrDict` key for normal and deeper indexing.&#34;&#34;&#34;
+NOT_FOUND = object()
+&#34;&#34;&#34;Sentinel for a missing object.&#34;&#34;&#34;
 
 
 class AttrDict(Dict[str, Any]):
@@ -94,6 +79,34 @@ class AttrDict(Dict[str, Any]):
             True
         &#34;&#34;&#34;
         return self.__class__(super().copy())
+
+    def __contains__(self, name: Any) -&gt; bool:
+        &#34;&#34;&#34;Return `True` if `name` is a key.
+
+        Args:
+            name (Any): typically a `AnyIndex`. If it&#39;s a string,
+                the check proceeds as usual. If it&#39;s a `Sequence`, the
+                checks are performed using `.get()`.
+
+        Returns:
+            bool: `True` if the `name` is a valid key, `False` otherwise.
+
+        Examples:
+            Normal checking works as expected:
+            &gt;&gt;&gt; items = AttrDict(a=1, b=2)
+            &gt;&gt;&gt; &#39;a&#39; in items
+            True
+            &gt;&gt;&gt; &#39;x&#39; in items
+            False
+
+            Nested checks are also possible:
+            &gt;&gt;&gt; items = AttrDict(a=[{&#34;b&#34;: 2}, {&#34;b&#34;: 3}])
+            &gt;&gt;&gt; [&#39;a&#39;, 0, &#39;b&#39;] in items
+            True
+            &gt;&gt;&gt; [&#39;a&#39;, 1, &#39;x&#39;] in items
+            False
+        &#34;&#34;&#34;
+        return self.get(name, NOT_FOUND) is not NOT_FOUND
 
     def __getattr__(self, name: str) -&gt; Optional[Any]:
         &#34;&#34;&#34;Return the value of the attribute or `None`.
@@ -193,11 +206,11 @@ class AttrDict(Dict[str, Any]):
         except AttributeError:  # use key/value
             del self[name]
 
-    def __getitem__(self, name: AttrDictKey) -&gt; Optional[Any]:
+    def __getitem__(self, name: AnyIndex) -&gt; Optional[Any]:
         &#34;&#34;&#34;Return the value of the key.
 
         Args:
-            name (AttrDictKey): key name or Sequence of the path to a key
+            name (AnyIndex): key name or Sequence of the path to a key
 
         Returns:
             Any: value of the key or `None` if it cannot be found
@@ -211,11 +224,11 @@ class AttrDict(Dict[str, Any]):
         &#34;&#34;&#34;
         return self.get(name)
 
-    def __setitem__(self, name: AttrDictKey, value: Any) -&gt; None:
+    def __setitem__(self, name: AnyIndex, value: Any) -&gt; None:
         &#34;&#34;&#34;Set the value of a key.
 
         Args:
-            name (str): key name
+            name (BoxIndex): key name
             value (Any): key value
 
         Examples:
@@ -253,11 +266,11 @@ class AttrDict(Dict[str, Any]):
         except KeyError:
             pass
 
-    def get(self, name: AttrDictKey, default: Optional[Any] = None, /) -&gt; Optional[Any]:
-        &#34;&#34;&#34;Return the value of the key or `default` if it cannot be found.
+    def get(self, path: AnyIndex, default: Optional[Any] = None, /) -&gt; Optional[Any]:
+        &#34;&#34;&#34;Return the value at `path` or `default` if it cannot be found.
 
         Args:
-            name (AttrDictKey): key name or Sequence path to the key
+            path (AnyIndex): path to the value
             default (Any, optional): value to return if `name` is not found.
                 Defaults to `None`.
 
@@ -286,26 +299,15 @@ class AttrDict(Dict[str, Any]):
             &gt;&gt;&gt; items.get([&#39;d&#39;, &#39;e&#39;]) is None # int is not indexable
             True
         &#34;&#34;&#34;
-        if isinstance(name, str):
-            return super().get(name, default)
+        if isinstance(path, str):
+            return super().get(path, default)
+        return get_path(self, path, default)
 
-        src: SupportsItem = self
-        result: Any = default
-        try:
-            for step in name:
-                result = src[step]  # take step
-                if isinstance(result, SupportsItem):
-                    src = result  # preserve context
-        except (KeyError, IndexError, TypeError):
-            # key doesn&#39;t exist, index is unreachable, or item is not indexable
-            result = default
-        return result
-
-    def set(self: Self, name: AttrDictKey, value: Optional[Any] = None, /) -&gt; Self:
-        &#34;&#34;&#34;Set key with `name` to `value`.
+    def set(self: Self, path: AnyIndex, value: Optional[Any] = None, /) -&gt; Self:
+        &#34;&#34;&#34;Set key at `path` to `value`.
 
         Args:
-            name (AttrDictKey): key name or `Sequence` to the key
+            path (AnyIndex): path to the key to set.
             value (Any, optional): value to set. Defaults to `None`.
 
         Returns:
@@ -328,23 +330,14 @@ class AttrDict(Dict[str, Any]):
             &gt;&gt;&gt; items.set((), 20)
             {&#39;a&#39;: 1, &#39;b&#39;: {&#39;c&#39;: {&#39;d&#39;: 10}}}
         &#34;&#34;&#34;
-        if isinstance(name, str):
-            super().__setitem__(name, value)
+        if isinstance(path, str):
+            super().__setitem__(path, value)
             return self
 
-        if not name:  # empty sequence
-            return self
-
-        cls = self.__class__
-        dest: SupportsItem = self
-        for step in name[:-1]:
-            if step not in dest or not isinstance(dest[step], Mapping):
-                dest[step] = cls()
-            dest = dest[step]
-        dest[name[-1]] = value
+        set_path(self, path, value, self.__class__)
         return self
 
-    def __lshift__(self, other: Mapping[str, Any]) -&gt; AttrDict:
+    def __lshift__(self: Self, other: Mapping[str, Any]) -&gt; Self:
         &#34;&#34;&#34;Merge `other` into `self`.
 
         NOTE: Any nested dictionaries will be converted to `AttrDict` objects.
@@ -366,15 +359,17 @@ class AttrDict(Dict[str, Any]):
             &gt;&gt;&gt; item.c.d.e
             5
         &#34;&#34;&#34;
-        dict_merge(self, other, default=self.__class__)
+        dict_merge(self, other, cls_dict=self.__class__)
         return self
 
 
 __pdoc__ = {
+    &#34;AttrDict.__contains__&#34;: True,
     &#34;AttrDict.__getattr__&#34;: True,
     &#34;AttrDict.__setattr__&#34;: True,
     &#34;AttrDict.__delattr__&#34;: True,
     &#34;AttrDict.__getitem__&#34;: True,
+    &#34;AttrDict.__setitem__&#34;: True,
     &#34;AttrDict.__delitem__&#34;: True,
     &#34;AttrDict.__lshift__&#34;: True,
 }</code></pre>
@@ -432,6 +427,34 @@ a non-existent key or attribute returns <code>None</code>.</p>
         &#34;&#34;&#34;
         return self.__class__(super().copy())
 
+    def __contains__(self, name: Any) -&gt; bool:
+        &#34;&#34;&#34;Return `True` if `name` is a key.
+
+        Args:
+            name (Any): typically a `AnyIndex`. If it&#39;s a string,
+                the check proceeds as usual. If it&#39;s a `Sequence`, the
+                checks are performed using `.get()`.
+
+        Returns:
+            bool: `True` if the `name` is a valid key, `False` otherwise.
+
+        Examples:
+            Normal checking works as expected:
+            &gt;&gt;&gt; items = AttrDict(a=1, b=2)
+            &gt;&gt;&gt; &#39;a&#39; in items
+            True
+            &gt;&gt;&gt; &#39;x&#39; in items
+            False
+
+            Nested checks are also possible:
+            &gt;&gt;&gt; items = AttrDict(a=[{&#34;b&#34;: 2}, {&#34;b&#34;: 3}])
+            &gt;&gt;&gt; [&#39;a&#39;, 0, &#39;b&#39;] in items
+            True
+            &gt;&gt;&gt; [&#39;a&#39;, 1, &#39;x&#39;] in items
+            False
+        &#34;&#34;&#34;
+        return self.get(name, NOT_FOUND) is not NOT_FOUND
+
     def __getattr__(self, name: str) -&gt; Optional[Any]:
         &#34;&#34;&#34;Return the value of the attribute or `None`.
 
@@ -530,11 +553,11 @@ a non-existent key or attribute returns <code>None</code>.</p>
         except AttributeError:  # use key/value
             del self[name]
 
-    def __getitem__(self, name: AttrDictKey) -&gt; Optional[Any]:
+    def __getitem__(self, name: AnyIndex) -&gt; Optional[Any]:
         &#34;&#34;&#34;Return the value of the key.
 
         Args:
-            name (AttrDictKey): key name or Sequence of the path to a key
+            name (AnyIndex): key name or Sequence of the path to a key
 
         Returns:
             Any: value of the key or `None` if it cannot be found
@@ -548,11 +571,11 @@ a non-existent key or attribute returns <code>None</code>.</p>
         &#34;&#34;&#34;
         return self.get(name)
 
-    def __setitem__(self, name: AttrDictKey, value: Any) -&gt; None:
+    def __setitem__(self, name: AnyIndex, value: Any) -&gt; None:
         &#34;&#34;&#34;Set the value of a key.
 
         Args:
-            name (str): key name
+            name (BoxIndex): key name
             value (Any): key value
 
         Examples:
@@ -590,11 +613,11 @@ a non-existent key or attribute returns <code>None</code>.</p>
         except KeyError:
             pass
 
-    def get(self, name: AttrDictKey, default: Optional[Any] = None, /) -&gt; Optional[Any]:
-        &#34;&#34;&#34;Return the value of the key or `default` if it cannot be found.
+    def get(self, path: AnyIndex, default: Optional[Any] = None, /) -&gt; Optional[Any]:
+        &#34;&#34;&#34;Return the value at `path` or `default` if it cannot be found.
 
         Args:
-            name (AttrDictKey): key name or Sequence path to the key
+            path (AnyIndex): path to the value
             default (Any, optional): value to return if `name` is not found.
                 Defaults to `None`.
 
@@ -623,26 +646,15 @@ a non-existent key or attribute returns <code>None</code>.</p>
             &gt;&gt;&gt; items.get([&#39;d&#39;, &#39;e&#39;]) is None # int is not indexable
             True
         &#34;&#34;&#34;
-        if isinstance(name, str):
-            return super().get(name, default)
+        if isinstance(path, str):
+            return super().get(path, default)
+        return get_path(self, path, default)
 
-        src: SupportsItem = self
-        result: Any = default
-        try:
-            for step in name:
-                result = src[step]  # take step
-                if isinstance(result, SupportsItem):
-                    src = result  # preserve context
-        except (KeyError, IndexError, TypeError):
-            # key doesn&#39;t exist, index is unreachable, or item is not indexable
-            result = default
-        return result
-
-    def set(self: Self, name: AttrDictKey, value: Optional[Any] = None, /) -&gt; Self:
-        &#34;&#34;&#34;Set key with `name` to `value`.
+    def set(self: Self, path: AnyIndex, value: Optional[Any] = None, /) -&gt; Self:
+        &#34;&#34;&#34;Set key at `path` to `value`.
 
         Args:
-            name (AttrDictKey): key name or `Sequence` to the key
+            path (AnyIndex): path to the key to set.
             value (Any, optional): value to set. Defaults to `None`.
 
         Returns:
@@ -665,23 +677,14 @@ a non-existent key or attribute returns <code>None</code>.</p>
             &gt;&gt;&gt; items.set((), 20)
             {&#39;a&#39;: 1, &#39;b&#39;: {&#39;c&#39;: {&#39;d&#39;: 10}}}
         &#34;&#34;&#34;
-        if isinstance(name, str):
-            super().__setitem__(name, value)
+        if isinstance(path, str):
+            super().__setitem__(path, value)
             return self
 
-        if not name:  # empty sequence
-            return self
-
-        cls = self.__class__
-        dest: SupportsItem = self
-        for step in name[:-1]:
-            if step not in dest or not isinstance(dest[step], Mapping):
-                dest[step] = cls()
-            dest = dest[step]
-        dest[name[-1]] = value
+        set_path(self, path, value, self.__class__)
         return self
 
-    def __lshift__(self, other: Mapping[str, Any]) -&gt; AttrDict:
+    def __lshift__(self: Self, other: Mapping[str, Any]) -&gt; Self:
         &#34;&#34;&#34;Merge `other` into `self`.
 
         NOTE: Any nested dictionaries will be converted to `AttrDict` objects.
@@ -703,7 +706,7 @@ a non-existent key or attribute returns <code>None</code>.</p>
             &gt;&gt;&gt; item.c.d.e
             5
         &#34;&#34;&#34;
-        dict_merge(self, other, default=self.__class__)
+        dict_merge(self, other, cls_dict=self.__class__)
         return self</code></pre>
 </details>
 <h3>Ancestors</h3>
@@ -752,6 +755,71 @@ True
         True
     &#34;&#34;&#34;
     return self.__class__(super().copy())</code></pre>
+</details>
+</dd>
+<dt id="attrbox.attrdict.AttrDict.__contains__"><code class="name flex">
+<span>def <span class="ident">__contains__</span></span>(<span>self, name: Any) ‑> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return <code>True</code> if <code>name</code> is a key.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>Any</code></dt>
+<dd>typically a <code>AnyIndex</code>. If it's a string,
+the check proceeds as usual. If it's a <code>Sequence</code>, the
+checks are performed using <code>.get()</code>.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd><code>True</code> if the <code>name</code> is a valid key, <code>False</code> otherwise.</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<p>Normal checking works as expected:</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; items = AttrDict(a=1, b=2)
+&gt;&gt;&gt; 'a' in items
+True
+&gt;&gt;&gt; 'x' in items
+False
+</code></pre>
+<p>Nested checks are also possible:</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; items = AttrDict(a=[{&quot;b&quot;: 2}, {&quot;b&quot;: 3}])
+&gt;&gt;&gt; ['a', 0, 'b'] in items
+True
+&gt;&gt;&gt; ['a', 1, 'x'] in items
+False
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __contains__(self, name: Any) -&gt; bool:
+    &#34;&#34;&#34;Return `True` if `name` is a key.
+
+    Args:
+        name (Any): typically a `AnyIndex`. If it&#39;s a string,
+            the check proceeds as usual. If it&#39;s a `Sequence`, the
+            checks are performed using `.get()`.
+
+    Returns:
+        bool: `True` if the `name` is a valid key, `False` otherwise.
+
+    Examples:
+        Normal checking works as expected:
+        &gt;&gt;&gt; items = AttrDict(a=1, b=2)
+        &gt;&gt;&gt; &#39;a&#39; in items
+        True
+        &gt;&gt;&gt; &#39;x&#39; in items
+        False
+
+        Nested checks are also possible:
+        &gt;&gt;&gt; items = AttrDict(a=[{&#34;b&#34;: 2}, {&#34;b&#34;: 3}])
+        &gt;&gt;&gt; [&#39;a&#39;, 0, &#39;b&#39;] in items
+        True
+        &gt;&gt;&gt; [&#39;a&#39;, 1, &#39;x&#39;] in items
+        False
+    &#34;&#34;&#34;
+    return self.get(name, NOT_FOUND) is not NOT_FOUND</code></pre>
 </details>
 </dd>
 <dt id="attrbox.attrdict.AttrDict.__getattr__"><code class="name flex">
@@ -966,13 +1034,13 @@ AttributeError: 'AttrDict' object has no attribute 'b'
 </details>
 </dd>
 <dt id="attrbox.attrdict.AttrDict.__getitem__"><code class="name flex">
-<span>def <span class="ident">__getitem__</span></span>(<span>self, name: AttrDictKey) ‑> Optional[Any]</span>
+<span>def <span class="ident">__getitem__</span></span>(<span>self, name: AnyIndex) ‑> Optional[Any]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Return the value of the key.</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>name</code></strong> :&ensp;<code>AttrDictKey</code></dt>
+<dt><strong><code>name</code></strong> :&ensp;<code>AnyIndex</code></dt>
 <dd>key name or Sequence of the path to a key</dd>
 </dl>
 <h2 id="returns">Returns</h2>
@@ -991,11 +1059,11 @@ True
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def __getitem__(self, name: AttrDictKey) -&gt; Optional[Any]:
+<pre><code class="python">def __getitem__(self, name: AnyIndex) -&gt; Optional[Any]:
     &#34;&#34;&#34;Return the value of the key.
 
     Args:
-        name (AttrDictKey): key name or Sequence of the path to a key
+        name (AnyIndex): key name or Sequence of the path to a key
 
     Returns:
         Any: value of the key or `None` if it cannot be found
@@ -1008,6 +1076,52 @@ True
         True
     &#34;&#34;&#34;
     return self.get(name)</code></pre>
+</details>
+</dd>
+<dt id="attrbox.attrdict.AttrDict.__setitem__"><code class="name flex">
+<span>def <span class="ident">__setitem__</span></span>(<span>self, name: AnyIndex, value: Any) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set the value of a key.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>BoxIndex</code></dt>
+<dd>key name</dd>
+<dt><strong><code>value</code></strong> :&ensp;<code>Any</code></dt>
+<dd>key value</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; item = AttrDict(a=1)
+&gt;&gt;&gt; item['a'] = 5
+&gt;&gt;&gt; item['a']
+5
+</code></pre>
+<pre><code class="language-python-repl">&gt;&gt;&gt; item[['a', 'b']] = 10
+&gt;&gt;&gt; item.a.b
+10
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __setitem__(self, name: AnyIndex, value: Any) -&gt; None:
+    &#34;&#34;&#34;Set the value of a key.
+
+    Args:
+        name (BoxIndex): key name
+        value (Any): key value
+
+    Examples:
+        &gt;&gt;&gt; item = AttrDict(a=1)
+        &gt;&gt;&gt; item[&#39;a&#39;] = 5
+        &gt;&gt;&gt; item[&#39;a&#39;]
+        5
+
+        &gt;&gt;&gt; item[[&#39;a&#39;, &#39;b&#39;]] = 10
+        &gt;&gt;&gt; item.a.b
+        10
+    &#34;&#34;&#34;
+    self.set(name, value)</code></pre>
 </details>
 </dd>
 <dt id="attrbox.attrdict.AttrDict.__delitem__"><code class="name flex">
@@ -1061,14 +1175,14 @@ True
 </details>
 </dd>
 <dt id="attrbox.attrdict.AttrDict.get"><code class="name flex">
-<span>def <span class="ident">get</span></span>(<span>self, name: AttrDictKey, default: Optional[Any] = None, /) ‑> Optional[Any]</span>
+<span>def <span class="ident">get</span></span>(<span>self, path: AnyIndex, default: Optional[Any] = None, /) ‑> Optional[Any]</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Return the value of the key or <code>default</code> if it cannot be found.</p>
+<div class="desc"><p>Return the value at <code>path</code> or <code>default</code> if it cannot be found.</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>name</code></strong> :&ensp;<code>AttrDictKey</code></dt>
-<dd>key name or Sequence path to the key</dd>
+<dt><strong><code>path</code></strong> :&ensp;<code>AnyIndex</code></dt>
+<dd>path to the value</dd>
 <dt><strong><code>default</code></strong> :&ensp;<code>Any</code>, optional</dt>
 <dd>value to return if <code>name</code> is not found.
 Defaults to <code>None</code>.</dd>
@@ -1104,11 +1218,11 @@ True
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get(self, name: AttrDictKey, default: Optional[Any] = None, /) -&gt; Optional[Any]:
-    &#34;&#34;&#34;Return the value of the key or `default` if it cannot be found.
+<pre><code class="python">def get(self, path: AnyIndex, default: Optional[Any] = None, /) -&gt; Optional[Any]:
+    &#34;&#34;&#34;Return the value at `path` or `default` if it cannot be found.
 
     Args:
-        name (AttrDictKey): key name or Sequence path to the key
+        path (AnyIndex): path to the value
         default (Any, optional): value to return if `name` is not found.
             Defaults to `None`.
 
@@ -1137,31 +1251,20 @@ True
         &gt;&gt;&gt; items.get([&#39;d&#39;, &#39;e&#39;]) is None # int is not indexable
         True
     &#34;&#34;&#34;
-    if isinstance(name, str):
-        return super().get(name, default)
-
-    src: SupportsItem = self
-    result: Any = default
-    try:
-        for step in name:
-            result = src[step]  # take step
-            if isinstance(result, SupportsItem):
-                src = result  # preserve context
-    except (KeyError, IndexError, TypeError):
-        # key doesn&#39;t exist, index is unreachable, or item is not indexable
-        result = default
-    return result</code></pre>
+    if isinstance(path, str):
+        return super().get(path, default)
+    return get_path(self, path, default)</code></pre>
 </details>
 </dd>
 <dt id="attrbox.attrdict.AttrDict.set"><code class="name flex">
-<span>def <span class="ident">set</span></span>(<span>self: Self, name: AttrDictKey, value: Optional[Any] = None, /) ‑> ~Self</span>
+<span>def <span class="ident">set</span></span>(<span>self: Self, path: AnyIndex, value: Optional[Any] = None, /) ‑> ~Self</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Set key with <code>name</code> to <code>value</code>.</p>
+<div class="desc"><p>Set key at <code>path</code> to <code>value</code>.</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>name</code></strong> :&ensp;<code>AttrDictKey</code></dt>
-<dd>key name or <code>Sequence</code> to the key</dd>
+<dt><strong><code>path</code></strong> :&ensp;<code>AnyIndex</code></dt>
+<dd>path to the key to set.</dd>
 <dt><strong><code>value</code></strong> :&ensp;<code>Any</code>, optional</dt>
 <dd>value to set. Defaults to <code>None</code>.</dd>
 </dl>
@@ -1191,11 +1294,11 @@ True
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set(self: Self, name: AttrDictKey, value: Optional[Any] = None, /) -&gt; Self:
-    &#34;&#34;&#34;Set key with `name` to `value`.
+<pre><code class="python">def set(self: Self, path: AnyIndex, value: Optional[Any] = None, /) -&gt; Self:
+    &#34;&#34;&#34;Set key at `path` to `value`.
 
     Args:
-        name (AttrDictKey): key name or `Sequence` to the key
+        path (AnyIndex): path to the key to set.
         value (Any, optional): value to set. Defaults to `None`.
 
     Returns:
@@ -1218,25 +1321,16 @@ True
         &gt;&gt;&gt; items.set((), 20)
         {&#39;a&#39;: 1, &#39;b&#39;: {&#39;c&#39;: {&#39;d&#39;: 10}}}
     &#34;&#34;&#34;
-    if isinstance(name, str):
-        super().__setitem__(name, value)
+    if isinstance(path, str):
+        super().__setitem__(path, value)
         return self
 
-    if not name:  # empty sequence
-        return self
-
-    cls = self.__class__
-    dest: SupportsItem = self
-    for step in name[:-1]:
-        if step not in dest or not isinstance(dest[step], Mapping):
-            dest[step] = cls()
-        dest = dest[step]
-    dest[name[-1]] = value
+    set_path(self, path, value, self.__class__)
     return self</code></pre>
 </details>
 </dd>
 <dt id="attrbox.attrdict.AttrDict.__lshift__"><code class="name flex">
-<span>def <span class="ident">__lshift__</span></span>(<span>self, other: Mapping[str, Any]) ‑> <a title="attrbox.attrdict.AttrDict" href="#attrbox.attrdict.AttrDict">AttrDict</a></span>
+<span>def <span class="ident">__lshift__</span></span>(<span>self: Self, other: Mapping[str, Any]) ‑> ~Self</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Merge <code>other</code> into <code>self</code>.</p>
@@ -1266,7 +1360,7 @@ True
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def __lshift__(self, other: Mapping[str, Any]) -&gt; AttrDict:
+<pre><code class="python">def __lshift__(self: Self, other: Mapping[str, Any]) -&gt; Self:
     &#34;&#34;&#34;Merge `other` into `self`.
 
     NOTE: Any nested dictionaries will be converted to `AttrDict` objects.
@@ -1288,7 +1382,7 @@ True
         &gt;&gt;&gt; item.c.d.e
         5
     &#34;&#34;&#34;
-    dict_merge(self, other, default=self.__class__)
+    dict_merge(self, other, cls_dict=self.__class__)
     return self</code></pre>
 </details>
 </dd>
@@ -1314,10 +1408,12 @@ True
 <h4><code><a title="attrbox.attrdict.AttrDict" href="#attrbox.attrdict.AttrDict">AttrDict</a></code></h4>
 <ul class="two-column">
 <li><code><a title="attrbox.attrdict.AttrDict.copy" href="#attrbox.attrdict.AttrDict.copy">copy</a></code></li>
+<li><code><a title="attrbox.attrdict.AttrDict.__contains__" href="#attrbox.attrdict.AttrDict.__contains__">__contains__</a></code></li>
 <li><code><a title="attrbox.attrdict.AttrDict.__getattr__" href="#attrbox.attrdict.AttrDict.__getattr__">__getattr__</a></code></li>
 <li><code><a title="attrbox.attrdict.AttrDict.__setattr__" href="#attrbox.attrdict.AttrDict.__setattr__">__setattr__</a></code></li>
 <li><code><a title="attrbox.attrdict.AttrDict.__delattr__" href="#attrbox.attrdict.AttrDict.__delattr__">__delattr__</a></code></li>
 <li><code><a title="attrbox.attrdict.AttrDict.__getitem__" href="#attrbox.attrdict.AttrDict.__getitem__">__getitem__</a></code></li>
+<li><code><a title="attrbox.attrdict.AttrDict.__setitem__" href="#attrbox.attrdict.AttrDict.__setitem__">__setitem__</a></code></li>
 <li><code><a title="attrbox.attrdict.AttrDict.__delitem__" href="#attrbox.attrdict.AttrDict.__delitem__">__delitem__</a></code></li>
 <li><code><a title="attrbox.attrdict.AttrDict.get" href="#attrbox.attrdict.AttrDict.get">get</a></code></li>
 <li><code><a title="attrbox.attrdict.AttrDict.set" href="#attrbox.attrdict.AttrDict.set">set</a></code></li>

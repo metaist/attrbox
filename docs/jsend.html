@@ -32,6 +32,7 @@
 &#34;&#34;&#34;Standard JSON responses.&#34;&#34;&#34;
 
 # native
+from __future__ import annotations
 from typing import Any, Dict, Optional
 
 # pkg
@@ -69,7 +70,7 @@ class JSend(AttrDict):
         self.update(ok=True, status=STATUS_SUCCESS, data=None)
         super().__init__(*args, **kwargs)
 
-    def fail(self, message: Msg = None) -&gt; &#34;JSend&#34;:
+    def fail(self, message: Msg = None) -&gt; JSend:
         &#34;&#34;&#34;Indicate a controlled failure.
 
         Args:
@@ -93,7 +94,7 @@ class JSend(AttrDict):
         self.update(ok=False, status=STATUS_FAIL, message=message)
         return self
 
-    def error(self, message: Msg = None, code: Optional[Any] = None) -&gt; &#34;JSend&#34;:
+    def error(self, message: Msg = None, code: Optional[Any] = None) -&gt; JSend:
         &#34;&#34;&#34;Indicate an uncontrolled error.
 
         Args:
@@ -121,7 +122,7 @@ class JSend(AttrDict):
         self.update(ok=False, status=STATUS_ERROR, message=message, code=code)
         return self
 
-    def success(self, data: Optional[Any] = None) -&gt; &#34;JSend&#34;:
+    def success(self, data: Optional[Any] = None) -&gt; JSend:
         &#34;&#34;&#34;Indicate a successful response.
 
         Args:
@@ -199,7 +200,7 @@ True
         self.update(ok=True, status=STATUS_SUCCESS, data=None)
         super().__init__(*args, **kwargs)
 
-    def fail(self, message: Msg = None) -&gt; &#34;JSend&#34;:
+    def fail(self, message: Msg = None) -&gt; JSend:
         &#34;&#34;&#34;Indicate a controlled failure.
 
         Args:
@@ -223,7 +224,7 @@ True
         self.update(ok=False, status=STATUS_FAIL, message=message)
         return self
 
-    def error(self, message: Msg = None, code: Optional[Any] = None) -&gt; &#34;JSend&#34;:
+    def error(self, message: Msg = None, code: Optional[Any] = None) -&gt; JSend:
         &#34;&#34;&#34;Indicate an uncontrolled error.
 
         Args:
@@ -251,7 +252,7 @@ True
         self.update(ok=False, status=STATUS_ERROR, message=message, code=code)
         return self
 
-    def success(self, data: Optional[Any] = None) -&gt; &#34;JSend&#34;:
+    def success(self, data: Optional[Any] = None) -&gt; JSend:
         &#34;&#34;&#34;Indicate a successful response.
 
         Args:
@@ -280,7 +281,7 @@ True
 <h3>Methods</h3>
 <dl>
 <dt id="attrbox.jsend.JSend.fail"><code class="name flex">
-<span>def <span class="ident">fail</span></span>(<span>self, message: Optional[str] = None) ‑> <a title="attrbox.jsend.JSend" href="#attrbox.jsend.JSend">JSend</a></span>
+<span>def <span class="ident">fail</span></span>(<span>self, message: Msg = None) ‑> <a title="attrbox.jsend.JSend" href="#attrbox.jsend.JSend">JSend</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Indicate a controlled failure.</p>
@@ -310,7 +311,7 @@ True
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def fail(self, message: Msg = None) -&gt; &#34;JSend&#34;:
+<pre><code class="python">def fail(self, message: Msg = None) -&gt; JSend:
     &#34;&#34;&#34;Indicate a controlled failure.
 
     Args:
@@ -336,7 +337,7 @@ True
 </details>
 </dd>
 <dt id="attrbox.jsend.JSend.error"><code class="name flex">
-<span>def <span class="ident">error</span></span>(<span>self, message: Optional[str] = None, code: Optional[Any] = None) ‑> <a title="attrbox.jsend.JSend" href="#attrbox.jsend.JSend">JSend</a></span>
+<span>def <span class="ident">error</span></span>(<span>self, message: Msg = None, code: Optional[Any] = None) ‑> <a title="attrbox.jsend.JSend" href="#attrbox.jsend.JSend">JSend</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Indicate an uncontrolled error.</p>
@@ -371,7 +372,7 @@ True
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def error(self, message: Msg = None, code: Optional[Any] = None) -&gt; &#34;JSend&#34;:
+<pre><code class="python">def error(self, message: Msg = None, code: Optional[Any] = None) -&gt; JSend:
     &#34;&#34;&#34;Indicate an uncontrolled error.
 
     Args:
@@ -427,7 +428,7 @@ True
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def success(self, data: Optional[Any] = None) -&gt; &#34;JSend&#34;:
+<pre><code class="python">def success(self, data: Optional[Any] = None) -&gt; JSend:
     &#34;&#34;&#34;Indicate a successful response.
 
     Args:
@@ -457,6 +458,16 @@ True
 <code><a title="attrbox.attrdict.AttrDict" href="attrdict.html#attrbox.attrdict.AttrDict">AttrDict</a></code>.<code><a title="attrbox.attrdict.AttrDict.copy" href="attrdict.html#attrbox.attrdict.AttrDict.copy">copy</a></code>
 </p>
 <div class="desc inherited"><p>Return a shallow copy …</p></div>
+</dd>
+<dt id="attrbox.jsend.JSend.__contains__"><code class="name flex">
+<span>def <span class="ident">__contains__</span></span>(<span>self, name: Any) ‑> bool</span>
+</code></dt>
+<dd>
+<p class="inheritance">
+<em>Inherited from:</em>
+<code><a title="attrbox.attrdict.AttrDict" href="attrdict.html#attrbox.attrdict.AttrDict">AttrDict</a></code>.<code><a title="attrbox.attrdict.AttrDict.__contains__" href="attrdict.html#attrbox.attrdict.AttrDict.__contains__">__contains__</a></code>
+</p>
+<div class="desc inherited"><p>Return <code>True</code> if <code>name</code> is a key …</p></div>
 </dd>
 <dt id="attrbox.jsend.JSend.__getattr__"><code class="name flex">
 <span>def <span class="ident">__getattr__</span></span>(<span>self, name: str) ‑> Optional[Any]</span>
@@ -489,7 +500,7 @@ True
 <div class="desc inherited"><p>Delete an attribute …</p></div>
 </dd>
 <dt id="attrbox.jsend.JSend.__getitem__"><code class="name flex">
-<span>def <span class="ident">__getitem__</span></span>(<span>self, name: AttrDictKey) ‑> Optional[Any]</span>
+<span>def <span class="ident">__getitem__</span></span>(<span>self, name: AnyIndex) ‑> Optional[Any]</span>
 </code></dt>
 <dd>
 <p class="inheritance">
@@ -497,6 +508,16 @@ True
 <code><a title="attrbox.attrdict.AttrDict" href="attrdict.html#attrbox.attrdict.AttrDict">AttrDict</a></code>.<code><a title="attrbox.attrdict.AttrDict.__getitem__" href="attrdict.html#attrbox.attrdict.AttrDict.__getitem__">__getitem__</a></code>
 </p>
 <div class="desc inherited"><p>Return the value of the key …</p></div>
+</dd>
+<dt id="attrbox.jsend.JSend.__setitem__"><code class="name flex">
+<span>def <span class="ident">__setitem__</span></span>(<span>self, name: AnyIndex, value: Any) ‑> None</span>
+</code></dt>
+<dd>
+<p class="inheritance">
+<em>Inherited from:</em>
+<code><a title="attrbox.attrdict.AttrDict" href="attrdict.html#attrbox.attrdict.AttrDict">AttrDict</a></code>.<code><a title="attrbox.attrdict.AttrDict.__setitem__" href="attrdict.html#attrbox.attrdict.AttrDict.__setitem__">__setitem__</a></code>
+</p>
+<div class="desc inherited"><p>Set the value of a key …</p></div>
 </dd>
 <dt id="attrbox.jsend.JSend.__delitem__"><code class="name flex">
 <span>def <span class="ident">__delitem__</span></span>(<span>self, name: str) ‑> None</span>
@@ -509,27 +530,27 @@ True
 <div class="desc inherited"><p>Delete a key …</p></div>
 </dd>
 <dt id="attrbox.jsend.JSend.get"><code class="name flex">
-<span>def <span class="ident">get</span></span>(<span>self, name: AttrDictKey, default: Optional[Any] = None, /) ‑> Optional[Any]</span>
+<span>def <span class="ident">get</span></span>(<span>self, path: AnyIndex, default: Optional[Any] = None, /) ‑> Optional[Any]</span>
 </code></dt>
 <dd>
 <p class="inheritance">
 <em>Inherited from:</em>
 <code><a title="attrbox.attrdict.AttrDict" href="attrdict.html#attrbox.attrdict.AttrDict">AttrDict</a></code>.<code><a title="attrbox.attrdict.AttrDict.get" href="attrdict.html#attrbox.attrdict.AttrDict.get">get</a></code>
 </p>
-<div class="desc inherited"><p>Return the value of the key or <code>default</code> if it cannot be found …</p></div>
+<div class="desc inherited"><p>Return the value at <code>path</code> or <code>default</code> if it cannot be found …</p></div>
 </dd>
 <dt id="attrbox.jsend.JSend.set"><code class="name flex">
-<span>def <span class="ident">set</span></span>(<span>self: Self, name: AttrDictKey, value: Optional[Any] = None, /) ‑> ~Self</span>
+<span>def <span class="ident">set</span></span>(<span>self: Self, path: AnyIndex, value: Optional[Any] = None, /) ‑> ~Self</span>
 </code></dt>
 <dd>
 <p class="inheritance">
 <em>Inherited from:</em>
 <code><a title="attrbox.attrdict.AttrDict" href="attrdict.html#attrbox.attrdict.AttrDict">AttrDict</a></code>.<code><a title="attrbox.attrdict.AttrDict.set" href="attrdict.html#attrbox.attrdict.AttrDict.set">set</a></code>
 </p>
-<div class="desc inherited"><p>Set key with <code>name</code> to <code>value</code> …</p></div>
+<div class="desc inherited"><p>Set key at <code>path</code> to <code>value</code> …</p></div>
 </dd>
 <dt id="attrbox.jsend.JSend.__lshift__"><code class="name flex">
-<span>def <span class="ident">__lshift__</span></span>(<span>self, other: Mapping[str, Any]) ‑> <a title="attrbox.attrdict.AttrDict" href="attrdict.html#attrbox.attrdict.AttrDict">AttrDict</a></span>
+<span>def <span class="ident">__lshift__</span></span>(<span>self: Self, other: Mapping[str, Any]) ‑> ~Self</span>
 </code></dt>
 <dd>
 <p class="inheritance">
@@ -563,10 +584,12 @@ True
 <li><code><a title="attrbox.jsend.JSend.error" href="#attrbox.jsend.JSend.error">error</a></code></li>
 <li><code><a title="attrbox.jsend.JSend.success" href="#attrbox.jsend.JSend.success">success</a></code></li>
 <li><code><a title="attrbox.jsend.JSend.copy" href="attrdict.html#attrbox.jsend.JSend.copy">copy</a></code></li>
+<li><code><a title="attrbox.jsend.JSend.__contains__" href="attrdict.html#attrbox.jsend.JSend.__contains__">__contains__</a></code></li>
 <li><code><a title="attrbox.jsend.JSend.__getattr__" href="attrdict.html#attrbox.jsend.JSend.__getattr__">__getattr__</a></code></li>
 <li><code><a title="attrbox.jsend.JSend.__setattr__" href="attrdict.html#attrbox.jsend.JSend.__setattr__">__setattr__</a></code></li>
 <li><code><a title="attrbox.jsend.JSend.__delattr__" href="attrdict.html#attrbox.jsend.JSend.__delattr__">__delattr__</a></code></li>
 <li><code><a title="attrbox.jsend.JSend.__getitem__" href="attrdict.html#attrbox.jsend.JSend.__getitem__">__getitem__</a></code></li>
+<li><code><a title="attrbox.jsend.JSend.__setitem__" href="attrdict.html#attrbox.jsend.JSend.__setitem__">__setitem__</a></code></li>
 <li><code><a title="attrbox.jsend.JSend.__delitem__" href="attrdict.html#attrbox.jsend.JSend.__delitem__">__delitem__</a></code></li>
 <li><code><a title="attrbox.jsend.JSend.get" href="attrdict.html#attrbox.jsend.JSend.get">get</a></code></li>
 <li><code><a title="attrbox.jsend.JSend.set" href="attrdict.html#attrbox.jsend.JSend.set">set</a></code></li>

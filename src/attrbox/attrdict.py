@@ -330,7 +330,7 @@ class AttrDict(Dict[str, Any]):
             >>> item.c.d.e
             5
         """
-        dict_merge(self, other, default=self.__class__)
+        dict_merge(self, other, cls_dict=self.__class__)
         return self
 
 
