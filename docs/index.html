@@ -28,29 +28,116 @@
 <a href="https://pypi.org/project/attrbox"><img alt="Supported Python versions" src="https://img.shields.io/pypi/pyversions/attrbox?style=for-the-badge"></a></p>
 <p><a href="https://github.com/metaist/attrbox/blob/main/CHANGELOG.md">Changelog</a> - <a href="https://github.com/metaist/attrbox/issues">Issues</a> - <a href="https://metaist.github.io/attrbox/">Documentation</a></p>
 <h2 id="why">Why?</h2>
-<p>I have some specific things I wish python <code>dict</code> and <code>list</code> could do:</p>
+<p>I have common use cases where I want to improve python's <code>dict</code> and <code>list</code>:</p>
 <ul>
-<li>(<code>dict</code>) <strong>Attribute Syntax</strong>: <code>thing.prop</code> to mean <code>thing["prop"]</code>.</li>
-<li>(<code>dict</code>) <strong>Suppress <code>KeyError</code></strong>: instead of <code>.get()</code> just give me <code>None</code> if I ask for a key that's not there.</li>
-<li>(<code>dict</code>) <strong>Better Merge</strong>: I want to merge nested <code>dict</code> objects.</li>
-<li>(<code>list</code>) <strong>Broadcast to Members</strong>: accessing an attribute or making a function call on the list should apply it to all the members.</li>
-</ul>
-<p><code><a title="attrbox" href="#attrbox">attrbox</a></code> also packages the most common use cases:</p>
-<ul>
-<li><code><a title="attrbox.AttrDict" href="#attrbox.AttrDict">AttrDict</a></code>, <code><a title="attrbox.AttrList" href="#attrbox.AttrList">AttrList</a></code>: basic attribute-based improvements</li>
-<li><code><a title="attrbox.JSend" href="#attrbox.JSend">JSend</a></code>: approximate implementation of the <a href="https://labs.omniti.com/labs/jsend"><code>JSend</code> specification</a> that makes it easy to create standard JSON responses.</li>
+<li><a href="#attrdict"><code>AttrDict</code></a>: attribute-based <code>dict</code> with better merge and deep value access</li>
+<li><a href="#attrlist"><code>AttrList</code></a>: <code>list</code> that broadcasts operations to its members</li>
+<li><a href="#environment">Environment</a>: reading environment files</li>
+<li><a href="#configuration">Configuration</a>: loading command-line arguments and configuration files</li>
+<li><a href="#jsend"><code>JSend</code></a>: sending JSON responses</li>
 </ul>
 <h2 id="install">Install</h2>
 <pre><code class="language-bash">python -m pip install attrbox
 </code></pre>
-<h2 id="example">Example</h2>
-<pre><code class="language-python">import json
-from attrbox import AttrDict
+<h2 id="attrdict">AttrDict</h2>
+<p><code><a title="attrbox.AttrDict" href="#attrbox.AttrDict">AttrDict</a></code> features:</p>
+<ul>
+<li>
+<p><strong>Attribute Syntax</strong> for <code>dict</code> similar to <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Working_with_objects#accessing_properties">accessing properties in JavaScript</a>: <code>thing.prop</code> means <code>thing["prop"]</code> for get / set / delete.</p>
+</li>
+<li>
+<p><strong>No <code>KeyError</code></strong>: if a key is missing, just return <code>None</code> (like <code>dict.get()</code>).</p>
+</li>
+<li>
+<p><strong>Deep Indexing</strong>: use a list of keys and <code>int</code> to get and set deeply nested values. This is similar to <a href="https://lodash.com/docs/#get">lodash.get</a> except that only the array-like syntax is supported and you must use actual <code>int</code> to index across <code>list</code> objects.</p>
+</li>
+<li>
+<p><strong>Deep Merge</strong>: combine two <code>dict</code> objects by extending deeply-nested keys where possible. This is different than the new <code>dict</code> union operator (<a href="https://peps.python.org/pep-0584/">PEP 584</a>).</p>
+</li>
+</ul>
+<pre><code class="language-python">from attrbox import AttrDict
 
-config = AttrDict() &lt;&lt; json.load(open('test/example-appengine.json'))
-print(config.get([&quot;deployment&quot;, &quot;files&quot;, &quot;example-resource-file1&quot;, &quot;sourceUrl&quot;])
-# =&gt; &quot;https://storage.googleapis.com/[MY_BUCKET_ID]/example-application/example-resource-file1&quot;
+items = AttrDict(a=1, b=[{&quot;c&quot;: {&quot;d&quot;: 5}}], e={&quot;f&quot;: {&quot;g&quot;: 7}})
+items.a
+# =&gt; 1
+items.x is None
+# =&gt; True
+items.x = 10
+items['x']
+# =&gt; 10
+items.get([&quot;b&quot;, 0, &quot;c&quot;, &quot;d&quot;])
+# =&gt; 5
+items &lt;&lt;= {&quot;e&quot;: {&quot;f&quot;: {&quot;g&quot;: 20, &quot;h&quot;: [30, 40]}}}
+items.e.f.g
+# =&gt; 20
+items[['e', 'f', 'h', 1]]
+# =&gt; 40
 </code></pre>
+<p><a href="https://metaist.github.io/attrbox/attrdict.html#attrbox.attrdict.AttrDict">Read more about <code>AttrDict</code></a></p>
+<h2 id="attrlist">AttrList</h2>
+<p><code><a title="attrbox.AttrList" href="#attrbox.AttrList">AttrList</a></code> provides <strong>member broadcast</strong>: performing operations on the list performs the operation on all the items in the list. I typically use this to achieve the <a href="https://en.wikipedia.org/wiki/Composite_pattern">Composite design pattern</a>.</p>
+<pre><code class="language-python">from attrbox import AttrDict, AttrList
+
+numbers = AttrList([complex(1, 2), complex(3, 4), complex(5, 6)])
+numbers.real
+# =&gt; [1.0, 3.0, 5.0]
+
+words = AttrList([&quot;Apple&quot;, &quot;Bat&quot;, &quot;Cat&quot;])
+words.lower()
+# =&gt; ['apple', 'bat', 'cat']
+
+items = AttrList([AttrDict(a=1, b=2), AttrDict(a=5)])
+items.a
+# =&gt; [1, 5]
+items.b
+# =&gt; [2, None]
+</code></pre>
+<p><a href="https://metaist.github.io/attrbox/attrlist.html#attrbox.attrlist.AttrList">Read more about <code>AttrList</code></a></p>
+<h2 id="environment">Environment</h2>
+<p><code><a title="attrbox.env" href="env.html">attrbox.env</a></code> is similar to <a href="https://github.com/theskumar/python-dotenv">python-dotenv</a>, but uses the <code><a title="attrbox.AttrDict" href="#attrbox.AttrDict">AttrDict</a></code> ability to do deep indexing to allow for things like dotted variable names. Typically, you'll use it by calling <code><a title="attrbox.load_env" href="#attrbox.load_env">load_env()</a></code> which will find the nearest <code>.env</code> file and load it into <code>os.environ</code>.</p>
+<p><a href="https://metaist.github.io/attrbox/env.html">Read more about <code>attrbox.env</code></a></p>
+<h2 id="configuration">Configuration</h2>
+<p><code><a title="attrbox" href="#attrbox">attrbox</a></code> supports loading configuration files from <code>.json</code>, <code>.toml</code>, and <code>.<a title="attrbox.env" href="env.html">attrbox.env</a></code> files. By default, <code><a title="attrbox.load_config" href="#attrbox.load_config">load_config()</a></code> looks for a key <code>imports</code> and will recursively import those files (relative to the current file) before loading the rest of the current file (data is merged using <code><a title="attrbox.AttrDict" href="#attrbox.AttrDict">AttrDict</a></code>). This allows you to create templates or smaller configurations that build up to a larger configuration.</p>
+<p>For CLI applications, <code><a title="attrbox.parse_docopt" href="#attrbox.parse_docopt">parse_docopt()</a></code> let's you use the power of <a href="https://github.com/docopt/docopt"><code>docopt</code></a> with the flexibility of <code><a title="attrbox.AttrDict" href="#attrbox.AttrDict">AttrDict</a></code>. By default, <code>--config</code> and <code>&lt;config&gt;</code> arguments will load the file using the <code><a title="attrbox.load_config" href="#attrbox.load_config">load_config()</a></code></p>
+<pre><code class="language-python">&quot;&quot;&quot;Usage: prog.py [--help] [--version] [-c CONFIG] --file FILE
+
+Options:
+  --help                show this message and exit
+  --version             show the version number and exit
+  -c, --config CONFIG   load this configuration file (supported: .toml, .json, .env)
+  --file FILE           the file to process
+&quot;&quot;&quot;
+
+def main():
+    args = parse_docopt(__doc__, version=__version__)
+    args.file # has the value of --file
+
+if __name__ == &quot;__main__&quot;:
+    main()
+</code></pre>
+<p>Building on top of <code>docopt</code> we strip off leading dashes and convert them to underscores so that we can access the arguments as <code><a title="attrbox.AttrDict" href="#attrbox.AttrDict">AttrDict</a></code> attributes.</p>
+<p><a href="https://metaist.github.io/attrbox/config.html">Read more about <code>attrbox.config</code></a></p>
+<h2 id="jsend">JSend</h2>
+<p><code><a title="attrbox.JSend" href="#attrbox.JSend">JSend</a></code> is an approximate implementation of the <a href="https://labs.omniti.com/labs/jsend"><code>JSend</code> specification</a> that makes it easy to create standard JSON responses. The main difference is that I added an <code>ok</code> attribute to make it easy to tell if there was a problem (<code>fail</code> or <code>error</code>).</p>
+<pre><code class="language-python">from attrbox import JSend
+
+def some_function(arg1):
+    result = JSend() # default is &quot;success&quot;
+
+    if not is_good(arg1):
+        # fail = controlled problem
+        return result.fail(message=&quot;You gone messed up.&quot;)
+
+    try:
+        result.success(data=process(arg1))
+    except Exception:
+        # error = uncontrolled problem
+        return result.error(message=&quot;We have a problem.&quot;)
+
+    return result
+</code></pre>
+<p>Because the <code><a title="attrbox.JSend" href="#attrbox.JSend">JSend</a></code> object is an <code><a title="attrbox.AttrDict" href="#attrbox.AttrDict">AttrDict</a></code>, it acts like a <code>dict</code> in every other respect (e.g., it is JSON-serializable).</p>
+<p><a href="https://metaist.github.io/attrbox/jsend.html#attrbox.jsend.JSend">Read more about <code>JSend</code></a></p>
 <h2 id="license">License</h2>
 <p><a href="https://github.com/metaist/attrbox/blob/main/LICENSE.md">MIT License</a></p>
 <details class="source">
@@ -64,17 +151,27 @@ print(config.get([&quot;deployment&quot;, &quot;files&quot;, &quot;example-resou
 &#34;&#34;&#34;
 
 # pkg
-from .attrdict import AttrDict, __pdoc__ as doc1
-from .attrlist import AttrList, __pdoc__ as doc2
+from .attrdict import __pdoc__ as doc1
+from .attrdict import AttrDict
+from .attrlist import __pdoc__ as doc2
+from .attrlist import AttrList
 
 from .jsend import JSend
 
-__version__ = &#34;0.1.1&#34;
+from .env import load_env
+from .config import load_config
+from .config import parse_docopt
+
+
+__version__ = &#34;0.1.2&#34;
 __all__ = (
     &#34;__version__&#34;,
     &#34;AttrDict&#34;,
     &#34;AttrList&#34;,
     &#34;JSend&#34;,
+    &#34;load_env&#34;,
+    &#34;load_config&#34;,
+    &#34;parse_docopt&#34;,
 )
 
 # Update pdoc at all levels.
@@ -86,10 +183,6 @@ for doc in [doc1, doc2]:
 <section>
 <h2 class="section-title" id="header-submodules">Sub-modules</h2>
 <dl>
-<dt><code class="name"><a title="attrbox.algo" href="algo.html">attrbox.algo</a></code></dt>
-<dd>
-<div class="desc"><p>Generic container-based algorithms.</p></div>
-</dd>
 <dt><code class="name"><a title="attrbox.attrdict" href="attrdict.html">attrbox.attrdict</a></code></dt>
 <dd>
 <div class="desc"><p><code>dict</code> with attribute access, deep selectors, and merging.</p></div>
@@ -97,6 +190,18 @@ for doc in [doc1, doc2]:
 <dt><code class="name"><a title="attrbox.attrlist" href="attrlist.html">attrbox.attrlist</a></code></dt>
 <dd>
 <div class="desc"><p><code>list</code> that broadcasts attribute access to its elements.</p></div>
+</dd>
+<dt><code class="name"><a title="attrbox.config" href="config.html">attrbox.config</a></code></dt>
+<dd>
+<div class="desc"><p>Configuration loading and parsing.</p></div>
+</dd>
+<dt><code class="name"><a title="attrbox.env" href="env.html">attrbox.env</a></code></dt>
+<dd>
+<div class="desc"><p>Load configuration from environment files …</p></div>
+</dd>
+<dt><code class="name"><a title="attrbox.fn" href="fn.html">attrbox.fn</a></code></dt>
+<dd>
+<div class="desc"><p>Generally useful functions.</p></div>
 </dd>
 <dt><code class="name"><a title="attrbox.jsend" href="jsend.html">attrbox.jsend</a></code></dt>
 <dd>
@@ -107,6 +212,280 @@ for doc in [doc1, doc2]:
 <section>
 </section>
 <section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="attrbox.load_env"><code class="name flex">
+<span>def <span class="ident">load_env</span></span>(<span>path: Union[pathlib.Path, str, None] = None) ‑> Dict[str, str]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Load an environment file.</p>
+<p>We recursively search for a <code>.<a title="attrbox.env" href="env.html">attrbox.env</a></code> file from the path given or the current
+working directory, if omitted.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>path</code></strong> :&ensp;<code>PathStr</code>, optional</dt>
+<dd>starting path. If <code>None</code>, start from the
+current working directory. Defaults to <code>None</code>.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>FileNotFoundError</code></dt>
+<dd>If not <code>.<a title="attrbox.env" href="env.html">attrbox.env</a></code> file is found.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Dict[str, str]</code></dt>
+<dd>configuration values</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; load_env() # our .env doesn't have any values
+{}
+</code></pre>
+<p>If no <code>.<a title="attrbox.env" href="env.html">attrbox.env</a></code> can be found, a <code>FileNotFoundError</code> is raised:</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; load_env(&quot;/&quot;)
+Traceback (most recent call last):
+    ...
+FileNotFoundError: Cannot find .env file to load.
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def load_env(path: Optional[PathStr] = None) -&gt; Dict[str, str]:
+    &#34;&#34;&#34;Load an environment file.
+
+    We recursively search for a `.env` file from the path given or the current
+    working directory, if omitted.
+
+    Args:
+        path (PathStr, optional): starting path. If `None`, start from the
+            current working directory. Defaults to `None`.
+
+    Raises:
+        FileNotFoundError: If not `.env` file is found.
+
+    Returns:
+        Dict[str, str]: configuration values
+
+    Examples:
+        &gt;&gt;&gt; load_env() # our .env doesn&#39;t have any values
+        {}
+
+        If no `.env` can be found, a `FileNotFoundError` is raised:
+        &gt;&gt;&gt; load_env(&#34;/&#34;)
+        Traceback (most recent call last):
+            ...
+        FileNotFoundError: Cannot find .env file to load.
+    &#34;&#34;&#34;
+    path = find_env(path)
+    if not path or not path.exists():
+        raise FileNotFoundError(&#34;Cannot find .env file to load.&#34;)
+    return loads(path.read_text(encoding=&#34;utf-8&#34;), update_env=True, dotted_keys=True)</code></pre>
+</details>
+</dd>
+<dt id="attrbox.load_config"><code class="name flex">
+<span>def <span class="ident">load_config</span></span>(<span>path: pathlib.Path, /, *, load_imports: bool = True, loaders: Optional[Mapping[str, Callable[[str], Any]]] = None, done: Optional[List[pathlib.Path]] = None) ‑> Dict[str, Any]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Load a configuration file from <code>path</code> using configuration <code>loaders</code>.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>path</code></strong> :&ensp;<code>Path</code></dt>
+<dd>file to load.</dd>
+<dt><strong><code>load_imports</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>If <code>True</code>, recursively load any files
+located at the <code>imports</code> key. Defaults to <code>True</code>.</dd>
+<dt><strong><code>loaders</code></strong> :&ensp;<code>Mapping[str, LoaderFunc]</code>, optional</dt>
+<dd>mapping of file suffixes
+to to loader functions. If <code>None</code>, uses the global <code>LOADERS</code>.
+Defaults to <code>None</code>.</dd>
+<dt><strong><code>done</code></strong> :&ensp;<code>List[Path]</code>, optional</dt>
+<dd>If provided, a list of paths to ignore when
+doing recursive loading. Defaults to <code>None</code>.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Dict[str, Any]</code></dt>
+<dd>keys/values from the configuration file</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; root = Path(__file__).parent.parent.parent
+&gt;&gt;&gt; expected = {'section': {'key': 'value1', &quot;env&quot;: &quot;loaded&quot;,
+... &quot;json&quot;: &quot;loaded&quot;, &quot;toml&quot;: &quot;loaded&quot;}}
+&gt;&gt;&gt; load_config(root / &quot;test/config_1.toml&quot;) == expected
+True
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def load_config(
+    path: Path,
+    /,
+    *,
+    load_imports: bool = True,
+    loaders: Optional[Mapping[str, LoaderFunc]] = None,
+    done: Optional[List[Path]] = None,
+) -&gt; Dict[str, Any]:
+    &#34;&#34;&#34;Load a configuration file from `path` using configuration `loaders`.
+
+    Args:
+        path (Path): file to load.
+
+        load_imports (bool, optional): If `True`, recursively load any files
+            located at the `imports` key. Defaults to `True`.
+
+        loaders (Mapping[str, LoaderFunc], optional): mapping of file suffixes
+            to to loader functions. If `None`, uses the global `LOADERS`.
+            Defaults to `None`.
+
+        done (List[Path], optional): If provided, a list of paths to ignore when
+            doing recursive loading. Defaults to `None`.
+
+    Returns:
+        Dict[str, Any]: keys/values from the configuration file
+
+    Examples:
+        &gt;&gt;&gt; root = Path(__file__).parent.parent.parent
+        &gt;&gt;&gt; expected = {&#39;section&#39;: {&#39;key&#39;: &#39;value1&#39;, &#34;env&#34;: &#34;loaded&#34;,
+        ... &#34;json&#34;: &#34;loaded&#34;, &#34;toml&#34;: &#34;loaded&#34;}}
+        &gt;&gt;&gt; load_config(root / &#34;test/config_1.toml&#34;) == expected
+        True
+    &#34;&#34;&#34;
+    result = AttrDict()
+    path = path.resolve()
+    done = done or []
+
+    loader = (loaders or LOADERS)[path.suffix]
+    data = loader(path.read_text())
+    if load_imports and &#34;imports&#34; in data:
+        imports = [(path.parent / p).resolve() for p in data.pop(&#34;imports&#34;)]
+        for file in imports:
+            if file in done:
+                continue
+
+            result &lt;&lt;= load_config(
+                file,
+                load_imports=True,
+                loaders=loaders,
+                done=done + imports,
+            )
+    result &lt;&lt;= data
+    return result</code></pre>
+</details>
+</dd>
+<dt id="attrbox.parse_docopt"><code class="name flex">
+<span>def <span class="ident">parse_docopt</span></span>(<span>doc: str, /, argv: Optional[Sequence[str]] = None, *, version: str = '1.0.0', options_first: bool = False, read_config: bool = True) ‑> Dict[str, Any]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Parse docopt args and load config.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>doc</code></strong> :&ensp;<code>str</code></dt>
+<dd>docstring with description of command</dd>
+<dt><strong><code>argv</code></strong> :&ensp;<code>Sequence[str]</code>, optional</dt>
+<dd>arguments to parse against the
+doc. If <code>None</code>, will default to <code>sys.argv[1:]</code>. Defaults to <code>None</code>.</dd>
+<dt><strong><code>version</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>program version. Defaults to <code>"1.0.0"</code>.</dd>
+<dt><strong><code>options_first</code></strong> :&ensp;<code>bool</code></dt>
+<dd>If <code>True</code>, options must come before positional
+arguments. Defaults to <code>False</code>.</dd>
+<dt><strong><code>read_config</code></strong> :&ensp;<code>bool</code></dt>
+<dd>If <code>True</code>, a <code>&lt;config&gt;</code> argument or <code>--config</code> option
+will be automatically loaded before args are parsed. Defaults to <code>True</code>.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Dict[str, Any]</code></dt>
+<dd>mapping of options to values</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; usage = &quot;Usage: test.py [--debug]&quot;
+&gt;&gt;&gt; parse_docopt(usage, argv=[&quot;--debug&quot;])
+{'debug': True}
+</code></pre>
+<pre><code class="language-python-repl">&gt;&gt;&gt; root = Path(__file__).parent.parent.parent
+&gt;&gt;&gt; path = str(root / &quot;test/config_1.toml&quot;)
+&gt;&gt;&gt; usage = &quot;Usage: test.py &lt;config&gt; [--section.key=VAL]&quot;
+&gt;&gt;&gt; argv = [path, &quot;--section.key=overwrite&quot;]
+&gt;&gt;&gt; expected = {&quot;section&quot;: {
+...     &quot;key&quot;: &quot;overwrite&quot;, # overwritten by argv
+...     &quot;env&quot;: &quot;loaded&quot;, &quot;json&quot;: &quot;loaded&quot;, &quot;toml&quot;: &quot;loaded&quot;
+... }, &quot;config&quot;: path}
+&gt;&gt;&gt; parse_docopt(usage, argv=argv) == expected
+True
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def parse_docopt(
+    doc: str,
+    /,
+    argv: Optional[Sequence[str]] = None,
+    *,
+    version: str = &#34;1.0.0&#34;,
+    options_first: bool = False,
+    read_config: bool = True,
+) -&gt; Dict[str, Any]:
+    &#34;&#34;&#34;Parse docopt args and load config.
+
+    Args:
+        doc (str): docstring with description of command
+
+        argv (Sequence[str], optional): arguments to parse against the
+            doc. If `None`, will default to `sys.argv[1:]`. Defaults to `None`.
+
+        version (str, optional): program version. Defaults to `&#34;1.0.0&#34;`.
+
+        options_first (bool): If `True`, options must come before positional
+            arguments. Defaults to `False`.
+
+        read_config (bool): If `True`, a `&lt;config&gt;` argument or `--config` option
+            will be automatically loaded before args are parsed. Defaults to `True`.
+
+    Returns:
+        Dict[str, Any]: mapping of options to values
+
+    Examples:
+        &gt;&gt;&gt; usage = &#34;Usage: test.py [--debug]&#34;
+        &gt;&gt;&gt; parse_docopt(usage, argv=[&#34;--debug&#34;])
+        {&#39;debug&#39;: True}
+
+        &gt;&gt;&gt; root = Path(__file__).parent.parent.parent
+        &gt;&gt;&gt; path = str(root / &#34;test/config_1.toml&#34;)
+        &gt;&gt;&gt; usage = &#34;Usage: test.py &lt;config&gt; [--section.key=VAL]&#34;
+        &gt;&gt;&gt; argv = [path, &#34;--section.key=overwrite&#34;]
+        &gt;&gt;&gt; expected = {&#34;section&#34;: {
+        ...     &#34;key&#34;: &#34;overwrite&#34;, # overwritten by argv
+        ...     &#34;env&#34;: &#34;loaded&#34;, &#34;json&#34;: &#34;loaded&#34;, &#34;toml&#34;: &#34;loaded&#34;
+        ... }, &#34;config&#34;: path}
+        &gt;&gt;&gt; parse_docopt(usage, argv=argv) == expected
+        True
+    &#34;&#34;&#34;
+    result = AttrDict()
+    args = {
+        optvar(k, shadow_builtins=True): v
+        for k, v in docopt(
+            cleandoc(doc),
+            argv=argv,
+            help=True,
+            version=version,
+            options_first=options_first,
+        ).items()
+    }
+
+    if read_config and &#34;config&#34; in args:
+        result &lt;&lt;= load_config(Path(args[&#34;config&#34;]))
+
+    for key, val in args.items():
+        key = optvar(key, shadow_builtins=True)
+        result[key.split(&#34;.&#34;)] = val
+    return result</code></pre>
+</details>
+</dd>
+</dl>
 </section>
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
@@ -153,6 +532,34 @@ a non-existent key or attribute returns <code>None</code>.</p>
             True
         &#34;&#34;&#34;
         return self.__class__(super().copy())
+
+    def __contains__(self, name: Any) -&gt; bool:
+        &#34;&#34;&#34;Return `True` if `name` is a key.
+
+        Args:
+            name (Any): typically a `AnyIndex`. If it&#39;s a string,
+                the check proceeds as usual. If it&#39;s a `Sequence`, the
+                checks are performed using `.get()`.
+
+        Returns:
+            bool: `True` if the `name` is a valid key, `False` otherwise.
+
+        Examples:
+            Normal checking works as expected:
+            &gt;&gt;&gt; items = AttrDict(a=1, b=2)
+            &gt;&gt;&gt; &#39;a&#39; in items
+            True
+            &gt;&gt;&gt; &#39;x&#39; in items
+            False
+
+            Nested checks are also possible:
+            &gt;&gt;&gt; items = AttrDict(a=[{&#34;b&#34;: 2}, {&#34;b&#34;: 3}])
+            &gt;&gt;&gt; [&#39;a&#39;, 0, &#39;b&#39;] in items
+            True
+            &gt;&gt;&gt; [&#39;a&#39;, 1, &#39;x&#39;] in items
+            False
+        &#34;&#34;&#34;
+        return self.get(name, NOT_FOUND) is not NOT_FOUND
 
     def __getattr__(self, name: str) -&gt; Optional[Any]:
         &#34;&#34;&#34;Return the value of the attribute or `None`.
@@ -252,11 +659,11 @@ a non-existent key or attribute returns <code>None</code>.</p>
         except AttributeError:  # use key/value
             del self[name]
 
-    def __getitem__(self, name: AttrDictKey) -&gt; Optional[Any]:
+    def __getitem__(self, name: AnyIndex) -&gt; Optional[Any]:
         &#34;&#34;&#34;Return the value of the key.
 
         Args:
-            name (AttrDictKey): key name or Sequence of the path to a key
+            name (AnyIndex): key name or Sequence of the path to a key
 
         Returns:
             Any: value of the key or `None` if it cannot be found
@@ -270,11 +677,11 @@ a non-existent key or attribute returns <code>None</code>.</p>
         &#34;&#34;&#34;
         return self.get(name)
 
-    def __setitem__(self, name: AttrDictKey, value: Any) -&gt; None:
+    def __setitem__(self, name: AnyIndex, value: Any) -&gt; None:
         &#34;&#34;&#34;Set the value of a key.
 
         Args:
-            name (str): key name
+            name (BoxIndex): key name
             value (Any): key value
 
         Examples:
@@ -312,11 +719,11 @@ a non-existent key or attribute returns <code>None</code>.</p>
         except KeyError:
             pass
 
-    def get(self, name: AttrDictKey, default: Optional[Any] = None, /) -&gt; Optional[Any]:
-        &#34;&#34;&#34;Return the value of the key or `default` if it cannot be found.
+    def get(self, path: AnyIndex, default: Optional[Any] = None, /) -&gt; Optional[Any]:
+        &#34;&#34;&#34;Return the value at `path` or `default` if it cannot be found.
 
         Args:
-            name (AttrDictKey): key name or Sequence path to the key
+            path (AnyIndex): path to the value
             default (Any, optional): value to return if `name` is not found.
                 Defaults to `None`.
 
@@ -345,26 +752,15 @@ a non-existent key or attribute returns <code>None</code>.</p>
             &gt;&gt;&gt; items.get([&#39;d&#39;, &#39;e&#39;]) is None # int is not indexable
             True
         &#34;&#34;&#34;
-        if isinstance(name, str):
-            return super().get(name, default)
+        if isinstance(path, str):
+            return super().get(path, default)
+        return get_path(self, path, default)
 
-        src: SupportsItem = self
-        result: Any = default
-        try:
-            for step in name:
-                result = src[step]  # take step
-                if isinstance(result, SupportsItem):
-                    src = result  # preserve context
-        except (KeyError, IndexError, TypeError):
-            # key doesn&#39;t exist, index is unreachable, or item is not indexable
-            result = default
-        return result
-
-    def set(self: Self, name: AttrDictKey, value: Optional[Any] = None, /) -&gt; Self:
-        &#34;&#34;&#34;Set key with `name` to `value`.
+    def set(self: Self, path: AnyIndex, value: Optional[Any] = None, /) -&gt; Self:
+        &#34;&#34;&#34;Set key at `path` to `value`.
 
         Args:
-            name (AttrDictKey): key name or `Sequence` to the key
+            path (AnyIndex): path to the key to set.
             value (Any, optional): value to set. Defaults to `None`.
 
         Returns:
@@ -387,23 +783,14 @@ a non-existent key or attribute returns <code>None</code>.</p>
             &gt;&gt;&gt; items.set((), 20)
             {&#39;a&#39;: 1, &#39;b&#39;: {&#39;c&#39;: {&#39;d&#39;: 10}}}
         &#34;&#34;&#34;
-        if isinstance(name, str):
-            super().__setitem__(name, value)
+        if isinstance(path, str):
+            super().__setitem__(path, value)
             return self
 
-        if not name:  # empty sequence
-            return self
-
-        cls = self.__class__
-        dest: SupportsItem = self
-        for step in name[:-1]:
-            if step not in dest or not isinstance(dest[step], Mapping):
-                dest[step] = cls()
-            dest = dest[step]
-        dest[name[-1]] = value
+        set_path(self, path, value, self.__class__)
         return self
 
-    def __lshift__(self, other: Mapping[str, Any]) -&gt; AttrDict:
+    def __lshift__(self: Self, other: Mapping[str, Any]) -&gt; Self:
         &#34;&#34;&#34;Merge `other` into `self`.
 
         NOTE: Any nested dictionaries will be converted to `AttrDict` objects.
@@ -425,7 +812,7 @@ a non-existent key or attribute returns <code>None</code>.</p>
             &gt;&gt;&gt; item.c.d.e
             5
         &#34;&#34;&#34;
-        dict_merge(self, other, default=self.__class__)
+        dict_merge(self, other, cls_dict=self.__class__)
         return self</code></pre>
 </details>
 <h3>Ancestors</h3>
@@ -474,6 +861,71 @@ True
         True
     &#34;&#34;&#34;
     return self.__class__(super().copy())</code></pre>
+</details>
+</dd>
+<dt id="attrbox.AttrDict.__contains__"><code class="name flex">
+<span>def <span class="ident">__contains__</span></span>(<span>self, name: Any) ‑> bool</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return <code>True</code> if <code>name</code> is a key.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>Any</code></dt>
+<dd>typically a <code>AnyIndex</code>. If it's a string,
+the check proceeds as usual. If it's a <code>Sequence</code>, the
+checks are performed using <code>.get()</code>.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd><code>True</code> if the <code>name</code> is a valid key, <code>False</code> otherwise.</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<p>Normal checking works as expected:</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; items = AttrDict(a=1, b=2)
+&gt;&gt;&gt; 'a' in items
+True
+&gt;&gt;&gt; 'x' in items
+False
+</code></pre>
+<p>Nested checks are also possible:</p>
+<pre><code class="language-python-repl">&gt;&gt;&gt; items = AttrDict(a=[{&quot;b&quot;: 2}, {&quot;b&quot;: 3}])
+&gt;&gt;&gt; ['a', 0, 'b'] in items
+True
+&gt;&gt;&gt; ['a', 1, 'x'] in items
+False
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __contains__(self, name: Any) -&gt; bool:
+    &#34;&#34;&#34;Return `True` if `name` is a key.
+
+    Args:
+        name (Any): typically a `AnyIndex`. If it&#39;s a string,
+            the check proceeds as usual. If it&#39;s a `Sequence`, the
+            checks are performed using `.get()`.
+
+    Returns:
+        bool: `True` if the `name` is a valid key, `False` otherwise.
+
+    Examples:
+        Normal checking works as expected:
+        &gt;&gt;&gt; items = AttrDict(a=1, b=2)
+        &gt;&gt;&gt; &#39;a&#39; in items
+        True
+        &gt;&gt;&gt; &#39;x&#39; in items
+        False
+
+        Nested checks are also possible:
+        &gt;&gt;&gt; items = AttrDict(a=[{&#34;b&#34;: 2}, {&#34;b&#34;: 3}])
+        &gt;&gt;&gt; [&#39;a&#39;, 0, &#39;b&#39;] in items
+        True
+        &gt;&gt;&gt; [&#39;a&#39;, 1, &#39;x&#39;] in items
+        False
+    &#34;&#34;&#34;
+    return self.get(name, NOT_FOUND) is not NOT_FOUND</code></pre>
 </details>
 </dd>
 <dt id="attrbox.AttrDict.__getattr__"><code class="name flex">
@@ -688,13 +1140,13 @@ AttributeError: 'AttrDict' object has no attribute 'b'
 </details>
 </dd>
 <dt id="attrbox.AttrDict.__getitem__"><code class="name flex">
-<span>def <span class="ident">__getitem__</span></span>(<span>self, name: AttrDictKey) ‑> Optional[Any]</span>
+<span>def <span class="ident">__getitem__</span></span>(<span>self, name: AnyIndex) ‑> Optional[Any]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Return the value of the key.</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>name</code></strong> :&ensp;<code>AttrDictKey</code></dt>
+<dt><strong><code>name</code></strong> :&ensp;<code>AnyIndex</code></dt>
 <dd>key name or Sequence of the path to a key</dd>
 </dl>
 <h2 id="returns">Returns</h2>
@@ -713,11 +1165,11 @@ True
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def __getitem__(self, name: AttrDictKey) -&gt; Optional[Any]:
+<pre><code class="python">def __getitem__(self, name: AnyIndex) -&gt; Optional[Any]:
     &#34;&#34;&#34;Return the value of the key.
 
     Args:
-        name (AttrDictKey): key name or Sequence of the path to a key
+        name (AnyIndex): key name or Sequence of the path to a key
 
     Returns:
         Any: value of the key or `None` if it cannot be found
@@ -730,6 +1182,52 @@ True
         True
     &#34;&#34;&#34;
     return self.get(name)</code></pre>
+</details>
+</dd>
+<dt id="attrbox.AttrDict.__setitem__"><code class="name flex">
+<span>def <span class="ident">__setitem__</span></span>(<span>self, name: AnyIndex, value: Any) ‑> None</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set the value of a key.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>BoxIndex</code></dt>
+<dd>key name</dd>
+<dt><strong><code>value</code></strong> :&ensp;<code>Any</code></dt>
+<dd>key value</dd>
+</dl>
+<h2 id="examples">Examples</h2>
+<pre><code class="language-python-repl">&gt;&gt;&gt; item = AttrDict(a=1)
+&gt;&gt;&gt; item['a'] = 5
+&gt;&gt;&gt; item['a']
+5
+</code></pre>
+<pre><code class="language-python-repl">&gt;&gt;&gt; item[['a', 'b']] = 10
+&gt;&gt;&gt; item.a.b
+10
+</code></pre></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def __setitem__(self, name: AnyIndex, value: Any) -&gt; None:
+    &#34;&#34;&#34;Set the value of a key.
+
+    Args:
+        name (BoxIndex): key name
+        value (Any): key value
+
+    Examples:
+        &gt;&gt;&gt; item = AttrDict(a=1)
+        &gt;&gt;&gt; item[&#39;a&#39;] = 5
+        &gt;&gt;&gt; item[&#39;a&#39;]
+        5
+
+        &gt;&gt;&gt; item[[&#39;a&#39;, &#39;b&#39;]] = 10
+        &gt;&gt;&gt; item.a.b
+        10
+    &#34;&#34;&#34;
+    self.set(name, value)</code></pre>
 </details>
 </dd>
 <dt id="attrbox.AttrDict.__delitem__"><code class="name flex">
@@ -783,14 +1281,14 @@ True
 </details>
 </dd>
 <dt id="attrbox.AttrDict.get"><code class="name flex">
-<span>def <span class="ident">get</span></span>(<span>self, name: AttrDictKey, default: Optional[Any] = None, /) ‑> Optional[Any]</span>
+<span>def <span class="ident">get</span></span>(<span>self, path: AnyIndex, default: Optional[Any] = None, /) ‑> Optional[Any]</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Return the value of the key or <code>default</code> if it cannot be found.</p>
+<div class="desc"><p>Return the value at <code>path</code> or <code>default</code> if it cannot be found.</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>name</code></strong> :&ensp;<code>AttrDictKey</code></dt>
-<dd>key name or Sequence path to the key</dd>
+<dt><strong><code>path</code></strong> :&ensp;<code>AnyIndex</code></dt>
+<dd>path to the value</dd>
 <dt><strong><code>default</code></strong> :&ensp;<code>Any</code>, optional</dt>
 <dd>value to return if <code>name</code> is not found.
 Defaults to <code>None</code>.</dd>
@@ -826,11 +1324,11 @@ True
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get(self, name: AttrDictKey, default: Optional[Any] = None, /) -&gt; Optional[Any]:
-    &#34;&#34;&#34;Return the value of the key or `default` if it cannot be found.
+<pre><code class="python">def get(self, path: AnyIndex, default: Optional[Any] = None, /) -&gt; Optional[Any]:
+    &#34;&#34;&#34;Return the value at `path` or `default` if it cannot be found.
 
     Args:
-        name (AttrDictKey): key name or Sequence path to the key
+        path (AnyIndex): path to the value
         default (Any, optional): value to return if `name` is not found.
             Defaults to `None`.
 
@@ -859,31 +1357,20 @@ True
         &gt;&gt;&gt; items.get([&#39;d&#39;, &#39;e&#39;]) is None # int is not indexable
         True
     &#34;&#34;&#34;
-    if isinstance(name, str):
-        return super().get(name, default)
-
-    src: SupportsItem = self
-    result: Any = default
-    try:
-        for step in name:
-            result = src[step]  # take step
-            if isinstance(result, SupportsItem):
-                src = result  # preserve context
-    except (KeyError, IndexError, TypeError):
-        # key doesn&#39;t exist, index is unreachable, or item is not indexable
-        result = default
-    return result</code></pre>
+    if isinstance(path, str):
+        return super().get(path, default)
+    return get_path(self, path, default)</code></pre>
 </details>
 </dd>
 <dt id="attrbox.AttrDict.set"><code class="name flex">
-<span>def <span class="ident">set</span></span>(<span>self: Self, name: AttrDictKey, value: Optional[Any] = None, /) ‑> ~Self</span>
+<span>def <span class="ident">set</span></span>(<span>self: Self, path: AnyIndex, value: Optional[Any] = None, /) ‑> ~Self</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Set key with <code>name</code> to <code>value</code>.</p>
+<div class="desc"><p>Set key at <code>path</code> to <code>value</code>.</p>
 <h2 id="args">Args</h2>
 <dl>
-<dt><strong><code>name</code></strong> :&ensp;<code>AttrDictKey</code></dt>
-<dd>key name or <code>Sequence</code> to the key</dd>
+<dt><strong><code>path</code></strong> :&ensp;<code>AnyIndex</code></dt>
+<dd>path to the key to set.</dd>
 <dt><strong><code>value</code></strong> :&ensp;<code>Any</code>, optional</dt>
 <dd>value to set. Defaults to <code>None</code>.</dd>
 </dl>
@@ -913,11 +1400,11 @@ True
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set(self: Self, name: AttrDictKey, value: Optional[Any] = None, /) -&gt; Self:
-    &#34;&#34;&#34;Set key with `name` to `value`.
+<pre><code class="python">def set(self: Self, path: AnyIndex, value: Optional[Any] = None, /) -&gt; Self:
+    &#34;&#34;&#34;Set key at `path` to `value`.
 
     Args:
-        name (AttrDictKey): key name or `Sequence` to the key
+        path (AnyIndex): path to the key to set.
         value (Any, optional): value to set. Defaults to `None`.
 
     Returns:
@@ -940,25 +1427,16 @@ True
         &gt;&gt;&gt; items.set((), 20)
         {&#39;a&#39;: 1, &#39;b&#39;: {&#39;c&#39;: {&#39;d&#39;: 10}}}
     &#34;&#34;&#34;
-    if isinstance(name, str):
-        super().__setitem__(name, value)
+    if isinstance(path, str):
+        super().__setitem__(path, value)
         return self
 
-    if not name:  # empty sequence
-        return self
-
-    cls = self.__class__
-    dest: SupportsItem = self
-    for step in name[:-1]:
-        if step not in dest or not isinstance(dest[step], Mapping):
-            dest[step] = cls()
-        dest = dest[step]
-    dest[name[-1]] = value
+    set_path(self, path, value, self.__class__)
     return self</code></pre>
 </details>
 </dd>
 <dt id="attrbox.AttrDict.__lshift__"><code class="name flex">
-<span>def <span class="ident">__lshift__</span></span>(<span>self, other: Mapping[str, Any]) ‑> <a title="attrbox.attrdict.AttrDict" href="attrdict.html#attrbox.attrdict.AttrDict">AttrDict</a></span>
+<span>def <span class="ident">__lshift__</span></span>(<span>self: Self, other: Mapping[str, Any]) ‑> ~Self</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Merge <code>other</code> into <code>self</code>.</p>
@@ -988,7 +1466,7 @@ True
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def __lshift__(self, other: Mapping[str, Any]) -&gt; AttrDict:
+<pre><code class="python">def __lshift__(self: Self, other: Mapping[str, Any]) -&gt; Self:
     &#34;&#34;&#34;Merge `other` into `self`.
 
     NOTE: Any nested dictionaries will be converted to `AttrDict` objects.
@@ -1010,7 +1488,7 @@ True
         &gt;&gt;&gt; item.c.d.e
         5
     &#34;&#34;&#34;
-    dict_merge(self, other, default=self.__class__)
+    dict_merge(self, other, cls_dict=self.__class__)
     return self</code></pre>
 </details>
 </dd>
@@ -1830,7 +2308,7 @@ True
         self.update(ok=True, status=STATUS_SUCCESS, data=None)
         super().__init__(*args, **kwargs)
 
-    def fail(self, message: Msg = None) -&gt; &#34;JSend&#34;:
+    def fail(self, message: Msg = None) -&gt; JSend:
         &#34;&#34;&#34;Indicate a controlled failure.
 
         Args:
@@ -1854,7 +2332,7 @@ True
         self.update(ok=False, status=STATUS_FAIL, message=message)
         return self
 
-    def error(self, message: Msg = None, code: Optional[Any] = None) -&gt; &#34;JSend&#34;:
+    def error(self, message: Msg = None, code: Optional[Any] = None) -&gt; JSend:
         &#34;&#34;&#34;Indicate an uncontrolled error.
 
         Args:
@@ -1882,7 +2360,7 @@ True
         self.update(ok=False, status=STATUS_ERROR, message=message, code=code)
         return self
 
-    def success(self, data: Optional[Any] = None) -&gt; &#34;JSend&#34;:
+    def success(self, data: Optional[Any] = None) -&gt; JSend:
         &#34;&#34;&#34;Indicate a successful response.
 
         Args:
@@ -1911,7 +2389,7 @@ True
 <h3>Methods</h3>
 <dl>
 <dt id="attrbox.JSend.fail"><code class="name flex">
-<span>def <span class="ident">fail</span></span>(<span>self, message: Optional[str] = None) ‑> <a title="attrbox.jsend.JSend" href="jsend.html#attrbox.jsend.JSend">JSend</a></span>
+<span>def <span class="ident">fail</span></span>(<span>self, message: Msg = None) ‑> <a title="attrbox.jsend.JSend" href="jsend.html#attrbox.jsend.JSend">JSend</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Indicate a controlled failure.</p>
@@ -1941,7 +2419,7 @@ True
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def fail(self, message: Msg = None) -&gt; &#34;JSend&#34;:
+<pre><code class="python">def fail(self, message: Msg = None) -&gt; JSend:
     &#34;&#34;&#34;Indicate a controlled failure.
 
     Args:
@@ -1967,7 +2445,7 @@ True
 </details>
 </dd>
 <dt id="attrbox.JSend.error"><code class="name flex">
-<span>def <span class="ident">error</span></span>(<span>self, message: Optional[str] = None, code: Optional[Any] = None) ‑> <a title="attrbox.jsend.JSend" href="jsend.html#attrbox.jsend.JSend">JSend</a></span>
+<span>def <span class="ident">error</span></span>(<span>self, message: Msg = None, code: Optional[Any] = None) ‑> <a title="attrbox.jsend.JSend" href="jsend.html#attrbox.jsend.JSend">JSend</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Indicate an uncontrolled error.</p>
@@ -2002,7 +2480,7 @@ True
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def error(self, message: Msg = None, code: Optional[Any] = None) -&gt; &#34;JSend&#34;:
+<pre><code class="python">def error(self, message: Msg = None, code: Optional[Any] = None) -&gt; JSend:
     &#34;&#34;&#34;Indicate an uncontrolled error.
 
     Args:
@@ -2058,7 +2536,7 @@ True
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def success(self, data: Optional[Any] = None) -&gt; &#34;JSend&#34;:
+<pre><code class="python">def success(self, data: Optional[Any] = None) -&gt; JSend:
     &#34;&#34;&#34;Indicate a successful response.
 
     Args:
@@ -2088,6 +2566,16 @@ True
 <code><a title="attrbox.attrdict.AttrDict" href="attrdict.html#attrbox.attrdict.AttrDict">AttrDict</a></code>.<code><a title="attrbox.attrdict.AttrDict.copy" href="attrdict.html#attrbox.attrdict.AttrDict.copy">copy</a></code>
 </p>
 <div class="desc inherited"><p>Return a shallow copy …</p></div>
+</dd>
+<dt id="attrbox.JSend.__contains__"><code class="name flex">
+<span>def <span class="ident">__contains__</span></span>(<span>self, name: Any) ‑> bool</span>
+</code></dt>
+<dd>
+<p class="inheritance">
+<em>Inherited from:</em>
+<code><a title="attrbox.attrdict.AttrDict" href="attrdict.html#attrbox.attrdict.AttrDict">AttrDict</a></code>.<code><a title="attrbox.attrdict.AttrDict.__contains__" href="attrdict.html#attrbox.attrdict.AttrDict.__contains__">__contains__</a></code>
+</p>
+<div class="desc inherited"><p>Return <code>True</code> if <code>name</code> is a key …</p></div>
 </dd>
 <dt id="attrbox.JSend.__getattr__"><code class="name flex">
 <span>def <span class="ident">__getattr__</span></span>(<span>self, name: str) ‑> Optional[Any]</span>
@@ -2120,7 +2608,7 @@ True
 <div class="desc inherited"><p>Delete an attribute …</p></div>
 </dd>
 <dt id="attrbox.JSend.__getitem__"><code class="name flex">
-<span>def <span class="ident">__getitem__</span></span>(<span>self, name: AttrDictKey) ‑> Optional[Any]</span>
+<span>def <span class="ident">__getitem__</span></span>(<span>self, name: AnyIndex) ‑> Optional[Any]</span>
 </code></dt>
 <dd>
 <p class="inheritance">
@@ -2128,6 +2616,16 @@ True
 <code><a title="attrbox.attrdict.AttrDict" href="attrdict.html#attrbox.attrdict.AttrDict">AttrDict</a></code>.<code><a title="attrbox.attrdict.AttrDict.__getitem__" href="attrdict.html#attrbox.attrdict.AttrDict.__getitem__">__getitem__</a></code>
 </p>
 <div class="desc inherited"><p>Return the value of the key …</p></div>
+</dd>
+<dt id="attrbox.JSend.__setitem__"><code class="name flex">
+<span>def <span class="ident">__setitem__</span></span>(<span>self, name: AnyIndex, value: Any) ‑> None</span>
+</code></dt>
+<dd>
+<p class="inheritance">
+<em>Inherited from:</em>
+<code><a title="attrbox.attrdict.AttrDict" href="attrdict.html#attrbox.attrdict.AttrDict">AttrDict</a></code>.<code><a title="attrbox.attrdict.AttrDict.__setitem__" href="attrdict.html#attrbox.attrdict.AttrDict.__setitem__">__setitem__</a></code>
+</p>
+<div class="desc inherited"><p>Set the value of a key …</p></div>
 </dd>
 <dt id="attrbox.JSend.__delitem__"><code class="name flex">
 <span>def <span class="ident">__delitem__</span></span>(<span>self, name: str) ‑> None</span>
@@ -2140,27 +2638,27 @@ True
 <div class="desc inherited"><p>Delete a key …</p></div>
 </dd>
 <dt id="attrbox.JSend.get"><code class="name flex">
-<span>def <span class="ident">get</span></span>(<span>self, name: AttrDictKey, default: Optional[Any] = None, /) ‑> Optional[Any]</span>
+<span>def <span class="ident">get</span></span>(<span>self, path: AnyIndex, default: Optional[Any] = None, /) ‑> Optional[Any]</span>
 </code></dt>
 <dd>
 <p class="inheritance">
 <em>Inherited from:</em>
 <code><a title="attrbox.attrdict.AttrDict" href="attrdict.html#attrbox.attrdict.AttrDict">AttrDict</a></code>.<code><a title="attrbox.attrdict.AttrDict.get" href="attrdict.html#attrbox.attrdict.AttrDict.get">get</a></code>
 </p>
-<div class="desc inherited"><p>Return the value of the key or <code>default</code> if it cannot be found …</p></div>
+<div class="desc inherited"><p>Return the value at <code>path</code> or <code>default</code> if it cannot be found …</p></div>
 </dd>
 <dt id="attrbox.JSend.set"><code class="name flex">
-<span>def <span class="ident">set</span></span>(<span>self: Self, name: AttrDictKey, value: Optional[Any] = None, /) ‑> ~Self</span>
+<span>def <span class="ident">set</span></span>(<span>self: Self, path: AnyIndex, value: Optional[Any] = None, /) ‑> ~Self</span>
 </code></dt>
 <dd>
 <p class="inheritance">
 <em>Inherited from:</em>
 <code><a title="attrbox.attrdict.AttrDict" href="attrdict.html#attrbox.attrdict.AttrDict">AttrDict</a></code>.<code><a title="attrbox.attrdict.AttrDict.set" href="attrdict.html#attrbox.attrdict.AttrDict.set">set</a></code>
 </p>
-<div class="desc inherited"><p>Set key with <code>name</code> to <code>value</code> …</p></div>
+<div class="desc inherited"><p>Set key at <code>path</code> to <code>value</code> …</p></div>
 </dd>
 <dt id="attrbox.JSend.__lshift__"><code class="name flex">
-<span>def <span class="ident">__lshift__</span></span>(<span>self, other: Mapping[str, Any]) ‑> <a title="attrbox.attrdict.AttrDict" href="attrdict.html#attrbox.attrdict.AttrDict">AttrDict</a></span>
+<span>def <span class="ident">__lshift__</span></span>(<span>self: Self, other: Mapping[str, Any]) ‑> ~Self</span>
 </code></dt>
 <dd>
 <p class="inheritance">
@@ -2180,17 +2678,30 @@ True
 <ul>
 <li><a href="#why">Why?</a></li>
 <li><a href="#install">Install</a></li>
-<li><a href="#example">Example</a></li>
+<li><a href="#attrdict">AttrDict</a></li>
+<li><a href="#attrlist">AttrList</a></li>
+<li><a href="#environment">Environment</a></li>
+<li><a href="#configuration">Configuration</a></li>
+<li><a href="#jsend">JSend</a></li>
 <li><a href="#license">License</a></li>
 </ul>
 </div>
 <ul id="index">
 <li><h3><a href="#header-submodules">Sub-modules</a></h3>
 <ul>
-<li><code><a title="attrbox.algo" href="algo.html">attrbox.algo</a></code></li>
 <li><code><a title="attrbox.attrdict" href="attrdict.html">attrbox.attrdict</a></code></li>
 <li><code><a title="attrbox.attrlist" href="attrlist.html">attrbox.attrlist</a></code></li>
+<li><code><a title="attrbox.config" href="config.html">attrbox.config</a></code></li>
+<li><code><a title="attrbox.env" href="env.html">attrbox.env</a></code></li>
+<li><code><a title="attrbox.fn" href="fn.html">attrbox.fn</a></code></li>
 <li><code><a title="attrbox.jsend" href="jsend.html">attrbox.jsend</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="attrbox.load_env" href="#attrbox.load_env">load_env</a></code></li>
+<li><code><a title="attrbox.load_config" href="#attrbox.load_config">load_config</a></code></li>
+<li><code><a title="attrbox.parse_docopt" href="#attrbox.parse_docopt">parse_docopt</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
@@ -2199,10 +2710,12 @@ True
 <h4><code><a title="attrbox.AttrDict" href="#attrbox.AttrDict">AttrDict</a></code></h4>
 <ul class="two-column">
 <li><code><a title="attrbox.AttrDict.copy" href="#attrbox.AttrDict.copy">copy</a></code></li>
+<li><code><a title="attrbox.AttrDict.__contains__" href="#attrbox.AttrDict.__contains__">__contains__</a></code></li>
 <li><code><a title="attrbox.AttrDict.__getattr__" href="#attrbox.AttrDict.__getattr__">__getattr__</a></code></li>
 <li><code><a title="attrbox.AttrDict.__setattr__" href="#attrbox.AttrDict.__setattr__">__setattr__</a></code></li>
 <li><code><a title="attrbox.AttrDict.__delattr__" href="#attrbox.AttrDict.__delattr__">__delattr__</a></code></li>
 <li><code><a title="attrbox.AttrDict.__getitem__" href="#attrbox.AttrDict.__getitem__">__getitem__</a></code></li>
+<li><code><a title="attrbox.AttrDict.__setitem__" href="#attrbox.AttrDict.__setitem__">__setitem__</a></code></li>
 <li><code><a title="attrbox.AttrDict.__delitem__" href="#attrbox.AttrDict.__delitem__">__delitem__</a></code></li>
 <li><code><a title="attrbox.AttrDict.get" href="#attrbox.AttrDict.get">get</a></code></li>
 <li><code><a title="attrbox.AttrDict.set" href="#attrbox.AttrDict.set">set</a></code></li>
@@ -2228,10 +2741,12 @@ True
 <li><code><a title="attrbox.JSend.error" href="#attrbox.JSend.error">error</a></code></li>
 <li><code><a title="attrbox.JSend.success" href="#attrbox.JSend.success">success</a></code></li>
 <li><code><a title="attrbox.JSend.copy" href="attrdict.html#attrbox.JSend.copy">copy</a></code></li>
+<li><code><a title="attrbox.JSend.__contains__" href="attrdict.html#attrbox.JSend.__contains__">__contains__</a></code></li>
 <li><code><a title="attrbox.JSend.__getattr__" href="attrdict.html#attrbox.JSend.__getattr__">__getattr__</a></code></li>
 <li><code><a title="attrbox.JSend.__setattr__" href="attrdict.html#attrbox.JSend.__setattr__">__setattr__</a></code></li>
 <li><code><a title="attrbox.JSend.__delattr__" href="attrdict.html#attrbox.JSend.__delattr__">__delattr__</a></code></li>
 <li><code><a title="attrbox.JSend.__getitem__" href="attrdict.html#attrbox.JSend.__getitem__">__getitem__</a></code></li>
+<li><code><a title="attrbox.JSend.__setitem__" href="attrdict.html#attrbox.JSend.__setitem__">__setitem__</a></code></li>
 <li><code><a title="attrbox.JSend.__delitem__" href="attrdict.html#attrbox.JSend.__delitem__">__delitem__</a></code></li>
 <li><code><a title="attrbox.JSend.get" href="attrdict.html#attrbox.JSend.get">get</a></code></li>
 <li><code><a title="attrbox.JSend.set" href="attrdict.html#attrbox.JSend.set">set</a></code></li>

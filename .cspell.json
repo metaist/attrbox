@@ -8,11 +8,13 @@
     "attrlist",
     "docopt",
     "dotenv",
+    "endswith",
     "jsend",
     "Metaist",
     "mypy",
     "optvar",
     "pdoc",
-    "setuptools"
+    "setuptools",
+    "startswith"
   ]
 }

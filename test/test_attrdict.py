@@ -21,8 +21,8 @@ def test_lshift_json() -> None:
     path = HERE / "example-appengine.json"
     config = AttrDict() << json.load(path.open(encoding="utf-8"))
 
-    have = config.get(["deployment", "files", "example-resource-file1", "sourceUrl"])
-    want = "https://storage.googleapis.com/[MY_BUCKET_ID]/example-application/example-resource-file1"
+    have = config.get(["handlers", 0, "script", "scriptPath"])
+    want = "example-python-app.py"
     assert want == have, "expect to get valid value"
 
 
@@ -39,55 +39,55 @@ def test_lshift_toml() -> None:
 
 def test_merge_empty() -> None:
     """Expect no change."""
-    a = AttrDict(a=1, b=2)
-    b: Dict[Any, Any] = {}
+    one = AttrDict(a=1, b=2)
+    two: Dict[Any, Any] = {}
 
     want = dict(a=1, b=2)
-    have = a << b
+    have = one << two
     assert want == have, "expect no change"
 
 
 def test_update() -> None:
     """Expect a basic merges to work."""
-    a = AttrDict(a=1, b=2)
-    b = dict(a=3)
+    one = AttrDict(a=1, b=2)
+    two = dict(a=3)
 
     want = dict(a=3, b=2)
-    have = a << b
+    have = one << two
     assert want == have, "expect overwrite one value"
 
-    a = AttrDict(a=1, b=2)
-    b = dict(a=3, b=4)
+    one = AttrDict(a=1, b=2)
+    two = dict(a=3, b=4)
     want = dict(a=3, b=4)
-    have = a << b
+    have = one << two
     assert want == have, "expect overwrite both"
 
 
 def test_extend() -> None:
     """Expect to add new value."""
-    a = AttrDict(a=1, b=2)
-    b = dict(c=3)
+    one = AttrDict(a=1, b=2)
+    two = dict(c=3)
 
     want = dict(a=1, b=2, c=3)
-    have = a << b
+    have = one << two
     assert want == have, "expect new value"
 
 
 def test_nested() -> None:
     """Expect basic nesting to merge."""
-    a = AttrDict(a=1, b=dict(c=3, d=4))
-    b = dict(b=dict(c=5))
+    one = AttrDict(a=1, b=dict(c=3, d=4))
+    two = dict(b=dict(c=5))
 
     want = dict(a=1, b=dict(c=5, d=4))
-    have = a << b
+    have = one << two
     assert want == have, "expect 1-nested merge"
 
 
 def test_double_nested() -> None:
     """Expect double nesting to merge."""
-    a = AttrDict(a=1, b=dict(c=3, d=dict(e=4, f=5)))
-    b = dict(b=dict(d=dict(f=6)))
+    one = AttrDict(a=1, b=dict(c=3, d=dict(e=4, f=5)))
+    two = dict(b=dict(d=dict(f=6)))
 
     want = dict(a=1, b=dict(c=3, d=dict(e=4, f=6)))
-    have = a << b
+    have = one << two
     assert want == have, "expect 2-nested merge"
