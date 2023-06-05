@@ -19,6 +19,17 @@ These are changes that are on `main` that are not yet in `prod`.
 
 ---
 
+[#11]: https://github.com/metaist/attrbox/issues/11
+[0.1.3]: https://github.com/metaist/attrbox/compare/0.1.2...0.1.3
+
+## [0.1.3] - 2023-06-05T03:14:31Z
+
+**Fixed**
+
+- [#11]: add `py.typed`
+
+---
+
 [#1]: https://github.com/metaist/attrbox/issues/1
 [#2]: https://github.com/metaist/attrbox/issues/2
 [#3]: https://github.com/metaist/attrbox/issues/3
