@@ -19,6 +19,14 @@ These are changes that are on `main` that are not yet in `prod`.
 
 ---
 
+[0.1.5]: https://github.com/metaist/attrbox/compare/0.1.4...0.1.5
+
+## [0.1.5] - 2023-06-05T11:32:56Z
+
+Turns out the problem was that I forgot to update the version number in `__init__.py`. The GitHub action is tied to publishing a new release not a push on `prod`.
+
+---
+
 [0.1.4]: https://github.com/metaist/attrbox/compare/0.1.3...0.1.4
 
 ## [0.1.4] - 2023-06-05T11:25:13Z
