@@ -19,6 +19,16 @@ These are changes that are on `main` that are not yet in `prod`.
 
 ---
 
+[0.1.4]: https://github.com/metaist/attrbox/compare/0.1.3...0.1.4
+
+## [0.1.4] - 2023-06-05T11:25:13Z
+
+Pushing on `prod` starts a release PyPI using GitHub Actions. Pushing twice on `prod` with quick succession without updating the version number causes both pushes to fail.
+
+This is a zero-change version bump to cause the release to be successful.
+
+---
+
 [#11]: https://github.com/metaist/attrbox/issues/11
 [0.1.3]: https://github.com/metaist/attrbox/compare/0.1.2...0.1.3
 
