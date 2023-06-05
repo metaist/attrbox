@@ -238,7 +238,7 @@ def parse_docopt(
     version: str = &#34;1.0.0&#34;,
     options_first: bool = False,
     read_config: bool = True,
-) -&gt; Dict[str, Any]:
+) -&gt; AttrDict:
     &#34;&#34;&#34;Parse docopt args and load config.
 
     Args:
@@ -256,7 +256,7 @@ def parse_docopt(
             will be automatically loaded before args are parsed. Defaults to `True`.
 
     Returns:
-        Dict[str, Any]: mapping of options to values
+        AttrDict[str, Any]: mapping of options to values
 
     Examples:
         &gt;&gt;&gt; usage = &#34;Usage: test.py [--debug]&#34;
@@ -587,7 +587,7 @@ True
 </details>
 </dd>
 <dt id="attrbox.config.parse_docopt"><code class="name flex">
-<span>def <span class="ident">parse_docopt</span></span>(<span>doc: str, /, argv: Optional[Sequence[str]] = None, *, version: str = '1.0.0', options_first: bool = False, read_config: bool = True) ‑> Dict[str, Any]</span>
+<span>def <span class="ident">parse_docopt</span></span>(<span>doc: str, /, argv: Optional[Sequence[str]] = None, *, version: str = '1.0.0', options_first: bool = False, read_config: bool = True) ‑> <a title="attrbox.attrdict.AttrDict" href="attrdict.html#attrbox.attrdict.AttrDict">AttrDict</a></span>
 </code></dt>
 <dd>
 <div class="desc"><p>Parse docopt args and load config.</p>
@@ -609,7 +609,7 @@ will be automatically loaded before args are parsed. Defaults to <code>True</cod
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>Dict[str, Any]</code></dt>
+<dt><code>AttrDict[str, Any]</code></dt>
 <dd>mapping of options to values</dd>
 </dl>
 <h2 id="examples">Examples</h2>
@@ -640,7 +640,7 @@ True
     version: str = &#34;1.0.0&#34;,
     options_first: bool = False,
     read_config: bool = True,
-) -&gt; Dict[str, Any]:
+) -&gt; AttrDict:
     &#34;&#34;&#34;Parse docopt args and load config.
 
     Args:
@@ -658,7 +658,7 @@ True
             will be automatically loaded before args are parsed. Defaults to `True`.
 
     Returns:
-        Dict[str, Any]: mapping of options to values
+        AttrDict[str, Any]: mapping of options to values
 
     Examples:
         &gt;&gt;&gt; usage = &#34;Usage: test.py [--debug]&#34;
