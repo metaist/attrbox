@@ -209,7 +209,7 @@ def parse_docopt(
     version: str = "1.0.0",
     options_first: bool = False,
     read_config: bool = True,
-) -> Dict[str, Any]:
+) -> AttrDict:
     """Parse docopt args and load config.
 
     Args:
@@ -227,7 +227,7 @@ def parse_docopt(
             will be automatically loaded before args are parsed. Defaults to `True`.
 
     Returns:
-        Dict[str, Any]: mapping of options to values
+        AttrDict[str, Any]: mapping of options to values
 
     Examples:
         >>> usage = "Usage: test.py [--debug]"

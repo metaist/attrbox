@@ -5,6 +5,9 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.package-data]
+attrbox = ["py.typed"]
+
 [tool.setuptools.dynamic]
 version = { attr = "attrbox.__version__" }
 
@@ -22,11 +25,12 @@ keywords = ["attr", "attributes", "dict", "list"]
 dynamic = ["version"]
 requires-python = ">=3.8"
 dependencies = [
-  "docopt==0.6.2",  # TODO: vendorize
-  "tomli >= 1.1.0", # TODO 2026-10-04 [3.10 EOL]: remove
+  # lib => pinned range
+  "docopt==0.6.2", # TODO: vendorize
+  "tomli>=1.1.0",  # TODO 2026-10-04 [3.10 EOL]: remove
 ]
 optional-dependencies = { dev = [
-  # dev dependencies are latest
+  # dev => latest
   "black",
   "coverage",
   "mypy",
@@ -35,9 +39,6 @@ optional-dependencies = { dev = [
   "pytest-cov",
   "pytest",
   "ruff",
-
-  # for tests
-  "toml",
 ] }
 readme = "README.md"
 license = { text = "MIT" }
@@ -55,6 +56,8 @@ classifiers = [
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
+  "Topic :: Software Development :: Libraries",
+  "Typing :: Typed",
 ]
 
 [tool.pdm.scripts]

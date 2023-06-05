@@ -15,6 +15,7 @@
     "optvar",
     "pdoc",
     "setuptools",
-    "startswith"
+    "startswith",
+    "tomli"
   ]
 }
