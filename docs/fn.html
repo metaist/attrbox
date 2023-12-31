@@ -64,6 +64,7 @@ class SupportsItem(Protocol):  # pragma: no cover
 
     def __contains__(self, key: Any) -&gt; bool:
         &#34;&#34;&#34;Return `True` if `key` exists, `False` otherwise.&#34;&#34;&#34;
+        return False
 
     def __getitem__(self, key: Any) -&gt; Any:
         &#34;&#34;&#34;Return value of `key`.&#34;&#34;&#34;
@@ -516,11 +517,13 @@ Defaults to <code>dict</code>.</dd>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class SupportsItem(Protocol):  # pragma: no cover
+<pre><code class="python">@runtime_checkable
+class SupportsItem(Protocol):  # pragma: no cover
     &#34;&#34;&#34;Protocol for `k in x`, `x[k]`, and `x[k] = v`.&#34;&#34;&#34;
 
     def __contains__(self, key: Any) -&gt; bool:
         &#34;&#34;&#34;Return `True` if `key` exists, `False` otherwise.&#34;&#34;&#34;
+        return False
 
     def __getitem__(self, key: Any) -&gt; Any:
         &#34;&#34;&#34;Return value of `key`.&#34;&#34;&#34;
