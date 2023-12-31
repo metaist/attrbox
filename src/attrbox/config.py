@@ -7,6 +7,7 @@ from typing import Any
 from typing import Callable
 from typing import Dict
 from typing import List
+from typing import LiteralString
 from typing import Mapping
 from typing import Optional
 from typing import Sequence
@@ -22,7 +23,7 @@ from .attrdict import AttrDict
 from . import env
 
 PYTHON_KEYWORDS: List[
-    str
+    LiteralString
 ] = """\
     False      await      else       import     pass
     None       break      except     in         raise

@@ -56,6 +56,7 @@ class SupportsRead(Protocol):  # pylint: disable=too-few-public-methods
 
     def read(self) -> str:
         """Read the contents of the file-like object."""
+        return ""  # pragma: no cover
 
 
 def expand(
@@ -118,7 +119,7 @@ def expand(
             name = name.split(".")
 
         if name in values:
-            value = str(values[name])
+            value = str(values[name])  # pyright: ignore
         return value
 
     return _RE_EXPAND.sub(_repl, value)

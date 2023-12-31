@@ -35,6 +35,7 @@ class SupportsItem(Protocol):  # pragma: no cover
 
     def __contains__(self, key: Any) -> bool:
         """Return `True` if `key` exists, `False` otherwise."""
+        return False
 
     def __getitem__(self, key: Any) -> Any:
         """Return value of `key`."""
