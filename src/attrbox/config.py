@@ -1,13 +1,13 @@
 """Configuration loading and parsing."""
 
-# native
+# std
+import sys
 from inspect import cleandoc
 from pathlib import Path
 from typing import Any
 from typing import Callable
 from typing import Dict
 from typing import List
-from typing import LiteralString
 from typing import Mapping
 from typing import Optional
 from typing import Sequence
@@ -16,11 +16,19 @@ import json
 
 # lib
 from docopt import docopt
-import tomli as tomllib  # TODO 2026-10-04 [3.10 EOL]: switch to native tomllib
 
 # pkg
 from .attrdict import AttrDict
 from . import env
+
+# TODO 2026-10-04 [3.10 EOL]: remove conditional
+if sys.version_info >= (3, 11):
+    from typing import LiteralString
+    import tomllib
+else:  # pragma: no cover
+    import tomli as tomllib
+
+    LiteralString = str
 
 PYTHON_KEYWORDS: List[
     LiteralString

@@ -14,9 +14,11 @@
     "mypy",
     "optvar",
     "pdoc",
+    "pypi",
     "pyright",
     "setuptools",
     "startswith",
-    "tomli"
+    "tomli",
+    "venv"
   ]
 }
