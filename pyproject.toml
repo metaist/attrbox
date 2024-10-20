@@ -27,7 +27,8 @@ requires-python = ">=3.8"
 dependencies = [
   # lib => pinned range
   "docopt==0.6.2", # TODO: vendorize
-  "tomli>=1.1.0",  # TODO 2026-10-04 [3.10 EOL]: remove
+  # TODO 2026-10-31 @ py3.10 EOL: remove
+  "tomli==2.0.1; python_version < '3.11'",
 ]
 optional-dependencies = { dev = [
   # dev => latest

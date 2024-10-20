@@ -5,9 +5,16 @@ from pathlib import Path
 from typing import Any
 from typing import Dict
 import json
+import sys
 
-# lib
-import tomli as tomllib  # TODO 2026-10-04 [3.10 EOL]: switch to native tomllib
+# no cover: start
+# Coverage disabled to cover all python versions.
+# TODO 2026-10-31 @ py3.10 EOL: remove conditional
+if sys.version_info >= (3, 11):
+    import tomllib as toml
+else:
+    import tomli as toml
+# no cover: stop
 
 # pkg
 from attrbox import AttrDict
@@ -30,7 +37,7 @@ def test_lshift_toml() -> None:
     """Expect to load TOML document."""
     # See: https://github.com/toml-lang/toml
     path = HERE / "example-toml.toml"
-    config = AttrDict() << tomllib.loads(path.read_text())
+    config = AttrDict() << toml.loads(path.read_text())
 
     want = "10.0.0.1"
     have = config.get("servers.alpha.ip".split("."))

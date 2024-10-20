@@ -21,18 +21,17 @@ from docopt import docopt
 from .attrdict import AttrDict
 from . import env
 
-# TODO 2026-10-04 [3.10 EOL]: remove conditional
+# TODO 2026-10-31 @ py3.10 EOL: remove conditional
 if sys.version_info >= (3, 11):
     from typing import LiteralString
-    import tomllib
+    import tomllib as toml
 else:  # pragma: no cover
-    import tomli as tomllib
+    import tomli as toml
 
     LiteralString = str
 
-PYTHON_KEYWORDS: List[
-    LiteralString
-] = """\
+PYTHON_KEYWORDS: List[LiteralString] = (
+    """\
     False      await      else       import     pass
     None       break      except     in         raise
     True       class      finally    is         return
@@ -41,6 +40,7 @@ PYTHON_KEYWORDS: List[
     assert     del        global     not        with
     async      elif       if         or         yield
 """.lower().split()
+)
 """[All Python keywords](https://docs.python.org/3/reference/lexical_analysis.html#keywords)."""
 
 LoaderFunc = Callable[[str], Any]
@@ -65,7 +65,7 @@ def set_loader(suffix: str, loader: LoaderFunc) -> None:
 
 
 set_loader(".json", json.loads)
-set_loader(".toml", tomllib.loads)
+set_loader(".toml", toml.loads)
 set_loader(".env", env.loads)
 # loaders registered
 
