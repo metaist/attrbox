@@ -41,6 +41,7 @@ optional-dependencies = { dev = [
   "pytest",
   "ruff",
   "types-docopt>=0.6.11.4",
+  "cogapp>=3.4.1",
 ] }
 readme = "README.md"
 license = { text = "MIT" }
