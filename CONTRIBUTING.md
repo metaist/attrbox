@@ -1,27 +1,31 @@
 # Contributing
 
+## Toolchain
+
+The top-level tool chain for managing this project is tested on Linux and macOS.
+Here are links for installing the appropriate tools.
+
+- [`cspell`](https://cspell.org/docs/installation/)
+- [`ds`](https://github.com/metaist/ds#install)
+- [`gh`](https://github.com/cli/cli#installation)
+- [`git`](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
+- [`uv`](https://github.com/astral-sh/uv#installation)
+
+All remaining tools are installed below.
+
 ## Local Development
 
 ```bash
 # get the code
 git clone git@github.com:metaist/attrbox.git
 cd attrbox
-
-# create a virtual environment
-python -m venv .venv --prompt attrbox
-. .venv/bin/activate
-pip install --upgrade pip
-
-# install dependencies and dev tools
-pip install -e ".[dev]"
-pnpm install -g cspell
+uv sync --extra dev
 ```
 
-As you work on the code, you should periodically run:
+Periodically, you should run:
 
 ```bash
-pdm lint  # for type checks
-pdm test  # for unit tests
+ds dev # check lint, type-checks, and run tests
 ```
 
 This repo generally tries to maintain type-correctness (via `mypy` and `pyright`) and complete unit test coverage.
@@ -41,7 +45,13 @@ Update top-most `__init__.py`:
 __version__ = "X.0.1"
 ```
 
-Update `CHANGELOG.md`:
+Update `CHANGELOG.md`. To see recently closed issues run:
+
+```bash
+ds recent-closed
+```
+
+You can also look at the [unreleased](https://github.com/metaist/attrbox/compare/prod...main) log too.
 
 Sections order is: `Fixed`, `Changed`, `Added`, `Deprecated`, `Removed`, `Security`.
 
@@ -65,25 +75,19 @@ Sections order is: `Fixed`, `Changed`, `Added`, `Deprecated`, `Removed`, `Securi
 **Security**
 ```
 
-###
+### Final checks, tag, and push
 
 ```bash
 export VER="X.0.1"
 
-# update docs
-pdm docs
+# final checks again every supported python version
+ds dev-all # requires uv >= 0.3.0
 
-# check build
-pip install -e .
+# final build
+ds docs build
 
-# commit and push tags
-git commit -am "release: $VER"
-git tag $VER
-git push
-git push --tags
-git checkout main
-git merge --no-ff --no-edit prod
-git push
+# commit, push tags, create a new release
+ds release: $VER
 ```
 
-[Create the release on GitHub](https://github.com/metaist/attrbox/releases/new). The `pypi.yaml` workflow will attempt to publish it to PyPI.
+[Review the release on GitHub](https://github.com/metaist/attrbox/releases). Once published, the `pypi.yaml` workflow will attempt to publish it to PyPI.
