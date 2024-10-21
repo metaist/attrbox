@@ -116,7 +116,7 @@ def set_path(
     last = len(path) - 1
     nested = dest
     for index, key in enumerate(path):
-        if isinstance(nested, Mapping) and key not in nested:
+        if isinstance(nested, dict) and key not in nested:
             nested[key] = None
 
         if isinstance(nested, List):

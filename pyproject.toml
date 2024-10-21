@@ -23,7 +23,7 @@ description = "Attribute-based data structures."
 keywords = ["attr", "attributes", "dict", "list"]
 
 dynamic = ["version"]
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 dependencies = [
   # lib => pinned range
   "docopt==0.6.2", # TODO: vendorize
@@ -41,6 +41,7 @@ optional-dependencies = { dev = [
   "pytest-cov",
   "pytest",
   "ruff",
+  "types-docopt>=0.6.11.4",
 ] }
 readme = "README.md"
 license = { text = "MIT" }
@@ -54,7 +55,6 @@ classifiers = [
   "Programming Language :: Python",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
@@ -63,42 +63,105 @@ classifiers = [
   "Typing :: Typed",
 ]
 
-[tool.pdm.scripts]
-black = { shell = "black ." }
-ruff = { shell = "ruff ." }
-cspell = { shell = "cspell --gitignore '**/*.{py,txt,md,markdown}'" }
-pyright = { shell = "pyright src test" }
+[tool.ds.scripts] # run dev scripts <https://github.com/metaist/ds>
+# Lint
+lint = ["ruff-*", "+cspell"]
+ruff-format = "ruff format ${@:-.}"
+ruff-lint = "ruff check --fix ${@:-.}"
+cspell = "cspell --gitignore '**/*.{py,txt,md,markdown}'"
 
-mypy = { shell = """\
+# Type Check
+types = ["pyright", "mypy"]
+pyright = "pyright src test"
+mypy = """
   mypy \
     --strict \
     --install-types \
     --non-interactive \
     src test
-""" }
+"""
 
-test = { shell = """\
-  PYTHONPATH=src \
+# Test
+test.help = "run unit tests"
+test.env = { PYTHONPATH = "src" }
+test.shell = """
   coverage run --branch --source=src -m \
     pytest \
       --doctest-modules \
       --doctest-ignore-import-errors \
-      src test; \
-  coverage report -m
-""" }
+      $@ src test;
+  coverage report --omit=src/cog_helpers.py -m
+"""
 
-docs = { shell = """\
-  rm -rf docs; \
+coverage-report = "coverage html"
+coverage-serve = { shell = "python -m http.server 8080", cwd = "htmlcov" }
+coverage = ["coverage-*"]
+
+# Documentation
+docs = ["cog", "pdoc"]
+cog = "cog -r README.md"
+pdoc = """
+  rm -rf docs;
+  mkdir -p docs;
   pdoc \
     --html \
     --output-dir docs \
     --config sort_identifiers=False \
     --config show_inherited_members=True \
     --force src/$(basename $(pwd));
-  mv docs/**/* docs/
+  mv docs/**/* docs/;
   touch docs/.nojekyll
-""" }
+"""
 
-lint = { composite = ["black", "ruff", "cspell", "pyright", "mypy"] }
-dev = { composite = ["lint", "test"] }
-all = { composite = ["lint", "test", "docs"] }
+# Common
+dev.help = "lint, type-check, and unit tests"
+dev.composite = ["lint", "types", "test"]
+
+dev-all.help = "check every supported python version"
+dev-all.shell = """
+  ds lint;
+  versions=($(grep -oP '(?<=Python :: )[0-9]+\\.[0-9]+' pyproject.toml));
+  for v in ${versions[@]};
+  do
+    uv run --isolated --all-extras --python $v -- ds types test;
+    echo;
+  done;
+"""
+
+# Build
+cosmo = """
+  cosmofy src/cosmofy \
+    --output dist/cosmofy \
+    --args '-m cosmofy --cosmo' \
+    --release-url "https://github.com/metaist/cosmofy/releases/latest/download/cosmofy" \
+    $@
+"""
+build = ["pip install -e .", "python -m build", "cosmo"]
+clean = """
+  rm -rf .mypy_cache;
+  rm -rf .pytest_cache;
+  rm -rf .ruff_cache;
+  rm -rf dist;
+  rm -rf htmlcov;
+  rm -rf src/*.egg-info
+  rm -rf .coverage;
+"""
+
+# Release
+recent.help = "see commits since last tag"
+recent.shell = "git log --oneline --color $(git describe --tags --abbrev=0)..HEAD"
+recent-closed = ["recent | rg 'closes #'"]
+
+release.help = "commit & tag the release"
+release.shell = """
+  git commit -am "release: $1";
+  git tag $1;
+  git push;
+  git push --tags;
+  git checkout main;
+  git merge --no-ff --no-edit prod;
+  git push;
+
+  awk 'BEGIN {count=0} /---/ {count++} count==2 && !/---/ {print} count==3 {exit}' \
+  CHANGELOG.md | gh release create $1 dist/* --draft --verify-tag --title $1 --notes-file -
+"""
