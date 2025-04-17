@@ -26,7 +26,6 @@ dynamic = ["version"]
 requires-python = ">=3.9"
 dependencies = [
   # lib => pinned range
-  "docopt==0.6.2", # TODO: vendorize
   # TODO 2026-10-31 @ py3.10 EOL: remove
   "tomli==2.0.1; python_version < '3.11'",
 ]
@@ -40,7 +39,6 @@ optional-dependencies = { dev = [
   "pytest-cov",
   "pytest",
   "ruff",
-  "types-docopt>=0.6.11.4",
   "cogapp>=3.4.1",
 ] }
 readme = "README.md"
@@ -68,7 +66,7 @@ classifiers = [
 lint = ["ruff-*", "+cspell"]
 ruff-format = "ruff format ${@:-.}"
 ruff-lint = "ruff check --fix ${@:-.}"
-cspell = "cspell --gitignore '**/*.{py,txt,md,markdown}'"
+cspell = "cspell lint --unique --gitignore --exclude '**/_vendor/**' '**/*.{py,txt,md,markdown}' "
 
 # Type Check
 types = ["pyright", "mypy"]
@@ -89,8 +87,9 @@ test.shell = """
     pytest \
       --doctest-modules \
       --doctest-ignore-import-errors \
+      "--ignore-glob=*/_vendor/*" \
       $@ src test;
-  coverage report --omit=src/cog_helpers.py -m
+  coverage report --omit=src/cog_helpers.py --omit '*/_vendor/*' -m
 """
 
 coverage-report = "coverage html"

@@ -14,12 +14,10 @@ from typing import Sequence
 from typing import Union
 import json
 
-# lib
-from docopt import docopt
-
 # pkg
 from .attrdict import AttrDict
 from . import env
+from ._vendor.docopt import docopt
 
 # TODO 2026-10-31 @ py3.10 EOL: remove conditional
 if sys.version_info >= (3, 11):  # pragma: no cover
@@ -258,7 +256,7 @@ def parse_docopt(
         for k, v in docopt(
             cleandoc(doc),
             argv=argv,
-            help=True,
+            default_help=True,
             version=version,
             options_first=options_first,
         ).items()
