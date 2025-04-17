@@ -88,6 +88,7 @@ mypy = """
 test.help = "run unit tests"
 test.env = { PYTHONPATH = "src" }
 test.shell = """
+  touch .env; # ensure .env exists
   coverage run --branch --source=src -m \
     pytest \
       --doctest-modules \
