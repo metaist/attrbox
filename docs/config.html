@@ -36,6 +36,7 @@ from typing import Any
 from typing import Callable
 from typing import Dict
 from typing import List
+from typing import LiteralString
 from typing import Mapping
 from typing import Optional
 from typing import Sequence
@@ -51,7 +52,7 @@ from .attrdict import AttrDict
 from . import env
 
 PYTHON_KEYWORDS: List[
-    str
+    LiteralString
 ] = &#34;&#34;&#34;\
     False      await      else       import     pass
     None       break      except     in         raise
@@ -300,7 +301,7 @@ def parse_docopt(
 <section>
 <h2 class="section-title" id="header-variables">Global variables</h2>
 <dl>
-<dt id="attrbox.config.PYTHON_KEYWORDS"><code class="name">var <span class="ident">PYTHON_KEYWORDS</span> : List[str]</code></dt>
+<dt id="attrbox.config.PYTHON_KEYWORDS"><code class="name">var <span class="ident">PYTHON_KEYWORDS</span> : List[LiteralString]</code></dt>
 <dd>
 <div class="desc"><p><a href="https://docs.python.org/3/reference/lexical_analysis.html#keywords">All Python keywords</a>.</p></div>
 </dd>

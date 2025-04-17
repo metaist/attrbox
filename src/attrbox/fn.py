@@ -35,6 +35,7 @@ class SupportsItem(Protocol):  # pragma: no cover
 
     def __contains__(self, key: Any) -> bool:
         """Return `True` if `key` exists, `False` otherwise."""
+        return False
 
     def __getitem__(self, key: Any) -> Any:
         """Return value of `key`."""
@@ -115,7 +116,7 @@ def set_path(
     last = len(path) - 1
     nested = dest
     for index, key in enumerate(path):
-        if isinstance(nested, Mapping) and key not in nested:
+        if isinstance(nested, dict) and key not in nested:
             nested[key] = None
 
         if isinstance(nested, List):

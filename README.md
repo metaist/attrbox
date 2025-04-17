@@ -1,16 +1,14 @@
-# attrbox
+# attrbox: attribute-based data structures
 
-_Attribute-based data structures._
-
-[![Build Status](https://img.shields.io/github/actions/workflow/status/metaist/attrbox/.github/workflows/ci.yaml?branch=main&style=for-the-badge)](https://github.com/metaist/attrbox/actions)
-[![attrbox on PyPI](https://img.shields.io/pypi/v/attrbox.svg?color=blue&style=for-the-badge)](https://pypi.org/project/attrbox)
-[![Supported Python versions](https://img.shields.io/pypi/pyversions/attrbox?style=for-the-badge)](https://pypi.org/project/attrbox)
-
-[Changelog] - [Issues] - [Documentation]
-
-[changelog]: https://github.com/metaist/attrbox/blob/main/CHANGELOG.md
-[issues]: https://github.com/metaist/attrbox/issues
-[documentation]: https://metaist.github.io/attrbox/
+<p align="center">
+  <a href="https://metaist.github.io/attrbox/"><img alt="Otto the Otter" width="200" src="https://raw.githubusercontent.com/metaist/attrbox/main/otter-box.png" /></a><br />
+  <em>Otto the Otter</em>
+</p>
+<p align="center">
+  <a href="https://github.com/metaist/attrbox/actions/workflows/ci.yaml"><img alt="Build" src="https://img.shields.io/github/actions/workflow/status/metaist/attrbox/.github/workflows/ci.yaml?branch=main&logo=github"/></a>
+  <a href="https://pypi.org/project/attrbox"><img alt="PyPI" src="https://img.shields.io/pypi/v/attrbox.svg?color=blue" /></a>
+  <a href="https://pypi.org/project/attrbox"><img alt="Supported Python Versions" src="https://img.shields.io/pypi/pyversions/attrbox" /></a>
+</p>
 
 ## Why?
 
@@ -150,3 +148,5 @@ Because the `JSend` object is an `AttrDict`, it acts like a `dict` in every othe
 ## License
 
 [MIT License](https://github.com/metaist/attrbox/blob/main/LICENSE.md)
+
+The vendorized version of [`docopt-ng`](https://github.com/jazzband/docopt-ng) is also [licensed under the MIT License](https://github.com/metaist/attrbox/blob/main/src/attrbox/_vendor/docopt/LICENSE-MIT).

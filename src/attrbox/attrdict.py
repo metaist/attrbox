@@ -51,16 +51,16 @@ class AttrDict(Dict[str, Any]):
         """
         return self.__class__(super().copy())
 
-    def __contains__(self, name: Any) -> bool:
-        """Return `True` if `name` is a key.
+    def __contains__(self, key: Any) -> bool:
+        """Return `True` if `key` is a key.
 
         Args:
-            name (Any): typically a `AnyIndex`. If it's a string,
+            key (Any): typically a `AnyIndex`. If it's a string,
                 the check proceeds as usual. If it's a `Sequence`, the
                 checks are performed using `.get()`.
 
         Returns:
-            bool: `True` if the `name` is a valid key, `False` otherwise.
+            bool: `True` if the `key` is a valid key, `False` otherwise.
 
         Examples:
             Normal checking works as expected:
@@ -77,7 +77,7 @@ class AttrDict(Dict[str, Any]):
             >>> ['a', 1, 'x'] in items
             False
         """
-        return self.get(name, NOT_FOUND) is not NOT_FOUND
+        return self.get(key, NOT_FOUND) is not NOT_FOUND
 
     def __getattr__(self, name: str) -> Optional[Any]:
         """Return the value of the attribute or `None`.
@@ -177,11 +177,11 @@ class AttrDict(Dict[str, Any]):
         except AttributeError:  # use key/value
             del self[name]
 
-    def __getitem__(self, name: AnyIndex) -> Optional[Any]:
+    def __getitem__(self, key: AnyIndex) -> Optional[Any]:
         """Return the value of the key.
 
         Args:
-            name (AnyIndex): key name or Sequence of the path to a key
+            key (AnyIndex): key name or Sequence of the path to a key
 
         Returns:
             Any: value of the key or `None` if it cannot be found
@@ -193,13 +193,13 @@ class AttrDict(Dict[str, Any]):
             >>> item['b'] is None
             True
         """
-        return self.get(name)
+        return self.get(key)
 
-    def __setitem__(self, name: AnyIndex, value: Any) -> None:
+    def __setitem__(self, key: AnyIndex, value: Any) -> None:
         """Set the value of a key.
 
         Args:
-            name (BoxIndex): key name
+            key (AnyIndex): key name
             value (Any): key value
 
         Examples:
@@ -212,13 +212,13 @@ class AttrDict(Dict[str, Any]):
             >>> item.a.b
             10
         """
-        self.set(name, value)
+        self.set(key, value)
 
-    def __delitem__(self, name: str) -> None:
+    def __delitem__(self, key: str) -> None:
         """Delete a key.
 
         Args:
-            name (str): key name
+            key (str): key name
 
         Examples:
             >>> item = AttrDict(a=1)
@@ -233,7 +233,7 @@ class AttrDict(Dict[str, Any]):
             {'a': 1}
         """
         try:
-            super().__delitem__(name)
+            super().__delitem__(key)
         except KeyError:
             pass
 

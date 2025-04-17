@@ -1,7 +1,7 @@
 """Attribute-based data structures.
 
 .. include:: ../../README.md
-   :start-line: 4
+   :start-line: 2
 """
 
 # pkg
