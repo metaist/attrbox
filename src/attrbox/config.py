@@ -6,29 +6,21 @@ from inspect import cleandoc
 from pathlib import Path
 from typing import Any
 from typing import Callable
-from typing import Dict
-from typing import List
-from typing import Mapping
-from typing import Optional
 from typing import Sequence
-from typing import Union
 import json
 
 # pkg
-from .attrdict import AttrDict
 from . import env
 from ._vendor.docopt import docopt
+from .attrdict import AttrDict
 
 # TODO 2026-10-31 @ py3.10 EOL: remove conditional
 if sys.version_info >= (3, 11):  # pragma: no cover
-    from typing import LiteralString
     import tomllib as toml
 else:  # pragma: no cover
     import tomli as toml
 
-    LiteralString = str
-
-PYTHON_KEYWORDS: List[LiteralString] = """
+PYTHON_KEYWORDS: Sequence[str] = """
     False      await      else       import     pass
     None       break      except     in         raise
     True       class      finally    is         return
@@ -42,7 +34,7 @@ PYTHON_KEYWORDS: List[LiteralString] = """
 LoaderFunc = Callable[[str], Any]
 """Function signature to load configuration from a string."""
 
-LOADERS: Dict[str, LoaderFunc] = {}
+LOADERS: dict[str, LoaderFunc] = {}
 """Mapping of file extensions to configuration loaders."""
 
 
@@ -71,9 +63,9 @@ def load_config(
     /,
     *,
     load_imports: bool = True,
-    loaders: Optional[Mapping[str, LoaderFunc]] = None,
-    done: Optional[List[Path]] = None,
-) -> Dict[str, Any]:
+    loaders: dict[str, LoaderFunc] | None = None,
+    done: list[Path] | None = None,
+) -> dict[str, Any]:
     """Load a configuration file from `path` using configuration `loaders`.
 
     Args:
@@ -82,15 +74,15 @@ def load_config(
         load_imports (bool, optional): If `True`, recursively load any files
             located at the `imports` key. Defaults to `True`.
 
-        loaders (Mapping[str, LoaderFunc], optional): mapping of file suffixes
+        loaders (dict[str, LoaderFunc], optional): mapping of file suffixes
             to to loader functions. If `None`, uses the global `LOADERS`.
             Defaults to `None`.
 
-        done (List[Path], optional): If provided, a list of paths to ignore when
+        done (list[Path], optional): If provided, a list of paths to ignore when
             doing recursive loading. Defaults to `None`.
 
     Returns:
-        Dict[str, Any]: keys/values from the configuration file
+        dict[str, Any]: keys/values from the configuration file
 
     Examples:
         >>> root = Path(__file__).parent.parent.parent
@@ -189,7 +181,7 @@ def optvar(
         result = result[1:]
     # leading hyphens removed
 
-    trans: Dict[str, Union[str, int, None]] = {"-": "_", "<": "", ">": ""}
+    trans: dict[str, str | int | None] = {"-": "_", "<": "", ">": ""}
     result = result.translate(str.maketrans(trans))
     # hyphens become underscores; angle brackets removed
 
@@ -209,7 +201,7 @@ def optvar(
 def parse_docopt(
     doc: str,
     /,
-    argv: Optional[Sequence[str]] = None,
+    argv: Sequence[str] | None = None,
     *,
     version: str = "1.0.0",
     options_first: bool = False,
