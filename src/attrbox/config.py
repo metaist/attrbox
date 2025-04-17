@@ -255,7 +255,7 @@ def parse_docopt(
         optvar(k, shadow_builtins=True): v
         for k, v in docopt(
             cleandoc(doc),
-            argv=argv,
+            argv=list(argv) if argv else None,
             default_help=True,
             version=version,
             options_first=options_first,

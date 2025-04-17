@@ -32,14 +32,14 @@ dependencies = [
 optional-dependencies = { dev = [
   "build",
   "coverage",
-  "ds-run>=1.3.0",
+  "ds-run",
   "mypy",
   "pdoc3",
   "pyright",
   "pytest-cov",
   "pytest",
   "ruff",
-  "cogapp>=3.4.1",
+  "cogapp",
 ] }
 readme = "README.md"
 license = { text = "MIT" }
@@ -61,12 +61,15 @@ classifiers = [
   "Typing :: Typed",
 ]
 
+[tool.pyright]
+exclude = ["**/_vendor/**"]
+
 [tool.ds.scripts] # run dev scripts <https://github.com/metaist/ds>
 # Lint
 lint = ["ruff-*", "+cspell"]
-ruff-format = "ruff format ${@:-.}"
-ruff-lint = "ruff check --fix ${@:-.}"
-cspell = "cspell lint --unique --gitignore --exclude '**/_vendor/**' '**/*.{py,txt,md,markdown}' "
+ruff-format = "uvx ruff format ${@:-.}"
+ruff-lint = "uvx ruff check --fix ${@:-.}"
+cspell = "npx cspell lint --unique --gitignore --exclude '**/_vendor/**' '**/*.{py,txt,md,markdown}' "
 
 # Type Check
 types = ["pyright", "mypy"]
@@ -76,6 +79,8 @@ mypy = """
     --strict \
     --install-types \
     --non-interactive \
+    --follow-imports=skip \
+    --exclude '/_vendor/' \
     src test
 """
 
@@ -93,16 +98,16 @@ test.shell = """
 """
 
 coverage-report = "coverage html"
-coverage-serve = { shell = "python -m http.server 8080", cwd = "htmlcov" }
+coverage-serve = { shell = "uv run -m http.server 8080", cwd = "htmlcov" }
 coverage = ["coverage-*"]
 
 # Documentation
 docs = ["cog", "pdoc"]
-cog = "cog -r README.md"
+cog = "uvx cog -r README.md"
 pdoc = """
   rm -rf docs;
   mkdir -p docs;
-  pdoc \
+  uvx pdoc3 \
     --html \
     --output-dir docs \
     --config sort_identifiers=False \
@@ -119,22 +124,15 @@ dev.composite = ["lint", "types", "test"]
 dev-all.help = "check every supported python version"
 dev-all.shell = """
   ds lint;
-  versions=($(grep -oP '(?<=Python :: )[0-9]+\\.[0-9]+' pyproject.toml));
+  versions=($(sed -n 's/.*Python :: \\([0-9][0-9]*\\.[0-9][0-9]*\\)",*/\\1/p' pyproject.toml));
   for v in ${versions[@]};
   do
-    uv run --isolated --all-extras --python $v -- ds types test;
+    uv run --isolated --all-extras --python $v -- ds -e UV_PYTHON=$v types test;
     echo;
   done;
 """
 
 # Build
-cosmo = """
-  cosmofy src/cosmofy \
-    --output dist/cosmofy \
-    --args '-m cosmofy --cosmo' \
-    --release-url "https://github.com/metaist/cosmofy/releases/latest/download/cosmofy" \
-    $@
-"""
 build = ["pip install -e .", "python -m build", "cosmo"]
 clean = """
   rm -rf .mypy_cache;
