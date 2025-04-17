@@ -148,3 +148,5 @@ Because the `JSend` object is an `AttrDict`, it acts like a `dict` in every othe
 ## License
 
 [MIT License](https://github.com/metaist/attrbox/blob/main/LICENSE.md)
+
+The vendorized version of [`docopt-ng`](https://github.com/jazzband/docopt-ng) is also [licensed under the MIT License](https://github.com/metaist/attrbox/blob/main/src/attrbox/_vendor/docopt/LICENSE-MIT).
