@@ -19,6 +19,36 @@ These are changes that are on `main` that are not yet in `prod`.
 
 ---
 
+[#13]: https://github.com/metaist/attrbox/issues/13
+[#14]: https://github.com/metaist/attrbox/issues/14
+[#15]: https://github.com/metaist/attrbox/issues/15
+[#16]: https://github.com/metaist/attrbox/issues/16
+[metaist/LTS#4]: https://github.com/metaist/LTS/issues/4
+[metaist/LTS#5]: https://github.com/metaist/LTS/issues/5
+[metaist/LTS#6]: https://github.com/metaist/LTS/issues/6
+[metaist/LTS#8]: https://github.com/metaist/LTS/issues/8
+[0.1.6]: https://github.com/metaist/attrbox/compare/0.1.5...0.1.6
+
+## [0.1.6] - 2025-04-17T21:49:10Z
+
+**Changed**
+
+- [#13]: vendorized `docopt-ng`
+- [#14], [#16], [metaist/LTS#8]: using latest project configurations
+- [metaist/LTS#4]: switched to using `ds`
+- [metaist/LTS#6]: copyright year
+- [metaist/LTS#8]: using latest github actions
+
+**Added**
+
+- [#15]: `cog` to docs process
+
+**Removed**
+
+- [metaist/LTS#5]: python 3.9 support
+
+---
+
 [0.1.5]: https://github.com/metaist/attrbox/compare/0.1.4...0.1.5
 
 ## [0.1.5] - 2023-06-05T11:32:56Z
