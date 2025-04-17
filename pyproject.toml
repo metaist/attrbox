@@ -30,7 +30,6 @@ dependencies = [
   "tomli==2.0.1; python_version < '3.11'",
 ]
 optional-dependencies = { dev = [
-  "build",
   "coverage",
   "ds-run",
   "mypy",
@@ -42,12 +41,12 @@ optional-dependencies = { dev = [
   "cogapp",
 ] }
 readme = "README.md"
-license = { text = "MIT" }
+license = "MIT"
+license-files = ["LICENSE.md", "src/attrbox/_vendor/docopt/LICENSE-MIT"]
 authors = [{ name = "Metaist LLC", email = "metaist@metaist.com" }]
 classifiers = [
   "Development Status :: 4 - Beta",
   "Intended Audience :: Developers",
-  "License :: OSI Approved :: MIT License",
   "Natural Language :: English",
   "Operating System :: OS Independent",
   "Programming Language :: Python",
@@ -57,6 +56,7 @@ classifiers = [
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Topic :: Software Development :: Libraries",
   "Typing :: Typed",
 ]
@@ -73,7 +73,7 @@ cspell = "npx cspell lint --unique --gitignore --exclude '**/_vendor/**' '**/*.{
 
 # Type Check
 types = ["pyright", "mypy"]
-pyright = "pyright src test"
+pyright = "npx pyright src test"
 mypy = """
   mypy \
     --strict \
@@ -103,11 +103,11 @@ coverage = ["coverage-*"]
 
 # Documentation
 docs = ["cog", "pdoc"]
-cog = "uvx cog -r README.md"
+cog = "cog -r README.md"
 pdoc = """
   rm -rf docs;
   mkdir -p docs;
-  uvx pdoc3 \
+  pdoc3 \
     --html \
     --output-dir docs \
     --config sort_identifiers=False \
@@ -127,13 +127,13 @@ dev-all.shell = """
   versions=($(sed -n 's/.*Python :: \\([0-9][0-9]*\\.[0-9][0-9]*\\)",*/\\1/p' pyproject.toml));
   for v in ${versions[@]};
   do
-    uv run --isolated --all-extras --python $v -- ds -e UV_PYTHON=$v types test;
+    uv run --isolated --all-extras --python $v -- ds types test;
     echo;
   done;
 """
 
 # Build
-build = ["pip install -e .", "python -m build", "cosmo"]
+build = "uv build"
 clean = """
   rm -rf .mypy_cache;
   rm -rf .pytest_cache;
