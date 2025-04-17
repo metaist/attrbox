@@ -1,13 +1,15 @@
 """Configuration loading and parsing."""
 
 # std
-import sys
 from inspect import cleandoc
 from pathlib import Path
 from typing import Any
 from typing import Callable
+from typing import Optional
 from typing import Sequence
+from typing import Union
 import json
+import sys
 
 # pkg
 from . import env
@@ -63,8 +65,8 @@ def load_config(
     /,
     *,
     load_imports: bool = True,
-    loaders: dict[str, LoaderFunc] | None = None,
-    done: list[Path] | None = None,
+    loaders: Optional[dict[str, LoaderFunc]] = None,
+    done: Optional[list[Path]] = None,
 ) -> dict[str, Any]:
     """Load a configuration file from `path` using configuration `loaders`.
 
@@ -181,7 +183,7 @@ def optvar(
         result = result[1:]
     # leading hyphens removed
 
-    trans: dict[str, str | int | None] = {"-": "_", "<": "", ">": ""}
+    trans: dict[str, Union[str, int, None]] = {"-": "_", "<": "", ">": ""}
     result = result.translate(str.maketrans(trans))
     # hyphens become underscores; angle brackets removed
 
@@ -201,7 +203,7 @@ def optvar(
 def parse_docopt(
     doc: str,
     /,
-    argv: Sequence[str] | None = None,
+    argv: Optional[Sequence[str]] = None,
     *,
     version: str = "1.0.0",
     options_first: bool = False,
