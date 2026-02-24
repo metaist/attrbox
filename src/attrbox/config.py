@@ -13,13 +13,17 @@ import sys
 
 # pkg
 from . import env
+from . import xml
 from ._vendor.docopt import docopt
 from .attrdict import AttrDict
 
-# TODO 2026-10-31 @ py3.10 EOL: remove conditional
+# TODO 2026-10-31 @ py3.10 EOL: remove conditional and pyright
+# pyright: reportMissingImports=false
 if sys.version_info >= (3, 11):  # pragma: no cover
     import tomllib as toml
 else:  # pragma: no cover
+    # the line-level comment does not work, so we have to use file-level
+    # which is gross
     import tomli as toml
 
 PYTHON_KEYWORDS: Sequence[str] = """
@@ -57,6 +61,8 @@ def set_loader(suffix: str, loader: LoaderFunc) -> None:
 set_loader(".json", json.loads)
 set_loader(".toml", toml.loads)
 set_loader(".env", env.loads)
+if xml.parser_available():  # pragma: no cover
+    set_loader(".xml", xml.loads)
 # loaders registered
 
 

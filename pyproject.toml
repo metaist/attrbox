@@ -39,6 +39,8 @@ optional-dependencies = { dev = [
   "pytest",
   "ruff",
   "cogapp",
+], xml = [
+  "xmltodict"
 ] }
 readme = "README.md"
 license = "MIT"
@@ -63,6 +65,9 @@ classifiers = [
 
 [tool.pyright]
 exclude = ["**/_vendor/**"]
+# TODO 2026-10-31 @ py3.10 EOL: remove this as it silences the tomli error on higher py versions
+# for whatever reason the line/file ignores don't work with pyright
+# reportMissingImports = false
 
 [tool.ds.scripts] # run dev scripts <https://github.com/metaist/ds>
 # Lint

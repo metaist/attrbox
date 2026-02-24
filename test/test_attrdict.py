@@ -10,9 +10,12 @@ import sys
 # no cover: start
 # Coverage disabled to cover all python versions.
 # TODO 2026-10-31 @ py3.10 EOL: remove conditional
+# pyright: reportMissingImports=false
 if sys.version_info >= (3, 11):
     import tomllib as toml
 else:
+    # the line-level comment does not work, so we have to use file-level
+    # which is gross
     import tomli as toml
 # no cover: stop
 
